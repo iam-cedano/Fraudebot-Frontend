@@ -1,8 +1,9 @@
 import React from 'react';
-import { ButtonProps, FeatureProps } from './types';
+import ManWithScreensImage from "@presentation/assets/man-with-screens.webp"
+import GirlWithScreensImage from "@presentation/assets/girl-with-screens.webp"
+import { FeatureProps } from "@presentation/pages/home/components/types";
 
-export function FeatureBlock() {
-    // I have set up placeholder images here. You can update the imageSrc when you provide the images.
+function FeatureBlock() {
     const features: FeatureProps[] = [
         {
             id: 'seguimiento',
@@ -12,12 +13,12 @@ export function FeatureBlock() {
                     Puedes añadir la información de contacto de un vendedor y te avisaremos si hay noticias sobre él. Dale clic en <strong>"Dar Seguimiento"</strong> y comienza con el proceso. No tiene ningún costo.
                 </>
             ),
-            imageSrc: 'https://placehold.co/400x300?text=Image+1', 
+            imageSrc: ManWithScreensImage,
             imageAlt: 'Ilustración de Seguimiento de Reportes',
             reverse: false,
             buttons: [
-                { label: 'Dar Seguimiento', variant: 'primary' },
-                { label: 'Buscar Reportes', variant: 'secondary' },
+                { label: 'Dar Seguimiento', variant: 'primary', href: '#' },
+                { label: 'Buscar Reportes', variant: 'secondary', href: '#' },
             ]
         },
         {
@@ -28,17 +29,17 @@ export function FeatureBlock() {
                     <strong>Fraudebot</strong> es visitado y confiado por miles de personas en México al hacer negocios online. Con nuestra infraestructura puede promocionar su negocio en un nicho en específico. Da clic en <strong>"Saber más"</strong> para conocer más.
                 </>
             ),
-            imageSrc: 'https://placehold.co/400x300?text=Image+2',
+            imageSrc: GirlWithScreensImage,
             imageAlt: 'Ilustración de Promocionar Negocio',
             reverse: true,
             buttons: [
-                { label: 'Saber más', variant: 'primary' }
+                { label: 'Saber más', variant: 'primary', href: '#' }
             ]
         }
     ];
 
     return (
-        <section className="flex flex-col w-full max-w-6xl mx-auto py-12 px-6">
+        <section className="flex flex-col w-full max-w-6xl mx-auto py-12 px-6 font-[Nunito]">
             {features.map((feature, index) => (
                 <React.Fragment key={feature.id}>
                     <div className={`flex flex-col md:flex-row items-center gap-10 md:gap-16 ${feature.reverse ? 'md:flex-row-reverse' : ''}`}>
@@ -63,8 +64,9 @@ export function FeatureBlock() {
                             
                             <div className="flex flex-wrap gap-4 mt-2">
                                 {feature.buttons.map((btn, btnIdx) => (
-                                    <button
+                                    <a
                                         key={btnIdx}
+                                        href={btn.href}
                                         onClick={btn.onClick}
                                         className={`px-6 py-2.5 rounded shadow-sm font-medium transition-colors ${
                                             btn.variant === 'primary' 
@@ -73,7 +75,7 @@ export function FeatureBlock() {
                                         }`}
                                     >
                                         {btn.label}
-                                    </button>
+                                    </a>
                                 ))}
                             </div>
                         </div>
@@ -88,3 +90,5 @@ export function FeatureBlock() {
         </section>
     );
 }
+
+export default FeatureBlock;
