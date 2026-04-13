@@ -5,6 +5,7 @@ export type HomeContainerProps = {
 export type ButtonProps = {
     label: string;
     variant: 'primary' | 'secondary';
+    href: string;
     onClick?: () => void;
 }
 
@@ -16,4 +17,10 @@ export type FeatureProps = {
     imageAlt: string;
     reverse?: boolean;
     buttons: ButtonProps[];
+}
+
+export type ReviewCardProps = {
+    name: string;
+    review: string;
+    avatarUrl?: string;
 }
