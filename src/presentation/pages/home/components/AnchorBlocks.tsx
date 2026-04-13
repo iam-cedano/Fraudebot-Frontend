@@ -6,7 +6,7 @@ import AyudaImage from '@presentation/assets/ayuda.webp';
 
 function AnchorBlocks() {
     const blocks = [
-        { title: 'Juridico', href: '#', imageSrc: JuridicoImage },
+        { title: 'Jurídico', href: '#', imageSrc: JuridicoImage },
         { title: 'Reportes', href: '#', imageSrc: ReporteImage },
         { title: 'Proveedores', href: '#', imageSrc: ProveedoresImage },
         { title: 'Noticias', href: '#', imageSrc: NoticiasImage },
