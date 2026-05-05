@@ -81,9 +81,8 @@ function FeatureBlock() {
                         </div>
                     </div>
                     
-                    {/* Horizontal Separator */}
                     {index !== features.length - 1 && (
-                        <div className="w-full my-16 border-b border-gray-100"></div>
+                        <div className="w-full  border-b border-gray-100"></div>
                     )}
                 </React.Fragment>
             ))}

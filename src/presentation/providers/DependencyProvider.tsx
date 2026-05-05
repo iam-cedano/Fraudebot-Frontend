@@ -1,10 +1,14 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useMemo } from 'react';
 import { dependencies, Dependencies } from '../../infrastructure/di/container';
 
-const DependencyContext = createContext<Dependencies>(dependencies);
+const DependencyContext = createContext<Dependencies | null>(null);
 
 export const useDependencies = (): Dependencies => {
-    return useContext(DependencyContext);
+    const context = useContext(DependencyContext);
+    if (!context) {
+        throw new Error('useDependencies must be used within a DependencyProvider');
+    }
+    return context;
 };
 
 interface DependencyProviderProps {
@@ -16,8 +20,15 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({
     children, 
     overrides 
 }) => {
-    // Merge default dependencies with any overrides (useful for mocks in tests)
-    const contextValue = { ...dependencies, ...overrides };
+    const contextValue = useMemo(() => {
+        const instances = Object.keys(dependencies).reduce((acc, key) => {
+            const factory = dependencies[key as keyof typeof dependencies];
+            acc[key as keyof Dependencies] = factory() as any;
+            return acc;
+        }, {} as Dependencies);
+
+        return { ...instances, ...overrides };
+    }, [overrides]);
 
     return (
         <DependencyContext.Provider value={contextValue}>

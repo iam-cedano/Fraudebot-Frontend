@@ -1,11 +1,19 @@
 import FraudeBotLogo from '@presentation/assets/fraudebot-logo.webp'
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
+
+    const navigate = useNavigate();
+
+    function handleHome() {
+        navigate('/');
+    }
+
     return (
-        <header className="w-full max-w-6xl h-20 bg-white mb-16 rounded shadow-sm flex items-center justify-between px-8 font-[Nunito]">
-            <a href="#" className="flex items-center gap-2">
-                <img src={FraudeBotLogo} alt="Fraudebot Logo" className="h-14" />
-            </a>
+        <header className="w-full max-w-6xl h-20 bg-white mb-16 rounded shadow-sm flex items-center justify-between px-8 font-[Nunito] m-auto absolute left-0 right-0 top-0">
+            <div className="flex items-center gap-2">
+                <img src={FraudeBotLogo} alt="Fraudebot Logo" className="h-14 cursor-pointer" onClick={handleHome} />
+            </div>
 
             <nav className="flex items-center gap-12">
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Reportar</a>
