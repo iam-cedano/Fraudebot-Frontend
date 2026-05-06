@@ -1,31 +1,31 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Header from "@presentation/shared/components/Header";
 import Footer from "@presentation/shared/components/Footer";
 import LottieAnimation from "@presentation/shared/components/LottieAnimation";
 import RobotLottieAnimation from "@presentation/assets/robot.lottie";
 import SearchContainer from "@presentation/pages/search/components/SearchContainer";
-import { useEffect } from "react";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 
 function Search() {
-    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { searchScammerUseCase } = useDependencies();
     const query = searchParams.get("q");
 
     useEffect(() => {
         if (!query || query.trim() === "") {
-            navigate("/404");
-            
             return;
         }
 
         searchScammerUseCase.execute(query).then((data) => {
             console.log(data);
+        }).catch((error) => {
+            if (error.name === "AbortError") {
+                console.log("Search cancelled");
+                return;
+            }
+            console.error("Search failed", error);
         });
-
-        return () => {
-        };
     }, [query]);
 
     return (

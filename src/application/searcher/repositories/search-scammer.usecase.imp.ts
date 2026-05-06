@@ -4,15 +4,10 @@ import SearchScammerUseCase from "@/domain/searcher/usecases/search-scammer.usec
 import Http from "@/infrastructure/http/http";
 
 export default class SearchScammerImplUsecase extends SearchScammerUseCase {
-    private controller: AbortController;
-
-    public constructor() {
-        super();
-
-        this.controller = new AbortController();
-    }
+    private controller: AbortController | null = null;
 
     public async execute(query: string): Promise<SingleSearchResponse> {
+        this.controller = new AbortController();
         const parsedQuery = query.replaceAll(" ", "");
 
         const response = await Http.get<SingleSearchResponse>(`${environment.API_BASE_URL}/public/scammers/`, {
@@ -26,6 +21,6 @@ export default class SearchScammerImplUsecase extends SearchScammerUseCase {
     }
 
     public cancel(): void {
-        this.controller.abort();
+        this.controller?.abort();
     }
 }
