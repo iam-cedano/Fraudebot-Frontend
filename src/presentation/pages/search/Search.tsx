@@ -20,13 +20,17 @@ function Search() {
         searchScammerUseCase.execute(query).then((data) => {
             console.log(data);
         }).catch((error) => {
-            if (error.name === "AbortError") {
+            if (error?.name === "AbortError" || error?.name === "CanceledError" || error?.code === "ERR_CANCELED") {
                 console.log("Search cancelled");
                 return;
             }
             console.error("Search failed", error);
         });
-    }, [query]);
+
+        return () => {
+            searchScammerUseCase.cancel();
+        };
+    }, [query, searchScammerUseCase]);
 
     return (
         <>

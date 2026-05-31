@@ -1,19 +1,23 @@
 import environment from "@environment/environment";
 import SingleSearchResponse from "@/domain/searcher/models/responses/single-response.response";
 import SearchScammerUseCase from "@/domain/searcher/usecases/search-scammer.usecase";
+import PurifierUtil from "@/utils/purifier.util"
 import Http from "@/infrastructure/http/http";
+import RequestCanceler from "@/infrastructure/http/request-canceler";
 
 export default class SearchScammerImplUsecase extends SearchScammerUseCase {
-    private controller: AbortController | null = null;
+    private readonly requestCanceler = new RequestCanceler();
 
     public async execute(query: string): Promise<SingleSearchResponse> {
-        this.controller = new AbortController();
-        const parsedQuery = query.replaceAll(" ", "");
+        const signal = this.requestCanceler.prepareSignal();
+        const sanitizedQuery = PurifierUtil.sanitize(query);
+
+        await this.requestCanceler.delay(5000);
 
         const response = await Http.get<SingleSearchResponse>(`${environment.API_BASE_URL}/public/scammers/`, {
-            signal: this.controller.signal,
+            signal,
             params: {
-                "q": parsedQuery
+                "q": sanitizedQuery
             }
         });
 
@@ -21,6 +25,6 @@ export default class SearchScammerImplUsecase extends SearchScammerUseCase {
     }
 
     public cancel(): void {
-        this.controller?.abort();
+        this.requestCanceler.cancel();
     }
 }

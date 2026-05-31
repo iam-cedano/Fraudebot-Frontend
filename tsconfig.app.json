@@ -32,7 +32,9 @@
       "@domain/*": ["src/domain/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
       "@presentation/*": ["src/presentation/*"],
-      "@environment/*": ["src/environment/*"]
+      "@environment/*": ["src/environment/*"],
+      "@utils/*": ["src/utils/*"],
+      "@core/*": ["src/core/*"]
     }
   },
   "include": ["src", "src/declarations.d.ts"],

@@ -11,7 +11,7 @@ function Header() {
             </div>
 
             <nav className="flex items-center gap-12">
-                <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Reportar</a>
+                <Link to="/contact" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Reportar</Link>
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Blog</a>
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Nuestra misión</a>
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Herramientas</a>
