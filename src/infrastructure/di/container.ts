@@ -1,4 +1,4 @@
-import SearchScammerImplUsecase from '../../application/searcher/repositories/search-scammer.usecase.imp';
+import SearchScammerImplUsecase from '../../application/searcher/usecases/search-scammer.usecase.imp';
 
 export const createSearchScammerUseCase = () => new SearchScammerImplUsecase();
 
