@@ -1,5 +1,4 @@
 class PurifierUtil {
-
     public static sanitize(input: string): string {
         const prohibited: Record<string, string> = {
             '&': '',
