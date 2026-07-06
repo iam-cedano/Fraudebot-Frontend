@@ -7,20 +7,24 @@ import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerEntity from "@/domain/scammer/entities/scammer.entity";
 import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
+import Formatter from "@/presentation/shared/utils/formatter";
+import Paragraph from "@/presentation/shared/utils/paragraph";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSearching, setIsSearching] = useState(false);
+  const [query, setQuery] = useState(searchParams.get("q") || "");
   const [scammers, setScammers] = useState<ScammerEntity[]>([]);
   const { searchScammerUseCase } = useDependencies();
-  
-  const query = searchParams.get("q");
-  
+
   useEffect(() => {
     if (!query || query.trim() === "") {
       return;
     }
-    
+
+    setSearchParams({ q: query.replace(/\s+/g, " ").trim() });
+    setQuery(Formatter.FormatInput(query));
+
     setIsSearching(true);
 
     searchScammerUseCase
@@ -32,23 +36,26 @@ function Search() {
       searchScammerUseCase.cancel();
     };
   }, []);
-  
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuery = event.target.value;
+
+  const handleInputChange = (event: React.InputEvent<HTMLInputElement>) => {
+    const newQuery = Paragraph.RemoveWhitespaces(event.currentTarget.value);
+
+    const formattedQuery = Formatter.FormatInput(newQuery);
 
     setSearchParams({ q: newQuery });
-  }
+    setQuery(formattedQuery);
+  };
 
   const handleSubmit = async () => {
     if (!query || query.trim() === "") {
       setIsSearching(false);
       setScammers([]);
-      
+
       return;
     }
-    
+
     setIsSearching(true);
-    
+
     try {
       const scammers = await searchScammerUseCase.execute(query);
 
@@ -58,7 +65,7 @@ function Search() {
     } finally {
       setIsSearching(false);
     }
-  }
+  };
 
   return (
     <>
@@ -67,11 +74,15 @@ function Search() {
       <Header />
 
       <SearchContainer>
-        
         {isSearching && <Loader />}
 
-        {!isSearching && <LookupForm defaultQuery={query} onSubmit={handleSubmit} onInputChange={handleInputChange} />}
-
+        {!isSearching && (
+          <LookupForm
+            onSubmit={handleSubmit}
+            onInputChange={handleInputChange}
+            query={query}
+          />
+        )}
       </SearchContainer>
 
       <Footer />

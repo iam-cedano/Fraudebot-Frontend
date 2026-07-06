@@ -1,9 +1,9 @@
 export type SearchContainerProps = {
-    children: React.ReactNode;
-}
+  children: React.ReactNode;
+};
 
 export type LookupFormProps = {
-    defaultQuery: string | null;
-    onSubmit: () => void;
-    onInputChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
+  onSubmit: () => void;
+  onInputChange?: (event: React.InputEvent<HTMLInputElement>) => void;
+  query: string;
+};

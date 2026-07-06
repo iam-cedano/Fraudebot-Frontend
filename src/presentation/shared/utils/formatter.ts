@@ -3,35 +3,40 @@ class Formatter {
    * @author Oscar Cedano <oscar.cedano@outlook.com>
    * @param value - The input value to format.
    * @param e - Callback function to update the input value.
-   * @description This method formats the input value by following the pattern: 1234 2415 1512 1234
+   * @description This method formats the input value and updates it using the provided callback function.
    * @returns The formatted input value.
    */
-  public static formatInputAndUpdate(
+  public static FormatInputAndUpdate(
     value: string,
     e: (v: string) => void,
   ): void {
-    if (/^[\d\s]+$/.test(value) === false) {
-      e(value);
+    e(Formatter.FormatInput(value));
+  }
 
-      return;
+  /**
+   * @author Oscar Cedano <oscar.cedano@outlook.com>
+   * @param value - The input value to format.
+   * @returns The formatted input value.
+   */
+  public static FormatInput(value: string): string {
+    if (/^[\d\s]+$/.test(value) === false) {
+      return value;
     }
 
     const formattedValue: string = value.replace(/\D/g, "").trim();
     const length: number = formattedValue.length;
 
     if (length <= 0) {
-      e("");
-    } else if (length == Formatter.getCardNumberLength()) {
-      e(Formatter.formatCardNumber(formattedValue));
-    } else if (length == Formatter.getAccountOrPhoneNumberLength()) {
-      e(Formatter.formatAccountOrPhoneNumber(formattedValue));
-    } else if (length == Formatter.getClabeNumberLength()) {
-      e(Formatter.formatClabeNumber(formattedValue));
+      return "";
+    } else if (length == Formatter.GetCardNumberLength()) {
+      return Formatter.FormatCardNumber(formattedValue);
+    } else if (length == Formatter.GetAccountOrPhoneNumberLength()) {
+      return Formatter.FormatAccountOrPhoneNumber(formattedValue);
+    } else if (length == Formatter.GetClabeNumberLength()) {
+      return Formatter.FormatClabeNumber(formattedValue);
     } else {
-      e(formattedValue);
+      return formattedValue;
     }
-
-    console.info("Formatted Applied!");
   }
 
   /**
@@ -41,7 +46,7 @@ class Formatter {
    * @description This method formats an account or mobile number by following the pattern: 1234 241 1512
    * @returns The formatted account or mobile number.
    */
-  public static formatAccountOrPhoneNumber(value: string): string {
+  public static FormatAccountOrPhoneNumber(value: string): string {
     if (!value) return "";
 
     // Remove all non-digit characters
@@ -68,7 +73,7 @@ class Formatter {
    * @description This method formats a card number by following the pattern: 1234 2415 1512 1234
    * @returns The formatted card number.
    */
-  public static formatCardNumber(value: string): string {
+  public static FormatCardNumber(value: string): string {
     if (!value) return "";
 
     // Remove all non-digit characters and strictly limit to 16 digits
@@ -85,7 +90,7 @@ class Formatter {
    * @description This method formats a CLABE number by following the pattern: 1234 1234 1234 1234 12
    * @returns The formatted CLABE number.
    */
-  public static formatClabeNumber(value: string): string {
+  public static FormatClabeNumber(value: string): string {
     if (!value) return "";
 
     // Remove all non-digit characters and strictly limit to 18 digits (Standard CLABE length)
@@ -99,7 +104,7 @@ class Formatter {
    * @author Oscar Cedano <oscar.cedano@outlook.com>
    * @returns The length of a card number.
    */
-  private static getCardNumberLength(): number {
+  private static GetCardNumberLength(): number {
     return 16;
   }
 
@@ -107,11 +112,11 @@ class Formatter {
    * @author Oscar Cedano <oscar.cedano@outlook.com>
    * @returns The length of an bank account or mobile number
    */
-  private static getAccountOrPhoneNumberLength(): number {
+  private static GetAccountOrPhoneNumberLength(): number {
     return 10;
   }
 
-  private static getClabeNumberLength(): number {
+  private static GetClabeNumberLength(): number {
     return 18;
   }
 }
