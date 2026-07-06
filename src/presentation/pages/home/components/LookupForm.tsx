@@ -1,20 +1,28 @@
-import { useRef } from "react";
+import Formatter from "@/presentation/shared/utils/formatter";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function LookupForm() {
     const navigate = useNavigate();
     const searchRef = useRef<HTMLInputElement>(null);
+    const [searchValue, setSearchValue] = useState('');
 
 
-    function handleSearch() {
+    function handleSearch(e: React.SubmitEvent<HTMLFormElement>) {
+        e.preventDefault();
+
         const searchValue = searchRef.current?.value;
         if (searchValue) {
             navigate(`/search?q=${encodeURIComponent(searchValue)}`);
         }
     }
 
+    function handleInput(value: string) {
+        setSearchValue(value);
+    }
+
     return (
-        <div className="flex flex-col items-center w-full max-w-4xl px-8 py-7 bg-white rounded-xl shadow-sm relative top-55">
+        <form onSubmit={handleSearch} className="flex flex-col items-center w-full max-w-4xl px-8 py-7 bg-white rounded-xl shadow-sm relative top-55">
             <h1 className="text-4xl font-medium text-gray-900 mb-4 font-[Nunito]">
                 <span className="font-bold">Fraudebot</span> te protege de los estafadores
             </h1>
@@ -27,15 +35,17 @@ function LookupForm() {
                     placeholder="número cuenta, tarjeta, telefono, url"
                     className="grow px-4 py-4 outline-none text-gray-400 placeholder-gray-400 text-lg font-[Nunito]"
                     ref={searchRef}
+                    onInput={(e) => Formatter.formatInputAndUpdate(e.currentTarget.value, handleInput)}
+                    value={searchValue}
                 />
                 <button 
-                  onClick={handleSearch}
+                  type="submit"
                   className="px-8 py-4 bg-white border-l border-gray-300 hover:bg-gray-50 transition-colors text-gray-900 text-lg font-[Nunito]"
                 >
                     Buscar
                 </button>
             </div>
-        </div>
+        </form>
     );
 }
 
