@@ -22,7 +22,7 @@ function Search() {
       return;
     }
 
-    setSearchParams({ q: query.replace(/\s+/g, " ").trim() });
+    setSearchParams({ q: Paragraph.RemoveWhitespaces(query) });
     setQuery(Formatter.FormatInput(query));
 
     setIsSearching(true);
