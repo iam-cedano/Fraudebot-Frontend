@@ -1,0 +1,18 @@
+import RequestCanceler from "@/infrastructure/http/request-canceler";
+import ScammerEntity from "@/domain/scammer/entities/scammer.entity";
+
+export default class SearchScammerUsecase {
+  private readonly requestCanceler = new RequestCanceler();
+
+  public async execute(_query: string): Promise<ScammerEntity[]> {
+    return [
+      new ScammerEntity("1", "Scammer 1", "US", 10, [], "tag1, tag2", true),
+      new ScammerEntity("2", "Scammer 2", "CA", 5, [], "tag3, tag4", false),
+      new ScammerEntity("3", "Scammer 3", "GB", 20, [], "tag5, tag6", true),
+    ];
+  }
+
+  public cancel(): void {
+    this.requestCanceler.cancel();
+  }
+}

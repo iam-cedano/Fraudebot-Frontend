@@ -3,7 +3,7 @@ import { LookupFormProps } from "@/presentation/pages/search/components/types";
 function LookupForm({ onSubmit, onInputChange, query }: LookupFormProps) {
   return (
     <div className="flex w-max flex-col mt-25">
-      <div className="flex">
+      <div className="flex gap-6">
         <input
           type="text"
           placeholder="número cuenta, tarjeta, telefono, url"
@@ -16,7 +16,11 @@ function LookupForm({ onSubmit, onInputChange, query }: LookupFormProps) {
           value={query}
         ></input>
 
-        <button type="submit" onClick={onSubmit}>
+        <button
+          type="submit"
+          className="bg-gray-200 rounded p-4 font-[Nunito] hover:bg-gray-300 transition-colors cursor-pointer"
+          onClick={onSubmit}
+        >
           Buscar
         </button>
       </div>
