@@ -1,12 +1,13 @@
 import environment from "@/common/environment";
-import SearchScammerResponse from "@/application/searcher/models/search-scammer.response";
-import PurifierUtil from "@/utils/purifier.util";
+import SearchScammerResponse from "@/common/usecases/searcher/models/search-scammer.response";
+import PurifierUtil from "@/common/utils/purifier.util";
 import Http from "@/infrastructure/http/http";
 import RequestCanceler from "@/infrastructure/http/request-canceler";
-import ScammerEntity from "@/domain/scammer/entities/scammer.entity";
+import ScammerEntity from "@/core/domain/scammer/entities/scammer.entity";
+import ApiCallerInterface from "@/core/base/api-caller.interface";
 import { AxiosResponse } from "axios";
 
-export default class SearchScammerUsecase {
+export default class SearchScammerUsecase implements ApiCallerInterface {
   private readonly requestCanceler = new RequestCanceler();
 
   public async execute(query: string): Promise<ScammerEntity[]> {

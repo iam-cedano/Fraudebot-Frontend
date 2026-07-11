@@ -33,7 +33,7 @@
       "@infrastructure/*": ["src/infrastructure/*"],
       "@presentation/*": ["src/presentation/*"],
       "@environment/*": ["src/environment/*"],
-      "@utils/*": ["src/utils/*"],
+      "@utils/*": ["src/common/utils/*"],
       "@core/*": ["src/core/*"]
     }
   },

@@ -1,7 +1,8 @@
 import RequestCanceler from "@/infrastructure/http/request-canceler";
-import ScammerEntity from "@/domain/scammer/entities/scammer.entity";
+import ScammerEntity from "@/core/domain/scammer/entities/scammer.entity";
+import ApiCallerInterface from "@/core/base/api-caller.interface";
 
-export default class SearchScammerUsecase {
+export default class SearchScammerDummyUsecase implements ApiCallerInterface {
   private readonly requestCanceler = new RequestCanceler();
 
   public async execute(_query: string): Promise<ScammerEntity[]> {

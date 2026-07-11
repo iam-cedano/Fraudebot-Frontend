@@ -1,4 +1,4 @@
-import OrganizationEntity from "@/domain/organization/entities/organization.entity";
+import OrganizationEntity from "@/core/domain/organization/entities/organization.entity";
 
 class ScammerEntity {
   constructor(
