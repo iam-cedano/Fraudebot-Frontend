@@ -1,5 +1,5 @@
-import _SearchScammerUsecase from "@/common/usecases/search/search-scammer.usecase";
-import SearchScammerDummyUsecase from "@/common/usecases/search/search-scammer-dummy.usecase";
+import _SearchScammerUsecase from "@/common/usecases/search_scammer/search-scammer.usecase";
+import SearchScammerDummyUsecase from "@/common/usecases/search_scammer/search-scammer-dummy.usecase";
 
 export const createSearchScammerUseCase = () => new SearchScammerDummyUsecase();
 

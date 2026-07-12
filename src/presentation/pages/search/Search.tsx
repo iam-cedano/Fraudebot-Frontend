@@ -9,12 +9,16 @@ import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
 import Paragraph from "@/presentation/shared/utils/paragraph";
+import OrganizationEntity from "@/core/domain/organization/entities/organization.entity";
+import Report from "@/presentation/pages/search/components/Report";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") || "");
-  const [_scammers, setScammers] = useState<ScammerEntity[]>([]);
+  const [reports, setReports] = useState<
+    (ScammerEntity | OrganizationEntity)[]
+  >([]);
   const { searchScammerUseCase } = useDependencies();
 
   useEffect(() => {
@@ -29,7 +33,7 @@ function Search() {
 
     searchScammerUseCase
       .execute(query)
-      .then((res) => setScammers(res))
+      .then((res) => setReports(res))
       .finally(() => setIsSearching(false));
 
     return () => {
@@ -49,7 +53,7 @@ function Search() {
   const handleSubmit = async () => {
     if (!query || query.trim() === "") {
       setIsSearching(false);
-      setScammers([]);
+      setReports([]);
 
       return;
     }
@@ -59,7 +63,7 @@ function Search() {
     try {
       const scammers = await searchScammerUseCase.execute(query);
 
-      setScammers(scammers);
+      setReports(scammers);
     } catch (error) {
       console.error("Error searching scammers:", error);
     } finally {
@@ -83,6 +87,22 @@ function Search() {
             query={query}
           />
         )}
+
+        {!isSearching &&
+          reports.length > 0 &&
+          reports.map((report, idx) => (
+            <Report
+              key={idx}
+              id={report.getId()}
+              name={report.getName()}
+              organization={
+                report instanceof ScammerEntity
+                  ? report.getOrganizations().join(", ")
+                  : undefined
+              }
+              reportsCount={}
+            />
+          ))}
       </SearchContainer>
 
       <Footer />
