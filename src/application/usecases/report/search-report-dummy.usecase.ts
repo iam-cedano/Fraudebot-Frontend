@@ -9,26 +9,29 @@ class SearchReportDummyUsecase implements ApiCallerInterface {
           new ReportEntity(
             "1",
             "Ecohuertas",
-            ["Crypto", "Investment"],
+            ["Criptomonedas", "Inversiones"],
             10,
             "organization",
             null,
+            "active",
           ),
           new ReportEntity(
             "2",
             "Billions Trade Club",
-            ["Investment"],
+            ["Inversiones"],
             52,
             "organization",
             ["Org 1"],
+            "active",
           ),
           new ReportEntity(
             "1",
             "Mario Lopez",
-            ["Investment"],
+            ["Inversiones"],
             129,
             "individual",
             ["Ecohuertas"],
+            "inactive",
           ),
         ];
         resolve(dummyReports);

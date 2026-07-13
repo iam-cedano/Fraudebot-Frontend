@@ -13,12 +13,18 @@ function Report({
   const isActive = status === "active";
 
   return (
-    <div className="flex flex-col gap-4 p-5 bg-white border border-gray-200 rounded-sm shadow-sm w-full font-sans">
+    <a
+      href="#"
+      className="flex flex-col gap-4 p-5 bg-white border border-gray-200 rounded-sm shadow-sm max-w-200 w-full font-[Nunito] mb-4 transition-all duration-200 ease-in-out hover:bg-gray-50/50 hover:border-gray-300 hover:shadow-md"
+    >
       {/* Top Row */}
       <div className="flex items-center justify-between w-full flex-wrap gap-2">
         <div className="flex items-center gap-2">
           {/* ID */}
-          <span className="text-gray-500 font-medium text-lg">#{id} -</span>
+          <span className="text-gray-500 font-medium text-lg">
+            #{type === "individual" ? "IN" : "OR"}
+            {id} -
+          </span>
 
           {/* Type Icon & Name */}
           <div className="flex items-center gap-1.5">
@@ -108,7 +114,7 @@ function Report({
           </div>
         )}
       </div>
-    </div>
+    </a>
   );
 }
 

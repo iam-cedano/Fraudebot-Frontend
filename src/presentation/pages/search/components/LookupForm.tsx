@@ -2,7 +2,7 @@ import { LookupFormProps } from "@/presentation/pages/search/components/types";
 
 function LookupForm({ onSubmit, onInputChange, query }: LookupFormProps) {
   return (
-    <div className="flex w-max flex-col mt-25">
+    <div className="flex w-max flex-col mt-25 mb-8">
       <div className="flex gap-6">
         <input
           type="text"
