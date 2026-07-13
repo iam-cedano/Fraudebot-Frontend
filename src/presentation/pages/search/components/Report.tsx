@@ -1,4 +1,5 @@
 import { ReportProps } from "@/presentation/pages/search/components/types";
+import { Link } from "react-router-dom";
 
 function Report({
   id,
@@ -13,8 +14,8 @@ function Report({
   const isActive = status === "active";
 
   return (
-    <a
-      href="#"
+    <Link
+      to="#"
       className="flex flex-col gap-4 p-5 bg-white border border-gray-200 rounded-sm shadow-sm max-w-200 w-full font-[Nunito] mb-4 transition-all duration-200 ease-in-out hover:bg-gray-50/50 hover:border-gray-300 hover:shadow-md"
     >
       {/* Top Row */}
@@ -114,7 +115,7 @@ function Report({
           </div>
         )}
       </div>
-    </a>
+    </Link>
   );
 }
 
