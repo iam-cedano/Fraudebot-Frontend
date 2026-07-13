@@ -1,25 +1,23 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import Header from "@presentation/shared/components/Header";
 import Footer from "@presentation/shared/components/Footer";
 import SearchContainer from "@presentation/pages/search/components/SearchContainer";
-import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerEntity from "@/core/domain/scammer/entities/scammer.entity";
 import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
 import Paragraph from "@/presentation/shared/utils/paragraph";
-import OrganizationEntity from "@/core/domain/organization/entities/organization.entity";
 import Report from "@/presentation/pages/search/components/Report";
+import ReportEntity from "@/common/domain/report/entities/report.entity";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") || "");
-  const [reports, setReports] = useState<
-    (ScammerEntity | OrganizationEntity)[]
-  >([]);
-  const { searchScammerUseCase } = useDependencies();
+  const [reports, setReports] = useState<ReportEntity[]>([]);
+  const { searchReportUseCase } = useDependencies();
 
   useEffect(() => {
     if (!query || query.trim() === "") {
@@ -31,13 +29,13 @@ function Search() {
 
     setIsSearching(true);
 
-    searchScammerUseCase
+    searchReportUseCase
       .execute(query)
       .then((res) => setReports(res))
       .finally(() => setIsSearching(false));
 
     return () => {
-      searchScammerUseCase.cancel();
+      searchReportUseCase.cancel();
     };
   }, []);
 
@@ -61,11 +59,11 @@ function Search() {
     setIsSearching(true);
 
     try {
-      const scammers = await searchScammerUseCase.execute(query);
+      const reports = await searchReportUseCase.execute(query);
 
-      setReports(scammers);
+      setReports(reports);
     } catch (error) {
-      console.error("Error searching scammers:", error);
+      console.error("Error searching reports:", error);
     } finally {
       setIsSearching(false);
     }
@@ -93,14 +91,13 @@ function Search() {
           reports.map((report, idx) => (
             <Report
               key={idx}
-              id={report.getId()}
-              name={report.getName()}
-              organization={
-                report instanceof ScammerEntity
-                  ? report.getOrganizations().join(", ")
-                  : undefined
-              }
-              reportsCount={}
+              id={report.id}
+              name={report.name}
+              organizations={report.organizations}
+              reports={report.reports}
+              tags={report.tags}
+              status={report.status}
+              type={report.type}
             />
           ))}
       </SearchContainer>

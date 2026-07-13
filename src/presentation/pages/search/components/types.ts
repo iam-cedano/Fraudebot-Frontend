@@ -10,10 +10,10 @@ export type LookupFormProps = {
 
 export type ReportProps = {
   id: string;
-  type: "individual" | "company";
+  type: "individual" | "organization";
   name: string;
   status: "active" | "inactive";
-  reportsCount: number;
-  organization?: string;
-  tags?: string[];
+  reports: number;
+  organizations: string[] | null;
+  tags: string[] | null;
 };

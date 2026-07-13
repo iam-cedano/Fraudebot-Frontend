@@ -5,8 +5,8 @@ function Report({
   type,
   name,
   status,
-  reportsCount,
-  organization,
+  reports,
+  organizations,
   tags,
 }: ReportProps) {
   const isIndividual = type === "individual";
@@ -71,7 +71,7 @@ function Report({
         {/* Reports Counter Badge */}
         <div className="flex items-center bg-red-600 text-white rounded-md px-2 py-1 font-bold text-xs shadow-sm">
           <span className="border border-white/40 rounded px-1 py-0.5 text-[10px] mr-1 font-medium leading-none">
-            {reportsCount}
+            {reports}
           </span>
           <span>Reportes</span>
         </div>
@@ -80,7 +80,7 @@ function Report({
       {/* Bottom Row */}
       <div className="flex items-center gap-6 text-gray-500 text-sm font-medium flex-wrap">
         {/* Linked Company (Only if individual layout and data exists) */}
-        {isIndividual && organization && (
+        {isIndividual && organizations && (
           <div className="flex items-center gap-1.5">
             <svg
               className="w-4 h-4 text-gray-400"
@@ -89,7 +89,7 @@ function Report({
             >
               <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
             </svg>
-            <span>{organization}</span>
+            <span>{organizations.join(", ")}</span>
           </div>
         )}
 

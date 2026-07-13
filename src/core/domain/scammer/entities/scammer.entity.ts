@@ -1,25 +1,25 @@
 class ScammerEntity {
   constructor(
-    private id: string,
-    private name: string,
-    private iso_country: string,
-    private is_active: boolean,
+    private readonly _id: string,
+    private readonly _name: string,
+    private readonly _iso_country: string,
+    private readonly _is_active: boolean,
   ) {}
 
-  public getId(): string {
-    return this.id;
+  public get id(): string {
+    return this._id;
   }
 
-  public getName(): string {
-    return this.name;
+  public get name(): string {
+    return this._name;
   }
 
-  public getIsoCountry(): string {
-    return this.iso_country;
+  public get isoCountry(): string {
+    return this._iso_country;
   }
 
-  public getIsActive(): boolean {
-    return this.is_active;
+  public get isActive(): boolean {
+    return this._is_active;
   }
 }
 

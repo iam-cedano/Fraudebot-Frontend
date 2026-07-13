@@ -1,25 +1,25 @@
 class OrganizationEntity {
   constructor(
-    private readonly id: string,
-    private readonly name: string,
-    private readonly description: string,
-    private readonly is_active: boolean,
+    private readonly _id: string,
+    private readonly _name: string,
+    private readonly _description: string,
+    private readonly _is_active: boolean,
   ) {}
 
-  public getId(): string {
-    return this.id;
+  public get id(): string {
+    return this._id;
   }
 
-  public getName(): string {
-    return this.name;
+  public get name(): string {
+    return this._name;
   }
 
-  public getDescription(): string {
-    return this.description;
+  public get description(): string {
+    return this._description;
   }
 
-  public getIsActive(): boolean {
-    return this.is_active;
+  public get isActive(): boolean {
+    return this._is_active;
   }
 }
 

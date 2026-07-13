@@ -1,10 +1,9 @@
-import _SearchScammerUsecase from "@/common/usecases/search_scammer/search-scammer.usecase";
-import SearchScammerDummyUsecase from "@/common/usecases/search_scammer/search-scammer-dummy.usecase";
+import SearchReportDummyUsecase from "@/application/usecases/report/search-report-dummy.usecase";
 
-export const createSearchScammerUseCase = () => new SearchScammerDummyUsecase();
+export const createSearchReportUseCase = () => new SearchReportDummyUsecase();
 
 export const dependencies = {
-  searchScammerUseCase: createSearchScammerUseCase,
+  searchReportUseCase: createSearchReportUseCase,
 };
 
 export type Dependencies = {
