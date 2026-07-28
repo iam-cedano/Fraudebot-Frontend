@@ -1,13 +1,16 @@
 type SearchReportResponse = {
   data: {
-    id: string;
-    type: string;
+    id: number | string;
+    type: "scammer" | "organization";
     name: string;
     reports: number;
     organizations: string[] | null;
-    tags: string[] | null;
-    status: string;
+    products: string[] | null;
+    is_active: boolean;
   }[];
+  total: number;
+  page: number;
+  count: number;
 };
 
 export default SearchReportResponse;
