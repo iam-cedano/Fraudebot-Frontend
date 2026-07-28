@@ -8,7 +8,6 @@ import ScammerEntity from "@/core/domain/scammer/entities/scammer.entity";
 import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
-import Paragraph from "@/presentation/shared/utils/paragraph";
 import Report from "@/presentation/pages/search/components/Report";
 import ReportEntity from "@/common/domain/report/entities/report.entity";
 
@@ -24,13 +23,15 @@ function Search() {
       return;
     }
 
-    setSearchParams({ q: Paragraph.RemoveWhitespaces(query) });
-    setQuery(Formatter.FormatInput(query));
+    const formattedQuery = Formatter.FormatInput(query);
+
+    setSearchParams({ q: formattedQuery });
+    setQuery(formattedQuery);
 
     setIsSearching(true);
 
     searchReportUseCase
-      .execute(query)
+      .execute(Formatter.toSearchQuery(query))
       .then((res) => setReports(res))
       .finally(() => setIsSearching(false));
 
@@ -40,11 +41,9 @@ function Search() {
   }, []);
 
   const handleInputChange = (event: React.InputEvent<HTMLInputElement>) => {
-    const newQuery = Paragraph.RemoveWhitespaces(event.currentTarget.value);
+    const formattedQuery = Formatter.FormatInput(event.currentTarget.value);
 
-    const formattedQuery = Formatter.FormatInput(newQuery);
-
-    setSearchParams({ q: newQuery });
+    setSearchParams({ q: formattedQuery });
     setQuery(formattedQuery);
   };
 
@@ -59,7 +58,9 @@ function Search() {
     setIsSearching(true);
 
     try {
-      const reports = await searchReportUseCase.execute(query);
+      const reports = await searchReportUseCase.execute(
+        Formatter.toSearchQuery(query),
+      );
 
       setReports(reports);
     } catch (error) {
