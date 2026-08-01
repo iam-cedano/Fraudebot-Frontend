@@ -8,10 +8,13 @@ function Report({
   status,
   reports,
   organizations,
+  products,
   tags,
 }: ReportProps) {
   const isIndividual = type === "individual";
   const isActive = status === "active";
+  const hasOrganizations = organizations && organizations.length > 0;
+  const hasProducts = products.length > 0;
 
   return (
     <Link
@@ -36,7 +39,7 @@ function Report({
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16w-2v-2c0-2.66-5.33-4-8-4z" />
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
             ) : (
               // Company Icon
@@ -87,7 +90,7 @@ function Report({
       {/* Bottom Row */}
       <div className="flex items-center gap-6 text-gray-500 text-sm font-medium flex-wrap">
         {/* Linked Company (Only if individual layout and data exists) */}
-        {isIndividual && organizations && (
+        {isIndividual && hasOrganizations && (
           <div className="flex items-center gap-1.5">
             <svg
               className="w-4 h-4 text-gray-400"
@@ -97,6 +100,21 @@ function Report({
               <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z" />
             </svg>
             <span>{organizations.join(", ")}</span>
+          </div>
+        )}
+
+        {/* Products */}
+        {hasProducts && (
+          <div className="flex items-center gap-1.5">
+            <svg
+              className="w-4 h-4 text-gray-400 fill-none stroke-current stroke-2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <span>{products.join(", ")}</span>
           </div>
         )}
 

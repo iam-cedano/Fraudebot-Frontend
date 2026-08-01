@@ -15,5 +15,6 @@ export type ReportProps = {
   status: "active" | "inactive";
   reports: number;
   organizations: string[] | null;
+  products: string[];
   tags: string[] | null;
 };
