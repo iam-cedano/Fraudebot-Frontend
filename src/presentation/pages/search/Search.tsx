@@ -54,11 +54,11 @@ function Search() {
   const updateSearchParams = useCallback(
     (nextQuery: string, nextPage: number) => {
       const nextSearchParams = new URLSearchParams({
-        q: Paragraph.RemoveWhitespaces(nextQuery),
+        q: Formatter.FormatInput(nextQuery),
       });
 
       if (nextPage > 1) {
-        nextSearchParams.set("page", String(nextPage));
+        nextSearchParams.set("p", String(nextPage));
       }
 
       setSearchParams(nextSearchParams);
