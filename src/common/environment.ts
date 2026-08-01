@@ -1,5 +1,13 @@
-const environment = {
-  API_BASE_URL: import.meta.env.VITE_API_BASE_URL ?? "/api",
+const ENVIRONMENT = {
+    API_BASE_URL: "http://localhost:9000/api",
+}
+
+const API_ROUTES = {
+    public: {
+        reports: {
+            search: `${ENVIRONMENT.API_BASE_URL}/public/reports/`,
+        },
+    },
 };
 
-export default environment;
+export { ENVIRONMENT, API_ROUTES };

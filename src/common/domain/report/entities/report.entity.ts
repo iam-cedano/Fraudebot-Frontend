@@ -6,6 +6,7 @@ class ReportEntity {
     private readonly _reports: number,
     private readonly _type: "individual" | "organization",
     private readonly _organizations: string[] | null,
+    private readonly _products: string[],
     private readonly _status: "active" | "inactive",
   ) {}
 
@@ -31,6 +32,10 @@ class ReportEntity {
 
   public get organizations(): string[] | null {
     return this._organizations;
+  }
+
+  public get products(): string[] {
+    return [...this._products];
   }
 
   public get status(): "active" | "inactive" {
