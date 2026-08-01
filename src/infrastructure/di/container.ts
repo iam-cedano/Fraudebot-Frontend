@@ -1,6 +1,6 @@
-import SearchReportDummyUsecase from "@/application/usecases/report/search-report-dummy.usecase";
+import SearchReportUsecase from "@/application/usecases/report/search-report.usecase";
 
-export const createSearchReportUseCase = () => new SearchReportDummyUsecase();
+export const createSearchReportUseCase = () => new SearchReportUsecase();
 
 export const dependencies = {
   searchReportUseCase: createSearchReportUseCase,

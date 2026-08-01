@@ -1,38 +1,60 @@
 import ReportEntity from "@/common/domain/report/entities/report.entity";
 import SearchReportResponse from "@/common/domain/report/models/search-report.response";
+import SearchReportResult from "@/common/domain/report/models/search-report.result";
 import ApiCallerInterface from "@/core/base/api-caller.interface";
 import Http from "@/infrastructure/http/http";
+import RequestCanceler from "@/infrastructure/http/request-canceler";
+import { API_ROUTES } from "@/common/environment";
 
 class SearchReportUsecase implements ApiCallerInterface {
-  private requestCanceller = new AbortController();
+  private requestCanceller = new RequestCanceler();
 
-  public async execute(): Promise<ReportEntity[]> {
+  public async execute(query: string, page = 1): Promise<SearchReportResult> {
+    const signal = this.requestCanceller.prepareSignal();
+
     const { data, status } = await Http.get<SearchReportResponse>(
-      "/api/reports",
+      API_ROUTES.public.reports.search,
       {
-        signal: this.requestCanceller.signal,
+        signal,
+        params: {
+          q: query,
+          p: page,
+        },
       },
     );
 
     if (status !== 200) {
-      return [];
+      return {
+        reports: [],
+        total: 0,
+        page,
+        count: 0,
+      };
     }
 
-    return data.data.map((report) => {
+    const reports = data.data.map((report) => {
       return new ReportEntity(
-        report.id,
+        String(report.id),
         report.name,
-        report.tags || [],
+        report.products || [],
         report.reports,
-        report.type as "individual" | "organization",
+        report.type === "organization" ? "organization" : "individual",
         report.organizations || null,
-        report.status as "active" | "inactive",
+        report.products || [],
+        report.status || (report.is_active ? "active" : "inactive"),
       );
     });
+
+    return {
+      reports,
+      total: data.total,
+      page: data.page,
+      count: data.count,
+    };
   }
 
   public cancel(): void {
-    this.requestCanceller.abort();
+    this.requestCanceller.cancel();
   }
 }
 
