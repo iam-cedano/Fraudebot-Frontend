@@ -36,7 +36,7 @@ class SearchReportUsecase implements ApiCallerInterface {
       return new ReportEntity(
         String(report.id),
         report.name,
-        report.tags || [],
+        report.products || [],
         report.reports,
         report.type === "organization" ? "organization" : "individual",
         report.organizations || null,

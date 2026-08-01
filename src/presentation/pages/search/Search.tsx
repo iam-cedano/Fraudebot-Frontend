@@ -7,7 +7,6 @@ import SearchContainer from "@presentation/pages/search/components/SearchContain
 import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
-import Paragraph from "@/presentation/shared/utils/paragraph";
 import Report from "@/presentation/pages/search/components/Report";
 import ReportEntity from "@/common/domain/report/entities/report.entity";
 
@@ -116,11 +115,9 @@ function Search() {
   }, []);
 
   const handleInputChange = (event: React.InputEvent<HTMLInputElement>) => {
-    const newQuery = Paragraph.RemoveWhitespaces(event.currentTarget.value);
+    const formattedQuery = Formatter.FormatInput(event.currentTarget.value);
 
-    const formattedQuery = Formatter.FormatInput(newQuery);
-
-    setSearchParams({ q: newQuery });
+    setSearchParams({ q: formattedQuery });
     setQuery(formattedQuery);
     setCurrentPage(1);
   };

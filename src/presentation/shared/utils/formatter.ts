@@ -19,11 +19,11 @@ class Formatter {
    * @returns The formatted input value.
    */
   public static FormatInput(value: string): string {
-    if (/^[\d\s]+$/.test(value) === false) {
+    if (!Formatter.isNumericOnlyInput(value)) {
       return value;
     }
 
-    const formattedValue: string = value.replace(/\D/g, "").trim();
+    const formattedValue: string = value.replace(/\D/g, "");
     const length: number = formattedValue.length;
 
     if (length <= 0) {
@@ -118,6 +118,26 @@ class Formatter {
 
   private static GetClabeNumberLength(): number {
     return 18;
+  }
+
+  /**
+   * True when the value contains only digits and whitespace (no letters or symbols).
+   * Once any non-numeric character is present, numeric formatting is disabled.
+   */
+  private static isNumericOnlyInput(value: string): boolean {
+    return value.length > 0 && !/[^\d\s]/.test(value);
+  }
+
+  /**
+   * Normalizes a search query for the API.
+   * Text queries keep internal spaces; numeric queries are stripped to digits only.
+   */
+  public static toSearchQuery(value: string): string {
+    if (!Formatter.isNumericOnlyInput(value)) {
+      return value.trim();
+    }
+
+    return value.replace(/\D/g, "");
   }
 }
 
