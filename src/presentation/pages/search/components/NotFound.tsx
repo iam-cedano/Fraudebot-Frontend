@@ -1,0 +1,20 @@
+import LottieAnimation from "@presentation/shared/components/LottieAnimation";
+import NotFoundLottieAnimation from "@presentation/assets/404.lottie";
+
+function NotFound() {
+    return (
+        <div className="grow flex flex-col items-center justify-center">
+            <div className="flex flex-col items-center gap-8">
+              <div className="w-64 h-64 bg-gray-50 flex items-center justify-center rounded-lg">
+                <LottieAnimation src={NotFoundLottieAnimation} />
+              </div>
+
+              <p className="text-[#6b7280] text-2xl font-[Nunito] text-center">
+                No se encontraron resultados
+              </p>
+            </div>
+        </div>
+    );
+}
+
+export default NotFound;
