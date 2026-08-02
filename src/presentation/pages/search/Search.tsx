@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import Header from "@presentation/shared/components/Header";
@@ -9,6 +9,7 @@ import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
 import Report from "@/presentation/pages/search/components/Report";
 import ReportEntity from "@/common/domain/report/entities/report.entity";
+import NotFound from "@/presentation/pages/search/components/NotFound";
 
 function getValidPage(page: string | null) {
   const parsedPage = Number(page);
@@ -47,6 +48,7 @@ function Search() {
   const [totalResults, setTotalResults] = useState(0);
   const [pageSize, setPageSize] = useState(0);
   const [reports, setReports] = useState<ReportEntity[]>([]);
+  const activeSearchId = useRef(0);
   const { searchReportUseCase } = useDependencies();
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
   const visiblePages = getVisiblePages(currentPage, totalPages);
@@ -68,6 +70,8 @@ function Search() {
 
   const searchReports = useCallback(
     async (nextQuery: string, nextPage: number) => {
+      const searchId = ++activeSearchId.current;
+
       if (!nextQuery || nextQuery.trim() === "") {
         setIsSearching(false);
         setReports([]);
@@ -95,7 +99,9 @@ function Search() {
 
         console.error("Error searching reports:", error);
       } finally {
-        setIsSearching(false);
+        if (searchId === activeSearchId.current) {
+          setIsSearching(false);
+        }
       }
     },
     [searchReportUseCase, updateSearchParams],
@@ -220,6 +226,8 @@ function Search() {
             </button>
           </nav>
         )}
+
+        {!isSearching && totalResults === 0 && <NotFound />}
       </SearchContainer>
 
       <Footer />
