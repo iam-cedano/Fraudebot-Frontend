@@ -4,6 +4,7 @@ import Home from "@presentation/pages/home/Home";
 import Contact from "@presentation/pages/contact/Contact";
 import Search from "@presentation/pages/search/Search";
 import NotFound from "@presentation/pages/404/NotFound";
+import ReportDetails from "@presentation/pages/report/ReportDetails";
 import { DependencyProvider } from "./providers/DependencyProvider";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/search" element={<Search />} />
+          <Route path="/report/:id" element={<ReportDetails />} />
           <Route path="/404" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

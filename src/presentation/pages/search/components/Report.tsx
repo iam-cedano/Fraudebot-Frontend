@@ -18,7 +18,7 @@ function Report({
 
   return (
     <Link
-      to="#"
+      to={`/report/${id}`}
       className="flex flex-col gap-4 p-5 bg-white border border-gray-200 rounded-sm shadow-sm max-w-200 w-full font-[Nunito] mb-4 transition-all duration-200 ease-in-out hover:bg-gray-50/50 hover:border-gray-300 hover:shadow-md"
     >
       {/* Top Row */}
