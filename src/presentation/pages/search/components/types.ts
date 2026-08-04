@@ -8,9 +8,9 @@ export type LookupFormProps = {
   query: string;
 };
 
-export type ReportProps = {
+export type ReportCardProps = {
   id: string;
-  type: "individual" | "organization";
+  type: "scammer" | "organization";
   name: string;
   status: "active" | "inactive";
   reports: number;

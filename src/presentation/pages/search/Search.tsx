@@ -7,9 +7,30 @@ import SearchContainer from "@presentation/pages/search/components/SearchContain
 import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
-import Report from "@/presentation/pages/search/components/Report";
-import ReportEntity from "@/common/domain/report/entities/report.entity";
+import Report from "@/presentation/pages/search/components/ReportCard";
+import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
+import type SearchReportResult from "@/core/domain/report/models/search-report.result";
 import NotFound from "@/presentation/pages/search/components/NotFound";
+
+type CachedReportSummary = {
+  id: string;
+  name: string;
+  tags: string[];
+  reports: number;
+  type: "scammer" | "organization";
+  organizations: string[] | null;
+  products: string[];
+  status: "active" | "inactive";
+};
+
+type CachedSearchReportResult = {
+  data: CachedReportSummary[];
+  total: number;
+  page: number;
+  count: number;
+};
+
+const SEARCH_CACHE_PREFIX = "fraudebot:search";
 
 function getValidPage(page: string | null) {
   const parsedPage = Number(page);
@@ -38,16 +59,78 @@ function isCanceledError(error: unknown) {
   );
 }
 
+function getSearchCacheKey(query: string, page: number) {
+  return `${SEARCH_CACHE_PREFIX}:${Formatter.FormatInput(query)}:${page}`;
+}
+
+function cacheSearchResult(query: string, result: SearchReportResult) {
+  const cachedResult: CachedSearchReportResult = {
+    data: result.data.map((report) => ({
+      id: report.id,
+      name: report.name,
+      tags: report.tags,
+      reports: report.reports,
+      type: report.type,
+      organizations: report.organizations,
+      products: report.products,
+      status: report.status,
+    })),
+    total: result.total,
+    page: result.page,
+    count: result.count,
+  };
+
+  sessionStorage.setItem(
+    getSearchCacheKey(query, result.page),
+    JSON.stringify(cachedResult),
+  );
+}
+
+function readCachedSearchResult(query: string, page: number): SearchReportResult | null {
+  const cachedResult = sessionStorage.getItem(getSearchCacheKey(query, page));
+
+  if (!cachedResult) {
+    return null;
+  }
+
+  try {
+    const parsedResult = JSON.parse(cachedResult) as CachedSearchReportResult;
+
+    return {
+      data: parsedResult.data.map(
+        (report) =>
+          new ReportSummaryEntity(
+            report.id,
+            report.name,
+            report.tags,
+            report.reports,
+            report.type,
+            report.organizations,
+            report.products,
+            report.status,
+          ),
+      ),
+      total: parsedResult.total,
+      page: parsedResult.page,
+      count: parsedResult.count,
+    };
+  } catch {
+    sessionStorage.removeItem(getSearchCacheKey(query, page));
+
+    return null;
+  }
+}
+
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [currentPage, setCurrentPage] = useState(() =>
-    getValidPage(searchParams.get("page")),
+    getValidPage(searchParams.get("p") || searchParams.get("page")),
   );
   const [totalResults, setTotalResults] = useState(0);
   const [pageSize, setPageSize] = useState(0);
-  const [reports, setReports] = useState<ReportEntity[]>([]);
+  const [reports, setReports] = useState<ReportSummaryEntity[]>([]);
   const activeSearchId = useRef(0);
   const { searchReportUseCase } = useDependencies();
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
@@ -87,10 +170,11 @@ function Search() {
       try {
         const result = await searchReportUseCase.execute(nextQuery, nextPage);
 
-        setReports(result.reports);
+        setReports(result.data);
         setCurrentPage(result.page);
         setTotalResults(result.total);
         setPageSize(result.count);
+        cacheSearchResult(nextQuery, result);
         updateSearchParams(nextQuery, result.page);
       } catch (error) {
         if (isCanceledError(error)) {
@@ -112,8 +196,21 @@ function Search() {
       return;
     }
 
-    setQuery(Formatter.FormatInput(query));
-    searchReports(query, currentPage);
+    const formattedQuery = Formatter.FormatInput(query);
+    const cachedResult = readCachedSearchResult(formattedQuery, currentPage);
+
+    setQuery(formattedQuery);
+
+    if (cachedResult) {
+      setReports(cachedResult.data);
+      setCurrentPage(cachedResult.page);
+      setTotalResults(cachedResult.total);
+      setPageSize(cachedResult.count);
+
+      return;
+    }
+
+    searchReports(formattedQuery, currentPage);
 
     return () => {
       searchReportUseCase.cancel();

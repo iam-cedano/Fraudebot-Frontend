@@ -1,7 +1,7 @@
-import { ReportProps } from "@/presentation/pages/search/components/types";
+import { ReportCardProps } from "@/presentation/pages/search/components/types";
 import { Link } from "react-router-dom";
 
-function Report({
+function ReportCard({
   id,
   type,
   name,
@@ -10,15 +10,16 @@ function Report({
   organizations,
   products,
   tags,
-}: ReportProps) {
-  const isIndividual = type === "individual";
+}: ReportCardProps) {
+  const isScammer = type === "scammer";
   const isActive = status === "active";
   const hasOrganizations = organizations && organizations.length > 0;
   const hasProducts = products.length > 0;
+  const reportPath = isScammer ? `/scammer/${id}` : `/organization/${id}`;
 
   return (
     <Link
-      to="#"
+      to={reportPath}
       className="flex flex-col gap-4 p-5 bg-white border border-gray-200 rounded-sm shadow-sm max-w-200 w-full font-[Nunito] mb-4 transition-all duration-200 ease-in-out hover:bg-gray-50/50 hover:border-gray-300 hover:shadow-md"
     >
       {/* Top Row */}
@@ -26,13 +27,13 @@ function Report({
         <div className="flex items-center gap-2">
           {/* ID */}
           <span className="text-gray-500 font-medium text-lg">
-            #{type === "individual" ? "IN" : "OR"}
+            #{isScammer ? "SC" : "OR"}
             {id} -
           </span>
 
           {/* Type Icon & Name */}
           <div className="flex items-center gap-1.5">
-            {isIndividual ? (
+            {isScammer ? (
               // User Icon
               <svg
                 className="w-5 h-5 text-black"
@@ -89,8 +90,8 @@ function Report({
 
       {/* Bottom Row */}
       <div className="flex items-center gap-6 text-gray-500 text-sm font-medium flex-wrap">
-        {/* Linked Company (Only if individual layout and data exists) */}
-        {isIndividual && hasOrganizations && (
+        {/* Linked Company (Only if scammer layout and data exists) */}
+        {isScammer && hasOrganizations && (
           <div className="flex items-center gap-1.5">
             <svg
               className="w-4 h-4 text-gray-400"
@@ -137,4 +138,4 @@ function Report({
   );
 }
 
-export default Report;
+export default ReportCard;

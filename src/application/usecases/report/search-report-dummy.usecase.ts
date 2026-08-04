@@ -1,13 +1,13 @@
 import ApiCallerInterface from "@/core/base/api-caller.interface";
-import ReportEntity from "@/common/domain/report/entities/report.entity";
-import SearchReportResult from "@/common/domain/report/models/search-report.result";
+import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
+import SearchReportResult from "@/core/domain/report/models/search-report.result";
 
 class SearchReportDummyUsecase implements ApiCallerInterface {
   public execute(_query: string, page = 1): Promise<SearchReportResult> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const dummyReports: ReportEntity[] = [
-          new ReportEntity(
+        const dummyReports: ReportSummaryEntity[] = [
+          new ReportSummaryEntity(
             "1",
             "Ecohuertas",
             ["Criptomonedas", "Inversiones"],
@@ -17,7 +17,7 @@ class SearchReportDummyUsecase implements ApiCallerInterface {
             ["Huertas", "Inversiones"],
             "active",
           ),
-          new ReportEntity(
+          new ReportSummaryEntity(
             "2",
             "Billions Trade Club",
             ["Inversiones"],
@@ -27,12 +27,12 @@ class SearchReportDummyUsecase implements ApiCallerInterface {
             ["Trading", "Cursos"],
             "active",
           ),
-          new ReportEntity(
+          new ReportSummaryEntity(
             "1",
             "Mario Lopez",
             ["Inversiones"],
             129,
-            "individual",
+            "scammer",
             ["Ecohuertas"],
             ["Criptomonedas"],
             "inactive",
@@ -40,7 +40,7 @@ class SearchReportDummyUsecase implements ApiCallerInterface {
         ];
 
         resolve({
-          reports: dummyReports,
+          data: dummyReports,
           total: dummyReports.length,
           page,
           count: dummyReports.length,
