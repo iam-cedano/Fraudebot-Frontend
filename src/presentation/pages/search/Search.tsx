@@ -7,30 +7,10 @@ import SearchContainer from "@presentation/pages/search/components/SearchContain
 import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
+import searchReportCache from "@/presentation/shared/utils/search-report-cache.util";
 import Report from "@/presentation/pages/search/components/ReportCard";
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
-import type SearchReportResult from "@/core/domain/report/models/search-report.result";
 import NotFound from "@/presentation/pages/search/components/NotFound";
-
-type CachedReportSummary = {
-  id: string;
-  name: string;
-  tags: string[];
-  reports: number;
-  type: "scammer" | "organization";
-  organizations: string[] | null;
-  products: string[];
-  status: "active" | "inactive";
-};
-
-type CachedSearchReportResult = {
-  data: CachedReportSummary[];
-  total: number;
-  page: number;
-  count: number;
-};
-
-const SEARCH_CACHE_PREFIX = "fraudebot:search";
 
 function getValidPage(page: string | null) {
   const parsedPage = Number(page);
@@ -57,68 +37,6 @@ function isCanceledError(error: unknown) {
     maybeCanceledError.name === "CanceledError" ||
     maybeCanceledError.code === "ERR_CANCELED"
   );
-}
-
-function getSearchCacheKey(query: string, page: number) {
-  return `${SEARCH_CACHE_PREFIX}:${Formatter.FormatInput(query)}:${page}`;
-}
-
-function cacheSearchResult(query: string, result: SearchReportResult) {
-  const cachedResult: CachedSearchReportResult = {
-    data: result.data.map((report) => ({
-      id: report.id,
-      name: report.name,
-      tags: report.tags,
-      reports: report.reports,
-      type: report.type,
-      organizations: report.organizations,
-      products: report.products,
-      status: report.status,
-    })),
-    total: result.total,
-    page: result.page,
-    count: result.count,
-  };
-
-  sessionStorage.setItem(
-    getSearchCacheKey(query, result.page),
-    JSON.stringify(cachedResult),
-  );
-}
-
-function readCachedSearchResult(query: string, page: number): SearchReportResult | null {
-  const cachedResult = sessionStorage.getItem(getSearchCacheKey(query, page));
-
-  if (!cachedResult) {
-    return null;
-  }
-
-  try {
-    const parsedResult = JSON.parse(cachedResult) as CachedSearchReportResult;
-
-    return {
-      data: parsedResult.data.map(
-        (report) =>
-          new ReportSummaryEntity(
-            report.id,
-            report.name,
-            report.tags,
-            report.reports,
-            report.type,
-            report.organizations,
-            report.products,
-            report.status,
-          ),
-      ),
-      total: parsedResult.total,
-      page: parsedResult.page,
-      count: parsedResult.count,
-    };
-  } catch {
-    sessionStorage.removeItem(getSearchCacheKey(query, page));
-
-    return null;
-  }
 }
 
 function Search() {
@@ -174,7 +92,7 @@ function Search() {
         setCurrentPage(result.page);
         setTotalResults(result.total);
         setPageSize(result.count);
-        cacheSearchResult(nextQuery, result);
+        searchReportCache.set(nextQuery, result);
         updateSearchParams(nextQuery, result.page);
       } catch (error) {
         if (isCanceledError(error)) {
@@ -197,7 +115,7 @@ function Search() {
     }
 
     const formattedQuery = Formatter.FormatInput(query);
-    const cachedResult = readCachedSearchResult(formattedQuery, currentPage);
+    const cachedResult = searchReportCache.get(formattedQuery, currentPage);
 
     setQuery(formattedQuery);
 

@@ -1,7 +1,7 @@
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
 import SearchReportResult, {
   SearchReportResponse,
-} from "@/core/domain/report/models/search-report.result";
+} from "@/core/domain/report/models/search-report.model";
 import ApiCallerInterface from "@/core/base/api-caller.interface";
 import Http from "@/infrastructure/http/http";
 import RequestCanceler from "@/infrastructure/http/request-canceler";

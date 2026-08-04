@@ -20,7 +20,7 @@ export type ReportHeroProps = {
   id: string;
   name: string;
   type: string;
-  reportDate: string;
+  reportDate: Date;
   status: string;
   reports: number;
   location: string;

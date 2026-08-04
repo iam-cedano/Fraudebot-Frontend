@@ -1,6 +1,6 @@
 import ApiCallerInterface from "@/core/base/api-caller.interface";
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
-import SearchReportResult from "@/core/domain/report/models/search-report.result";
+import SearchReportResult from "@/core/domain/report/models/search-report.model";
 
 class SearchReportDummyUsecase implements ApiCallerInterface {
   public execute(_query: string, page = 1): Promise<SearchReportResult> {

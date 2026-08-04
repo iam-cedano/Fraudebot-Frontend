@@ -11,24 +11,27 @@ import { ReportTab } from "@presentation/pages/report/components/types";
 import mockProfile from "@presentation/pages/report/mockProfile";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
+import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
 
 function Report({ type }: { type: "scammer" | "organization" }) {
-  const { findScammerSummaryByIdUseCase } = useDependencies();
+  const { findScammerSummaryByIdUseCase, findOrganizationSummaryByIdUseCase } = useDependencies();
   const [activeTab, setActiveTab] = useState<ReportTab>("General");
 
-  const [scammer, setScammer] = useState<ScammerSummaryEntity | null>(null);
+  const [party, setParty] = useState<ScammerSummaryEntity | OrganizationSummaryEntity | null>(null);
 
   useEffect(() => {
-    findScammerSummaryByIdUseCase.execute().then((scammer) => {
-      setScammer(scammer);
-    });
-
-    return () => {
-      findScammerSummaryByIdUseCase.cancel();
-    };
+    if (type === "scammer") {
+      findScammerSummaryByIdUseCase.execute().then((scammer) => {
+        setParty(scammer);
+      });
+    } else {
+      findOrganizationSummaryByIdUseCase.execute().then((organization) => {
+        setParty(organization);
+      });
+    }
   }, []);
 
-  if (!scammer) {
+  if (!party) {
     return <div>Loading...</div>;
   }
 
@@ -39,14 +42,14 @@ function Report({ type }: { type: "scammer" | "organization" }) {
       <div className="font-[Nunito]">
         <Header />
         <ReportHero 
-          id={scammer.id} 
-          name={scammer.name} 
-          type="Scammer" 
-          reportDate={scammer.createdAt.toISOString()} 
+          id={party.id} 
+          name={party.name} 
+          type={party instanceof ScammerSummaryEntity ? "Scammer" : "Organization"} 
+          reportDate={party.createdAt} 
           status="Active" 
-          reports={scammer.reports} 
-          location={scammer.country} 
-          categories={scammer.categories} 
+          reports={party.reports} 
+          location={party.country} 
+          categories={party.categories} 
         />
 
         <main className="min-h-[520px] bg-white">

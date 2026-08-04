@@ -48,7 +48,7 @@ function ReportHero({
             <div className="mt-5 grid gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2 lg:grid-cols-4">
               <SummaryItem
                 label="Fecha del reporte"
-                value={reportDate}
+                value={reportDate.toLocaleDateString()}
               />
               <SummaryItem label="Estado" value={status} />
               <SummaryItem
