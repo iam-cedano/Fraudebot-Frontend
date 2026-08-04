@@ -1,4 +1,4 @@
-import { ReportProfile } from "./components/types";
+import { ReportProfile } from "@presentation/pages/report/components/types";
 
 const mockProfile: ReportProfile = {
   id: "1000000",

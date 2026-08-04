@@ -1,10 +1,10 @@
-class ReportEntity {
+class ReportSummaryEntity {
   constructor(
     private readonly _id: string,
     private readonly _name: string,
     private readonly _tags: string[],
     private readonly _reports: number,
-    private readonly _type: "individual" | "organization",
+    private readonly _type: "scammer" | "organization",
     private readonly _organizations: string[] | null,
     private readonly _products: string[],
     private readonly _status: "active" | "inactive",
@@ -26,7 +26,7 @@ class ReportEntity {
     return this._reports;
   }
 
-  public get type(): "individual" | "organization" {
+  public get type(): "scammer" | "organization" {
     return this._type;
   }
 
@@ -43,4 +43,4 @@ class ReportEntity {
   }
 }
 
-export default ReportEntity;
+export default ReportSummaryEntity;

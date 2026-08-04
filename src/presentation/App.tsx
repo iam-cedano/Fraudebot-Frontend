@@ -4,8 +4,8 @@ import Home from "@presentation/pages/home/Home";
 import Contact from "@presentation/pages/contact/Contact";
 import Search from "@presentation/pages/search/Search";
 import NotFound from "@presentation/pages/404/NotFound";
-import ReportDetails from "@presentation/pages/report/ReportDetails";
-import { DependencyProvider } from "./providers/DependencyProvider";
+import Report from "@presentation/pages/report/Report";
+import { DependencyProvider } from "@presentation/providers/DependencyProvider";
 
 function App() {
   return (
@@ -15,7 +15,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/report/:id" element={<ReportDetails />} />
+          <Route path="/organization/:id" element={<Report type="organization" />} />
+          <Route path="/scammer/:id" element={<Report type="scammer" />} />
           <Route path="/404" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -16,6 +16,17 @@ export interface ReportProfile {
   contacts: Contact[];
 }
 
+export type ReportHeroProps = {
+  id: string;
+  name: string;
+  type: string;
+  reportDate: string;
+  status: string;
+  reports: number;
+  location: string;
+  categories: string[];
+};
+
 export const reportTabs = [
   "General",
   "Reportes",

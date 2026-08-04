@@ -1,4 +1,4 @@
-import { Contact } from "./types";
+import { Contact } from "@presentation/pages/report/components/types";
 
 interface ContactsTabProps {
   contacts: Contact[];

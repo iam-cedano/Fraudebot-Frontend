@@ -1,6 +1,7 @@
-import ReportEntity from "@/common/domain/report/entities/report.entity";
-import SearchReportResponse from "@/common/domain/report/models/search-report.response";
-import SearchReportResult from "@/common/domain/report/models/search-report.result";
+import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
+import SearchReportResult, {
+  SearchReportResponse,
+} from "@/core/domain/report/models/search-report.result";
 import ApiCallerInterface from "@/core/base/api-caller.interface";
 import Http from "@/infrastructure/http/http";
 import RequestCanceler from "@/infrastructure/http/request-canceler";
@@ -25,7 +26,7 @@ class SearchReportUsecase implements ApiCallerInterface {
 
     if (status !== 200) {
       return {
-        reports: [],
+        data: [],
         total: 0,
         page,
         count: 0,
@@ -33,12 +34,12 @@ class SearchReportUsecase implements ApiCallerInterface {
     }
 
     const reports = data.data.map((report) => {
-      return new ReportEntity(
+      return new ReportSummaryEntity(
         String(report.id),
         report.name,
         report.products || [],
         report.reports,
-        report.type === "organization" ? "organization" : "individual",
+        report.type === "organization" ? "organization" : "scammer",
         report.organizations || null,
         report.products || [],
         report.status || (report.is_active ? "active" : "inactive"),
@@ -46,7 +47,7 @@ class SearchReportUsecase implements ApiCallerInterface {
     });
 
     return {
-      reports,
+      data: reports,
       total: data.total,
       page: data.page,
       count: data.count,

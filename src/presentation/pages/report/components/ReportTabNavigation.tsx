@@ -1,4 +1,7 @@
-import { reportTabs, ReportTab } from "./types";
+import {
+  reportTabs,
+  ReportTab,
+} from "@presentation/pages/report/components/types";
 
 interface ReportTabNavigationProps {
   activeTab: ReportTab;

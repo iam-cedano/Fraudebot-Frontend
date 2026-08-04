@@ -1,4 +1,4 @@
-import { ReportProfile } from "./types";
+import { ReportProfile } from "@presentation/pages/report/components/types";
 
 interface GeneralTabProps {
   profile: ReportProfile;
