@@ -2,11 +2,11 @@ import ApiCallerInterface from "@/core/base/api-caller.interface";
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
 import SearchReportResult from "@/core/domain/report/models/search-report.model";
 
-class SearchReportDummyUsecase implements ApiCallerInterface {
+class SearchReportStubUsecase implements ApiCallerInterface {
   public execute(_query: string, page = 1): Promise<SearchReportResult> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const dummyReports: ReportSummaryEntity[] = [
+        const stubReports: ReportSummaryEntity[] = [
           new ReportSummaryEntity(
             "1",
             "Ecohuertas",
@@ -40,10 +40,10 @@ class SearchReportDummyUsecase implements ApiCallerInterface {
         ];
 
         resolve({
-          data: dummyReports,
-          total: dummyReports.length,
+          data: stubReports,
+          total: stubReports.length,
           page,
-          count: dummyReports.length,
+          count: stubReports.length,
         });
       }, 1000);
     });
@@ -52,4 +52,4 @@ class SearchReportDummyUsecase implements ApiCallerInterface {
   public cancel(): void {}
 }
 
-export default SearchReportDummyUsecase;
+export default SearchReportStubUsecase;

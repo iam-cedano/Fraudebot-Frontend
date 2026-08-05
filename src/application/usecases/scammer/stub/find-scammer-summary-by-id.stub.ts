@@ -1,7 +1,7 @@
 import ApiCallerInterface from "@/core/base/api-caller.interface";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
 
-class FindScammerSummaryByIdDummyUsecase implements ApiCallerInterface {
+class FindScammerSummaryByIdStubUsecase implements ApiCallerInterface {
     public async execute(): Promise<ScammerSummaryEntity> {
         return new ScammerSummaryEntity(
             "1",
@@ -17,8 +17,8 @@ class FindScammerSummaryByIdDummyUsecase implements ApiCallerInterface {
     }
 
     public cancel(): void {
-        // No cancellation needed for dummy usecase
+        // No cancellation needed for stub usecase
     }
 }
 
-export default FindScammerSummaryByIdDummyUsecase;
+export default FindScammerSummaryByIdStubUsecase;

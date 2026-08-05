@@ -1,7 +1,7 @@
 import ApiCallerInterface from "@/core/base/api-caller.interface";
 import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
 
-class FindOrganizationSummaryByIdDummyUsecase implements ApiCallerInterface {
+class FindOrganizationSummaryByIdStubUsecase implements ApiCallerInterface {
     public async execute(): Promise<OrganizationSummaryEntity> {
         return new OrganizationSummaryEntity(
             "1",
@@ -17,8 +17,8 @@ class FindOrganizationSummaryByIdDummyUsecase implements ApiCallerInterface {
     }
 
     public cancel(): void {
-        // No cancellation needed for dummy usecase
+        // No cancellation needed for stub usecase
     }
 }
 
-export default FindOrganizationSummaryByIdDummyUsecase;
+export default FindOrganizationSummaryByIdStubUsecase;
