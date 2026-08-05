@@ -13,11 +13,25 @@ import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
 import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
 
+function formatPartyType(
+  type: "scammer" | "organization",
+  entity: ScammerSummaryEntity | OrganizationSummaryEntity,
+) {
+  if (entity instanceof ScammerSummaryEntity || type === "scammer") {
+    return "Estafador";
+  }
+
+  return "Empresa";
+}
+
 function Report({ type }: { type: "scammer" | "organization" }) {
-  const { findScammerSummaryByIdUseCase, findOrganizationSummaryByIdUseCase } = useDependencies();
+  const { findScammerSummaryByIdUseCase, findOrganizationSummaryByIdUseCase } =
+    useDependencies();
   const [activeTab, setActiveTab] = useState<ReportTab>("General");
 
-  const [party, setParty] = useState<ScammerSummaryEntity | OrganizationSummaryEntity | null>(null);
+  const [party, setParty] = useState<
+    ScammerSummaryEntity | OrganizationSummaryEntity | null
+  >(null);
 
   useEffect(() => {
     if (type === "scammer") {
@@ -29,27 +43,44 @@ function Report({ type }: { type: "scammer" | "organization" }) {
         setParty(organization);
       });
     }
-  }, []);
+  }, [findOrganizationSummaryByIdUseCase, findScammerSummaryByIdUseCase, type]);
 
   if (!party) {
     return <div>Loading...</div>;
   }
 
+  const profile = {
+    ...mockProfile,
+    id: party.id,
+    name: party.name,
+    reports: party.reports,
+    location: party.country,
+    categories: party.categories,
+    type: formatPartyType(type, party),
+    status: party.isActive ? "Activo" : "Inactivo",
+    reportDate: party.createdAt.toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }),
+  };
+
   return (
     <>
-      <title>FraudeBot - {mockProfile.name}</title>
+      <title>FraudeBot - {party.name}</title>
 
       <div className="font-[Nunito]">
         <Header />
-        <ReportHero 
-          id={party.id} 
-          name={party.name} 
-          type={party instanceof ScammerSummaryEntity ? "Scammer" : "Organization"} 
-          reportDate={party.createdAt} 
-          status="Active" 
-          reports={party.reports} 
-          location={party.country} 
-          categories={party.categories} 
+        <ReportHero
+          id={party.id}
+          name={party.name}
+          type={formatPartyType(type, party)}
+          reportDate={party.createdAt}
+          status={party.isActive ? "Activo" : "Inactivo"}
+          reports={party.reports}
+          location={party.country}
+          categories={party.categories}
+          profilePicture={party.profilePicture}
         />
 
         <main className="min-h-[520px] bg-white">
@@ -58,10 +89,12 @@ function Report({ type }: { type: "scammer" | "organization" }) {
             onTabChange={setActiveTab}
           />
 
-          <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
-            {activeTab === "General" && <GeneralTab profile={mockProfile} />}
+          <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
+            {activeTab === "General" && (
+              <GeneralTab profile={profile} onNavigateTab={setActiveTab} />
+            )}
             {activeTab === "Reportes" && (
-              <ReportsTab reportCount={mockProfile.reports} />
+              <ReportsTab reportCount={party.reports} />
             )}
             {activeTab === "Contactos" && (
               <ContactsTab contacts={mockProfile.contacts} />

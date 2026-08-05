@@ -1,4 +1,7 @@
+import heroRedBackground from "@presentation/assets/hero-red.webp";
+import placeholderImage from "@presentation/assets/placeholder.webp";
 import SummaryItem from "@presentation/pages/report/components/SummaryItem";
+import reportIcons from "@presentation/pages/report/components/icons";
 import { ReportHeroProps } from "@presentation/pages/report/components/types";
 
 function ReportHero({
@@ -10,16 +13,26 @@ function ReportHero({
   reports,
   location,
   categories,
+  profilePicture,
 }: ReportHeroProps) {
+  const formattedDate = reportDate.toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
   return (
-    /* Replace this color with the final red background image from Figma. */
-    <section className="bg-[#c5221f] px-4 pb-10 pt-28 sm:pb-12 sm:pt-32">
-      <article className="mx-auto max-w-4xl rounded-xl bg-white p-5 shadow-xl sm:p-7">
-        <div className="flex flex-col gap-5 md:flex-row md:items-center">
-          {/* Replace this placeholder with the profile image/icon. */}
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full border-4 border-gray-100 bg-gray-200 text-2xl font-black text-gray-500">
-            NS
-          </div>
+    <section
+      className="bg-cover bg-center px-4 pb-10 pt-28 sm:pb-12 sm:pt-32"
+      style={{ backgroundImage: `url(${heroRedBackground})` }}
+    >
+      <article className="mx-auto max-w-5xl rounded-2xl bg-white p-5 shadow-xl sm:p-7">
+        <div className="flex flex-col gap-6 lg:flex-row">
+          <img
+            src={profilePicture ?? placeholderImage}
+            alt={name}
+            className="h-28 w-28 shrink-0 rounded-2xl border border-gray-100 object-cover sm:h-32 sm:w-32"
+          />
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -28,9 +41,14 @@ function ReportHero({
                   <h1 className="text-2xl font-black text-gray-900 sm:text-3xl">
                     {name}
                   </h1>
-                  <span className="rounded bg-amber-100 px-2 py-1 text-xs font-extrabold text-amber-800">
-                    Precaución
-                  </span>
+                  {reportIcons.warning && (
+                    <img
+                      src={reportIcons.warning}
+                      alt=""
+                      aria-hidden
+                      className="h-6 w-6"
+                    />
+                  )}
                 </div>
                 <p className="mt-1 text-sm text-gray-500">
                   ID: {id} | {type}
@@ -39,32 +57,53 @@ function ReportHero({
 
               <button
                 type="button"
-                className="rounded-md bg-sky-500 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-sky-600"
+                className="inline-flex items-center gap-2 rounded-md bg-sky-500 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-sky-600"
               >
                 Compartir
+                {reportIcons.shareArrow && (
+                  <img
+                    src={reportIcons.shareArrow}
+                    alt=""
+                    aria-hidden
+                    className="h-3 w-3"
+                  />
+                )}
               </button>
             </div>
 
-            <div className="mt-5 grid gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2 lg:grid-cols-4">
               <SummaryItem
-                label="Fecha del reporte"
-                value={reportDate.toLocaleDateString()}
+                label="Fecha del Reporte"
+                value={formattedDate}
+                iconSrc={reportIcons.calendar}
               />
-              <SummaryItem label="Estado" value={status} />
+              <SummaryItem
+                label="Estado"
+                value={status}
+                iconSrc={reportIcons.status}
+                valueIconSrc={reportIcons.warning}
+              />
               <SummaryItem
                 label="Reportes"
                 value={String(reports)}
+                iconSrc={reportIcons.reports}
                 tone="danger"
               />
-              <SummaryItem label="Ubicación" value={location} />
+              <SummaryItem
+                label="Ubicación"
+                value={location}
+                iconSrc={reportIcons.location}
+              />
             </div>
 
-            <div className="mt-4 flex flex-col gap-4 border-t border-gray-100 pt-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mt-4 flex flex-col gap-4 border-t border-gray-100 pt-4 lg:flex-row lg:items-end lg:justify-between">
               <SummaryItem
                 label="Categorías"
                 value={categories.join(", ")}
+                iconSrc={reportIcons.categories}
               />
-              <div className="flex gap-2">
+
+              <div className="flex shrink-0 gap-2 self-end">
                 <button
                   type="button"
                   className="rounded-md border border-gray-300 px-5 py-2 text-xs font-extrabold text-gray-700 hover:bg-gray-50"

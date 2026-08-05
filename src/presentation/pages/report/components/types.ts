@@ -25,6 +25,7 @@ export type ReportHeroProps = {
   reports: number;
   location: string;
   categories: string[];
+  profilePicture?: string | null;
 };
 
 export const reportTabs = [
