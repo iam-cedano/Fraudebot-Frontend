@@ -39,6 +39,7 @@ function Search() {
   const [totalResults, setTotalResults] = useState(0);
   const [pageSize, setPageSize] = useState(0);
   const [reports, setReports] = useState<ReportSummaryEntity[]>([]);
+  
   const activeSearchId = useRef(0);
   const { searchReportUseCase } = useDependencies();
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;

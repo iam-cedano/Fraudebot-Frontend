@@ -13,17 +13,6 @@ import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
 import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
 
-function formatPartyType(
-  type: "scammer" | "organization",
-  entity: ScammerSummaryEntity | OrganizationSummaryEntity,
-) {
-  if (entity instanceof ScammerSummaryEntity || type === "scammer") {
-    return "Estafador";
-  }
-
-  return "Empresa";
-}
-
 function Report({ type }: { type: "scammer" | "organization" }) {
   const { findScammerSummaryByIdUseCase, findOrganizationSummaryByIdUseCase } =
     useDependencies();
@@ -45,68 +34,59 @@ function Report({ type }: { type: "scammer" | "organization" }) {
     }
   }, [findOrganizationSummaryByIdUseCase, findScammerSummaryByIdUseCase, type]);
 
-  if (!party) {
-    return <div>Loading...</div>;
-  }
-
-  const profile = {
-    ...mockProfile,
-    id: party.id,
-    name: party.name,
-    reports: party.reports,
-    location: party.country,
-    categories: party.categories,
-    type: formatPartyType(type, party),
-    status: party.isActive ? "Activo" : "Inactivo",
-    reportDate: party.createdAt.toLocaleDateString("es-MX", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }),
-  };
+  useEffect(() => {
+    document.title = party
+      ? `FraudeBot - ${party.name}`
+      : "FraudeBot - Cargando...";
+  }, [party]);
 
   return (
     <>
-      <title>FraudeBot - {party.name}</title>
-
-      <div className="font-[Nunito]">
-        <Header />
-        <ReportHero
-          id={party.id}
-          name={party.name}
-          type={formatPartyType(type, party)}
-          reportDate={party.createdAt}
-          status={party.isActive ? "Activo" : "Inactivo"}
-          reports={party.reports}
-          location={party.country}
-          categories={party.categories}
-          profilePicture={party.profilePicture}
-        />
-
-        <main className="min-h-[520px] bg-white">
-          <ReportTabNavigation
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+      {!party ? (
+        <div>Loading...</div>
+      ) : (
+        <div className="font-[Nunito]">
+          <Header />
+          <ReportHero
+            id={party.id}
+            name={party.name}
+            type={type === "scammer" ? "Estafador" : "Empresa"}
+            reportDate={party.createdAt}
+            status={party.isActive ? "Activo" : "Inactivo"}
+            reports={party.reports}
+            location={party.country}
+            categories={party.categories}
+            profilePicture={party.profilePicture}
           />
 
-          <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
-            {activeTab === "General" && (
-              <GeneralTab profile={profile} onNavigateTab={setActiveTab} />
-            )}
-            {activeTab === "Reportes" && (
-              <ReportsTab reportCount={party.reports} />
-            )}
-            {activeTab === "Contactos" && (
-              <ContactsTab contacts={mockProfile.contacts} />
-            )}
-            {(activeTab === "Mapa" || activeTab === "Soporte") && (
-              <PlaceholderTab tab={activeTab} />
-            )}
-          </div>
-        </main>
+          <main className="min-h-130 bg-white">
+            <ReportTabNavigation
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
 
-        <Footer />
-      </div>
+            <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
+              {activeTab === "General" && (
+                <GeneralTab
+                  reports={party.reports}
+                  onNavigateTab={setActiveTab}
+                />
+              )}
+              {activeTab === "Reportes" && (
+                <ReportsTab reportCount={party.reports} />
+              )}
+              {activeTab === "Contactos" && (
+                <ContactsTab contacts={mockProfile.contacts} />
+              )}
+              {(activeTab === "Mapa" || activeTab === "Soporte") && (
+                <PlaceholderTab tab={activeTab} />
+              )}
+            </div>
+          </main>
+
+          <Footer />
+        </div>
+      )}
     </>
   );
 }

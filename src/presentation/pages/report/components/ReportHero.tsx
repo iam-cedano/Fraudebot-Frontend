@@ -3,6 +3,8 @@ import placeholderImage from "@presentation/assets/placeholder.webp";
 import SummaryItem from "@presentation/pages/report/components/SummaryItem";
 import reportIcons from "@presentation/pages/report/components/icons";
 import { ReportHeroProps } from "@presentation/pages/report/components/types";
+import DropdownButton from "@presentation/shared/components/DropdownButton";
+import { DropdownOption } from "@presentation/shared/components/types";
 
 function ReportHero({
   id,
@@ -20,6 +22,16 @@ function ReportHero({
     month: "2-digit",
     year: "numeric",
   });
+
+  const shareOptions: DropdownOption[] = [
+    {
+      id: "pdf",
+      label: "Descargar PDF",
+      onClick: () => {
+        alert("Descargando PDF");
+      },
+    }
+  ];
 
   return (
     <section
@@ -55,20 +67,11 @@ function ReportHero({
                 </p>
               </div>
 
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 rounded-md bg-sky-500 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-sky-600"
-              >
-                Compartir
-                {reportIcons.shareArrow && (
-                  <img
-                    src={reportIcons.shareArrow}
-                    alt=""
-                    aria-hidden
-                    className="h-3 w-3"
-                  />
-                )}
-              </button>
+              <DropdownButton
+                label="Compartir"
+                options={shareOptions}
+                iconSrc={reportIcons.shareArrow}
+              />
             </div>
 
             <div className="mt-5 grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,11 +1,8 @@
 import reportIcons from "@presentation/pages/report/components/icons";
-import {
-  ReportProfile,
-  ReportTab,
-} from "@presentation/pages/report/components/types";
+import { ReportTab } from "@presentation/pages/report/components/types";
 
 interface GeneralTabProps {
-  profile: ReportProfile;
+  reports: number;
   onNavigateTab: (tab: ReportTab) => void;
 }
 
@@ -48,7 +45,7 @@ function ReportsBarChart() {
   );
 }
 
-function GeneralTab({ profile, onNavigateTab }: GeneralTabProps) {
+function GeneralTab({ reports, onNavigateTab }: GeneralTabProps) {
   const today = formatLongDate(new Date());
 
   return (
@@ -75,7 +72,7 @@ function GeneralTab({ profile, onNavigateTab }: GeneralTabProps) {
                 />
               )}
               <span className="text-2xl font-extrabold text-gray-900">
-                {profile.reports} reportes
+                {reports} reportes
               </span>
             </div>
             {reportIcons.arrowRight && (

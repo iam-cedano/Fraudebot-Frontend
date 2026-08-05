@@ -14,3 +14,19 @@ export type LottieProps = {
   autoPlay?: boolean;
   style?: CSSProperties;
 };
+
+export type DropdownOption = {
+  id: string;
+  label: string;
+  onClick: () => void;
+  iconSrc?: string;
+  disabled?: boolean;
+};
+
+export type DropdownButtonProps = {
+  label: string;
+  options: DropdownOption[];
+  className?: string;
+  iconSrc?: string;
+  align?: "left" | "right";
+};

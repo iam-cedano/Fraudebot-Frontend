@@ -36,7 +36,7 @@ function ReportTabNavigation({
               key={tab}
               type="button"
               onClick={() => onTabChange(tab)}
-              className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-5 py-3.5 text-sm font-extrabold transition-colors sm:px-6 ${
+              className={`cursor-pointer inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-5 py-3.5 text-sm font-extrabold transition-colors sm:px-6 ${
                 isActive
                   ? "bg-gray-950 text-white"
                   : "text-gray-600 hover:bg-gray-200 hover:text-gray-950"

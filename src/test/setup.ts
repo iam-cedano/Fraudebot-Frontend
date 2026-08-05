@@ -1,6 +1,10 @@
 import "@testing-library/jest-dom/vitest";
 import { afterEach, vi } from "vitest";
 
+vi.mock("@lottiefiles/dotlottie-react", () => ({
+  DotLottieReact: () => null,
+}));
+
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
