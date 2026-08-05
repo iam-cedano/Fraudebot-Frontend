@@ -48,7 +48,9 @@ function ReportTabNavigation({
                   src={iconSrc}
                   alt=""
                   aria-hidden
-                  className="h-4 w-4 shrink-0"
+                  className={`h-4 w-4 shrink-0 ${
+                    isActive ? "brightness-0 invert" : ""
+                  }`}
                 />
               )}
               {tab}
