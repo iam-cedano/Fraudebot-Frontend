@@ -1,5 +1,5 @@
 import ContactEntity from "@/core/domain/contact/entities/contact.entity";
-import PaymentMethodEntity from "@/core/domain/paymentMethod/entities/paymentMethod.entity";
+import PaymentMethodEntity from "@/core/domain/payment-method/entities/payment-method.entity";
 import OrganizationEntity from "@/core/domain/organization/entities/organization.entity";
 import ReportEntity from "@/core/domain/report/entities/report.entity";
 

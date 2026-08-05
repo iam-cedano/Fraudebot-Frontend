@@ -1,6 +1,6 @@
 import ScammerEntity from "@/core/domain/scammer/entities/scammer.entity";
 import ContactEntity from "@/core/domain/contact/entities/contact.entity";
-import PaymentMethodEntity from "@/core/domain/paymentMethod/entities/paymentMethod.entity";
+import PaymentMethodEntity from "@/core/domain/payment-method/entities/payment-method.entity";
 
 class OrganizationEntity {
   constructor(
