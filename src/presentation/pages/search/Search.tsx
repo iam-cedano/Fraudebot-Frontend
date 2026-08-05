@@ -11,20 +11,10 @@ import searchReportCache from "@/presentation/shared/utils/search-report-cache.u
 import Report from "@/presentation/pages/search/components/ReportCard";
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
 import NotFound from "@/presentation/pages/search/components/NotFound";
-
-function getValidPage(page: string | null) {
-  const parsedPage = Number(page);
-
-  return Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
-}
-
-function getVisiblePages(currentPage: number, totalPages: number) {
-  const pages = new Set([1, currentPage - 1, currentPage, currentPage + 1, totalPages]);
-
-  return Array.from(pages)
-    .filter((page) => page >= 1 && page <= totalPages)
-    .sort((firstPage, secondPage) => firstPage - secondPage);
-}
+import {
+  getValidPage,
+  getVisiblePages,
+} from "@/presentation/shared/utils/search-pagination.util";
 
 function isCanceledError(error: unknown) {
   if (typeof error !== "object" || error === null) {

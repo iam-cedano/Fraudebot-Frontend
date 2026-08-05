@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "E2E Test Scammer",
+      "products": ["credit card"],
+      "reports": 4,
+      "type": "scammer",
+      "organizations": ["Test Corp"],
+      "status": "active"
+    }
+  ],
+  "total": 15,
+  "page": 1,
+  "count": 10
+}

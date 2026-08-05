@@ -37,5 +37,5 @@
       "@core/*": ["src/core/*"]
     }
   },
-  "include": ["src", "src/declarations.d.ts"],
+  "include": ["src", "src/declarations.d.ts", "src/test/vitest-env.d.ts"],
 }
