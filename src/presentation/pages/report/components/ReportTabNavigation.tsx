@@ -22,7 +22,7 @@ function ReportTabNavigation({
   onTabChange,
 }: ReportTabNavigationProps) {
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-6">
+    <div className="mx-auto flex max-w-5xl justify-center px-4 pt-6">
       <nav
         className="inline-flex w-fit max-w-full overflow-x-auto bg-gray-100"
         aria-label="Secciones del perfil"
