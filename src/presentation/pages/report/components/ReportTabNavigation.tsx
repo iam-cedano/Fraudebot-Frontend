@@ -1,3 +1,4 @@
+import reportIcons from "@presentation/pages/report/components/icons";
 import {
   reportTabs,
   ReportTab,
@@ -8,33 +9,56 @@ interface ReportTabNavigationProps {
   onTabChange: (tab: ReportTab) => void;
 }
 
+const tabIcons: Record<ReportTab, string> = {
+  General: reportIcons.home,
+  Reportes: reportIcons.reportes,
+  Contactos: reportIcons.contactos,
+  Mapa: reportIcons.mapa,
+  Soporte: reportIcons.soporte,
+};
+
 function ReportTabNavigation({
   activeTab,
   onTabChange,
 }: ReportTabNavigationProps) {
   return (
-    <nav
-      className="border-b border-gray-200 bg-gray-50 px-4"
-      aria-label="Secciones del perfil"
-    >
-      <div className="mx-auto flex max-w-4xl overflow-x-auto">
-        {reportTabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => onTabChange(tab)}
-            className={`min-w-32 border-b-2 px-6 py-4 text-sm font-extrabold transition-colors ${
-              activeTab === tab
-                ? "border-gray-950 bg-gray-950 text-white"
-                : "border-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-950"
-            }`}
-            aria-current={activeTab === tab ? "page" : undefined}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-    </nav>
+    <div className="mx-auto flex max-w-5xl justify-center px-4 pt-6">
+      <nav
+        className="inline-flex w-fit max-w-full overflow-x-auto bg-gray-100"
+        aria-label="Secciones del perfil"
+      >
+        {reportTabs.map((tab) => {
+          const isActive = activeTab === tab;
+          const iconSrc = tabIcons[tab];
+
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => onTabChange(tab)}
+              className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-5 py-3.5 text-sm font-extrabold transition-colors sm:px-6 ${
+                isActive
+                  ? "bg-gray-950 text-white"
+                  : "text-gray-600 hover:bg-gray-200 hover:text-gray-950"
+              }`}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {iconSrc && (
+                <img
+                  src={iconSrc}
+                  alt=""
+                  aria-hidden
+                  className={`h-4 w-4 shrink-0 ${
+                    isActive ? "brightness-0 invert" : ""
+                  }`}
+                />
+              )}
+              {tab}
+            </button>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
 

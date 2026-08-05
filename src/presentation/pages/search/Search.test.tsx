@@ -83,6 +83,30 @@ describe("Search page", () => {
     expect(execute).toHaveBeenCalledWith("test", 1);
   });
 
+  it("renders the profile tab navigation when results are found", async () => {
+    const execute = vi.fn().mockResolvedValue(createMockSearchResult());
+
+    renderWithProviders(<Search />, {
+      route: "/search?q=test",
+      overrides: {
+        searchReportUseCase: {
+          execute,
+          cancel: vi.fn(),
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("navigation", { name: "Secciones del perfil" }),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole("button", { name: "General" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Reportes" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Contactos" })).toBeInTheDocument();
+  });
+
   it("uses cached results without calling the use case", async () => {
     const execute = vi.fn();
     const cachedResult = createMockSearchResult();

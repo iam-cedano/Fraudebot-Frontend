@@ -1,53 +1,147 @@
-import { ReportProfile } from "@presentation/pages/report/components/types";
+import reportIcons from "@presentation/pages/report/components/icons";
+import {
+  ReportProfile,
+  ReportTab,
+} from "@presentation/pages/report/components/types";
 
 interface GeneralTabProps {
   profile: ReportProfile;
+  onNavigateTab: (tab: ReportTab) => void;
 }
 
-function GeneralTab({ profile }: GeneralTabProps) {
+function formatLongDate(date: Date) {
+  return date.toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function ReportsBarChart() {
+  const bars = [42, 68, 55, 80, 62];
+
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-      <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-red-600">
-          Acerca del perfil
-        </p>
-        <h2 className="mt-2 text-2xl font-extrabold text-gray-900">
-          Información general
-        </h2>
-        <p className="mt-4 leading-7 text-gray-600">{profile.description}</p>
+    <svg
+      viewBox="0 0 320 180"
+      className="h-44 w-full max-w-md text-gray-900"
+      aria-hidden
+    >
+      <line x1="28" y1="150" x2="300" y2="150" stroke="currentColor" />
+      <line x1="28" y1="150" x2="28" y2="20" stroke="currentColor" />
 
-        <div className="mt-7">
-          <h3 className="text-sm font-extrabold uppercase tracking-wide text-gray-500">
-            Categorías reportadas
-          </h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {profile.categories.map((category) => (
-              <span
-                key={category}
-                className="rounded-full bg-red-50 px-4 py-2 text-sm font-bold text-red-700"
-              >
-                {category}
+      {bars.map((height, index) => {
+        const x = 52 + index * 52;
+        const barHeight = height * 1.2;
+
+        return (
+          <rect
+            key={index}
+            x={x}
+            y={150 - barHeight}
+            width="28"
+            height={barHeight}
+            fill="currentColor"
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+function GeneralTab({ profile, onNavigateTab }: GeneralTabProps) {
+  const today = formatLongDate(new Date());
+
+  return (
+    <div className="divide-y divide-gray-200 border border-gray-200 bg-white">
+      <div className="grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
+        <section className="p-6 sm:p-8">
+          <h2 className="text-lg font-extrabold text-gray-900">Reportes:</h2>
+          <p className="mt-3 text-sm leading-6 text-gray-600">
+            Hasta el día de hoy {today} se han recibido:
+          </p>
+
+          <button
+            type="button"
+            onClick={() => onNavigateTab("Reportes")}
+            className="mt-5 flex w-full items-center justify-between gap-4 text-left transition-colors hover:bg-gray-50"
+          >
+            <div className="flex items-center gap-3">
+              {reportIcons.reportAlert && (
+                <img
+                  src={reportIcons.reportAlert}
+                  alt=""
+                  aria-hidden
+                  className="h-10 w-10 shrink-0"
+                />
+              )}
+              <span className="text-2xl font-extrabold text-gray-900">
+                {profile.reports} reportes
               </span>
-            ))}
-          </div>
-        </div>
-      </section>
+            </div>
+            {reportIcons.arrowRight && (
+              <img
+                src={reportIcons.arrowRight}
+                alt=""
+                aria-hidden
+                className="h-5 w-5 shrink-0 text-gray-400"
+              />
+            )}
+          </button>
 
-      <aside className="rounded-xl border border-gray-200 bg-gray-50 p-6">
-        <h2 className="text-xl font-extrabold text-gray-900">
-          ¿Tienes información?
-        </h2>
-        <p className="mt-3 leading-6 text-gray-600">
-          Ayuda a la comunidad agregando pruebas o información relacionada con
-          este perfil.
+          <p className="mt-4 text-xs text-gray-400">
+            Los reportes han sido verificados por nuestro equipo.
+          </p>
+        </section>
+
+        <section className="p-6 sm:p-8">
+          <h2 className="text-lg font-extrabold text-gray-900">Contactos:</h2>
+          <p className="mt-3 text-sm leading-6 text-gray-600">
+            Descubre los perfiles que utiliza esta{" "}
+            <span className="font-extrabold text-gray-900">
+              empresa/estafador
+            </span>
+            :
+          </p>
+
+          <button
+            type="button"
+            onClick={() => onNavigateTab("Contactos")}
+            className="mt-5 flex w-full items-center justify-between gap-4 text-left transition-colors hover:bg-gray-50"
+          >
+            {reportIcons.contactsIllustration ? (
+              <img
+                src={reportIcons.contactsIllustration}
+                alt=""
+                aria-hidden
+                className="h-28 w-auto max-w-full object-contain"
+              />
+            ) : (
+              <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400">
+                Ilustración de contactos
+              </div>
+            )}
+            {reportIcons.arrowRight && (
+              <img
+                src={reportIcons.arrowRight}
+                alt=""
+                aria-hidden
+                className="h-5 w-5 shrink-0 text-gray-400"
+              />
+            )}
+          </button>
+        </section>
+      </div>
+
+      <section className="p-6 sm:p-8">
+        <h2 className="text-lg font-extrabold text-gray-900">Diagrama:</h2>
+        <div className="mt-4">
+          <ReportsBarChart />
+        </div>
+        <p className="mt-2 text-xs text-gray-400">
+          Diagramas de barras de cantidad de reportes por mes del año{" "}
+          {new Date().getFullYear()}
         </p>
-        <button
-          type="button"
-          className="mt-6 w-full rounded-lg bg-red-600 px-5 py-3 text-sm font-extrabold text-white transition-colors hover:bg-red-700"
-        >
-          Agregar reporte
-        </button>
-      </aside>
+      </section>
     </div>
   );
 }
