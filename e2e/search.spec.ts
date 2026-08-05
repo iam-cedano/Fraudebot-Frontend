@@ -1,6 +1,15 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, test } from "@playwright/test";
-import searchResponse from "./fixtures/search-response.json";
-import searchResponsePage2 from "./fixtures/search-response-page-2.json";
+
+const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "fixtures");
+const searchResponse = JSON.parse(
+  readFileSync(path.join(fixturesDir, "search-response.json"), "utf-8"),
+);
+const searchResponsePage2 = JSON.parse(
+  readFileSync(path.join(fixturesDir, "search-response-page-2.json"), "utf-8"),
+);
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/public/reports/**", async (route) => {
