@@ -22,11 +22,11 @@ function ReportTabNavigation({
   onTabChange,
 }: ReportTabNavigationProps) {
   return (
-    <nav
-      className="border-b border-gray-200 bg-gray-100 px-4"
-      aria-label="Secciones del perfil"
-    >
-      <div className="mx-auto flex max-w-5xl overflow-x-auto">
+    <div className="mx-auto max-w-5xl px-4 pt-6">
+      <nav
+        className="inline-flex w-fit max-w-full overflow-x-auto bg-gray-100"
+        aria-label="Secciones del perfil"
+      >
         {reportTabs.map((tab) => {
           const isActive = activeTab === tab;
           const iconSrc = tabIcons[tab];
@@ -36,7 +36,7 @@ function ReportTabNavigation({
               key={tab}
               type="button"
               onClick={() => onTabChange(tab)}
-              className={`flex min-w-0 flex-1 items-center justify-center gap-2 px-4 py-3.5 text-sm font-extrabold transition-colors sm:px-6 ${
+              className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-5 py-3.5 text-sm font-extrabold transition-colors sm:px-6 ${
                 isActive
                   ? "bg-gray-950 text-white"
                   : "text-gray-600 hover:bg-gray-200 hover:text-gray-950"
@@ -55,8 +55,8 @@ function ReportTabNavigation({
             </button>
           );
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
 
