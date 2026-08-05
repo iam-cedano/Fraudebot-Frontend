@@ -8,9 +8,20 @@ import Loader from "@/presentation/pages/search/components/Loader";
 import LookupForm from "@presentation/pages/search/components/LookupForm";
 import Formatter from "@/presentation/shared/utils/formatter";
 import searchReportCache from "@/presentation/shared/utils/search-report-cache.util";
-import Report from "@/presentation/pages/search/components/ReportCard";
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
 import NotFound from "@/presentation/pages/search/components/NotFound";
+import ContactsTab from "@presentation/pages/report/components/ContactsTab";
+import GeneralTab from "@presentation/pages/report/components/GeneralTab";
+import PlaceholderTab from "@presentation/pages/report/components/PlaceholderTab";
+import ReportHero from "@presentation/pages/report/components/ReportHero";
+import ReportsTab from "@presentation/pages/report/components/ReportsTab";
+import ReportTabNavigation from "@presentation/pages/report/components/ReportTabNavigation";
+import { ReportTab } from "@presentation/pages/report/components/types";
+import mockProfile from "@presentation/pages/report/mockProfile";
+import {
+  toHeroProps,
+  toReportProfile,
+} from "@/presentation/pages/search/utils/map-report-summary.util";
 import {
   getValidPage,
   getVisiblePages,
@@ -39,10 +50,13 @@ function Search() {
   const [totalResults, setTotalResults] = useState(0);
   const [pageSize, setPageSize] = useState(0);
   const [reports, setReports] = useState<ReportSummaryEntity[]>([]);
+  const [activeTab, setActiveTab] = useState<ReportTab>("General");
   const activeSearchId = useRef(0);
   const { searchReportUseCase } = useDependencies();
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
   const visiblePages = getVisiblePages(currentPage, totalPages);
+  const selectedReport = reports[0] ?? null;
+  const profile = selectedReport ? toReportProfile(selectedReport) : null;
 
   const updateSearchParams = useCallback(
     (nextQuery: string, nextPage: number) => {
@@ -82,6 +96,7 @@ function Search() {
         setCurrentPage(result.page);
         setTotalResults(result.total);
         setPageSize(result.count);
+        setActiveTab("General");
         searchReportCache.set(nextQuery, result);
         updateSearchParams(nextQuery, result.page);
       } catch (error) {
@@ -146,96 +161,119 @@ function Search() {
     await searchReports(query, page);
   };
 
+  const hasResults = !isSearching && reports.length > 0 && selectedReport && profile;
+
   return (
     <>
       <title>FraudeBot - Buscando</title>
 
-      <Header />
+      <div className="font-[Nunito]">
+        <Header />
 
-      <SearchContainer>
-        {isSearching && <Loader />}
-
-        {!isSearching && (
-          <LookupForm
-            onSubmit={handleSubmit}
-            onInputChange={handleInputChange}
-            query={query}
-          />
+        {isSearching && (
+          <SearchContainer>
+            <Loader />
+          </SearchContainer>
         )}
 
-        {!isSearching &&
-          reports.length > 0 &&
-          reports.map((report, idx) => (
-            <Report
-              key={idx}
-              id={report.id}
-              name={report.name}
-              organizations={report.organizations}
-              products={report.products}
-              reports={report.reports}
-              tags={report.tags}
-              status={report.status}
-              type={report.type}
+        {!isSearching && !hasResults && (
+          <SearchContainer>
+            <LookupForm
+              onSubmit={handleSubmit}
+              onInputChange={handleInputChange}
+              query={query}
             />
-          ))}
 
-        {!isSearching && totalPages > 1 && (
-          <nav
-            className="flex items-center justify-center gap-2 mt-2 mb-4 font-[Nunito]"
-            aria-label="Paginación de reportes"
-          >
-            <button
-              type="button"
-              className="px-3 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50"
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              Anterior
-            </button>
+            {query && totalResults === 0 && <NotFound />}
+          </SearchContainer>
+        )}
 
-            {visiblePages.map((page, index) => {
-              const previousPage = visiblePages[index - 1];
-              const shouldShowGap = previousPage && page - previousPage > 1;
+        {hasResults && (
+          <>
+            <ReportHero {...toHeroProps(selectedReport)} />
 
-              return (
-                <div key={page} className="flex items-center gap-2">
-                  {shouldShowGap && (
-                    <span className="text-sm font-semibold text-gray-400">
-                      ...
-                    </span>
-                  )}
+            <main className="min-h-[520px] bg-white">
+              <ReportTabNavigation
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+              />
+
+              <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
+                {activeTab === "General" && (
+                  <GeneralTab profile={profile} onNavigateTab={setActiveTab} />
+                )}
+                {activeTab === "Reportes" && (
+                  <ReportsTab reportCount={selectedReport.reports} />
+                )}
+                {activeTab === "Contactos" && (
+                  <ContactsTab contacts={mockProfile.contacts} />
+                )}
+                {(activeTab === "Mapa" || activeTab === "Soporte") && (
+                  <PlaceholderTab tab={activeTab} />
+                )}
+              </div>
+
+              {totalPages > 1 && (
+                <nav
+                  className="mx-auto mb-8 flex max-w-5xl items-center justify-center gap-2 px-4"
+                  aria-label="Paginación de reportes"
+                >
+                  <button
+                    type="button"
+                    className="rounded-sm border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                  >
+                    Anterior
+                  </button>
+
+                  {visiblePages.map((page, index) => {
+                    const previousPage = visiblePages[index - 1];
+                    const shouldShowGap =
+                      previousPage && page - previousPage > 1;
+
+                    return (
+                      <div key={page} className="flex items-center gap-2">
+                        {shouldShowGap && (
+                          <span className="text-sm font-semibold text-gray-400">
+                            ...
+                          </span>
+                        )}
+
+                        <button
+                          type="button"
+                          className={`rounded-sm border px-3 py-2 text-sm font-semibold shadow-sm ${
+                            page === currentPage
+                              ? "border-red-600 bg-red-600 text-white"
+                              : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                          }`}
+                          aria-current={
+                            page === currentPage ? "page" : undefined
+                          }
+                          onClick={() => handlePageChange(page)}
+                        >
+                          {page}
+                        </button>
+                      </div>
+                    );
+                  })}
 
                   <button
                     type="button"
-                    className={`px-3 py-2 text-sm font-semibold border rounded-sm shadow-sm ${
-                      page === currentPage
-                        ? "bg-red-600 text-white border-red-600"
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                    }`}
-                    aria-current={page === currentPage ? "page" : undefined}
-                    onClick={() => handlePageChange(page)}
+                    className="rounded-sm border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
                   >
-                    {page}
+                    Siguiente
                   </button>
-                </div>
-              );
-            })}
-
-            <button
-              type="button"
-              className="px-3 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50"
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              Siguiente
-            </button>
-          </nav>
+                </nav>
+              )}
+            </main>
+          </>
         )}
 
-        {!isSearching && totalResults === 0 && <NotFound />}
-      </SearchContainer>
-
-      <Footer />
+        <Footer />
+      </div>
     </>
   );
 }
