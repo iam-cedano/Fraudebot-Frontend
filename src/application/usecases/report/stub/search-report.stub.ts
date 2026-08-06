@@ -45,7 +45,7 @@ class SearchReportStubUsecase implements ApiCallerInterface {
           page,
           count: stubReports.length,
         });
-      }, 1000);
+      }, 3000);
     });
   }
 

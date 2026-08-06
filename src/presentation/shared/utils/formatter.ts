@@ -121,11 +121,11 @@ class Formatter {
   }
 
   /**
-   * True when the value contains only digits and whitespace (no letters or symbols).
-   * Once any non-numeric character is present, numeric formatting is disabled.
+   * True when the value contains only digits, whitespace, or "+" (no letters or symbols).
+   * Once any other non-numeric character is present, numeric formatting is disabled.
    */
   private static isNumericOnlyInput(value: string): boolean {
-    return value.length > 0 && !/[^\d\s]/.test(value);
+    return value.length > 0 && !/[^\d\s+]/.test(value);
   }
 
   /**
@@ -140,8 +140,23 @@ class Formatter {
     return value.replace(/\D/g, "");
   }
 
-  public static UnformatInput(value: string): string {
-    return value.replace(/\D/g, "");
+  /**
+   * Encodes a query param value using "+" for spaces instead of "%20" or "%2B".
+   */
+  public static toQueryParamValue(value: string): string {
+    return encodeURIComponent(value).replace(/%20/g, "+");
+  }
+
+  public static buildSearchQueryString(query: string, page?: number): string {
+    const q = Formatter.isNumericOnlyInput(query)
+      ? Formatter.toSearchQuery(query)
+      : Formatter.toQueryParamValue(Formatter.toSearchQuery(query));
+
+    if (page && page > 1) {
+      return `q=${q}&p=${page}`;
+    }
+
+    return `q=${q}`;
   }
 }
 

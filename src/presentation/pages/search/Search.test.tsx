@@ -58,7 +58,7 @@ describe("Home LookupForm", () => {
     await user.click(screen.getByRole("button", { name: "Buscar" }));
 
     expect(router.state.location.pathname).toBe("/search");
-    expect(router.state.location.search).toBe("?q=john%20doe");
+    expect(router.state.location.search).toBe("?q=john+doe");
   });
 });
 

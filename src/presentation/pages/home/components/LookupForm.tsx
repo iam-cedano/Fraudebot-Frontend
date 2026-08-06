@@ -12,7 +12,7 @@ function LookupForm() {
 
     const searchValue = searchRef.current?.value;
     if (searchValue) {
-      navigate(`/search?q=${Formatter.UnformatInput(searchValue)}`);
+      navigate(`/search?${Formatter.buildSearchQueryString(searchValue)}`);
     }
   }
 

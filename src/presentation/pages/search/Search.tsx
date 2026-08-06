@@ -41,21 +41,15 @@ function Search() {
   const [reports, setReports] = useState<ReportSummaryEntity[]>([]);
   
   const activeSearchId = useRef(0);
-  const { searchReportUseCase } = useDependencies();
+  const { searchReportUseCase, searchReportStubUseCase } = useDependencies();
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
   const visiblePages = getVisiblePages(currentPage, totalPages);
 
+  const isStub = query.includes("[TEST]");
+
   const updateSearchParams = useCallback(
     (nextQuery: string, nextPage: number) => {
-      const nextSearchParams = new URLSearchParams({
-        q: Formatter.UnformatInput(nextQuery),
-      });
-
-      if (nextPage > 1) {
-        nextSearchParams.set("p", String(nextPage));
-      }
-
-      setSearchParams(nextSearchParams);
+      setSearchParams(`?${Formatter.buildSearchQueryString(nextQuery, nextPage)}`);
     },
     [setSearchParams],
   );
@@ -100,11 +94,41 @@ function Search() {
     [searchReportUseCase, updateSearchParams],
   );
 
+
+  const searchReportsStub = useCallback(
+    async (nextQuery: string, nextPage: number) => {
+      setIsSearching(true);
+
+      try {
+        const result = await searchReportStubUseCase.execute(nextQuery, nextPage);
+
+        setReports(result.data);
+        setCurrentPage(result.page);
+        setTotalResults(result.total);
+        setPageSize(result.count);
+      } catch (error) {
+        if (isCanceledError(error)) {
+          return;
+        }
+
+        console.error("Error searching reports stub:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [searchReportStubUseCase],
+  );
+
   useEffect(() => {
     if (!query || query.trim() === "") {
       return;
     }
 
+    if (isStub) {
+      searchReportsStub(query, currentPage);
+      return;
+    }
+    
     const formattedQuery = Formatter.FormatInput(query);
     const cachedResult = searchReportCache.get(formattedQuery, currentPage);
 
@@ -123,20 +147,30 @@ function Search() {
 
     return () => {
       searchReportUseCase.cancel();
+
+      if (isStub) {
+        searchReportStubUseCase.cancel();
+      }
+      
     };
   }, []);
 
   const handleInputChange = (event: React.InputEvent<HTMLInputElement>) => {
     const formattedQuery = Formatter.FormatInput(event.currentTarget.value);
-    const unformattedQuery = Formatter.UnformatInput(event.currentTarget.value);
 
-    setSearchParams({ q: unformattedQuery });
+    setSearchParams(`?${Formatter.buildSearchQueryString(formattedQuery)}`);
     setQuery(formattedQuery);
     setCurrentPage(1);
   };
 
   const handleSubmit = async () => {
     setPageSize(0);
+
+    if (isStub) {
+      searchReportsStub(query, 1);
+      return;
+    }
+
     await searchReports(query, 1);
   };
 
@@ -147,6 +181,7 @@ function Search() {
 
     await searchReports(query, page);
   };
+
 
   return (
     <>
