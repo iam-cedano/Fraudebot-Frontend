@@ -1,12 +1,12 @@
 import LottieAnimation from "@presentation/shared/components/LottieAnimation";
-import NotFoundLottieAnimation from "@presentation/assets/404.lottie";
+import NotFoundLottieAnimation from "@presentation/assets/not-found.lottie";
 
 function NotFound() {
     return (
         <div className="grow flex flex-col items-center justify-center">
             <div className="flex flex-col items-center gap-8">
               <div className="w-64 h-64 bg-gray-50 flex items-center justify-center rounded-lg">
-                <LottieAnimation src={NotFoundLottieAnimation} />
+                <LottieAnimation src={NotFoundLottieAnimation} className="w-full h-full lottie-not-found" />
               </div>
 
               <p className="text-[#6b7280] text-2xl font-[Nunito] text-center">

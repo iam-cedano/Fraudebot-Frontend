@@ -9,7 +9,7 @@ import Header from "@/presentation/shared/components/Header";
 function Home() {
     return (
         <>
-        <title>FraudeBot - Home</title>
+        <title>Fraudebot - Inicio</title>
 
         <Header />
         <HomeContainer>                

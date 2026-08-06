@@ -6,7 +6,7 @@ function Loader() {
         <div className="grow flex flex-col items-center justify-center">
             <div className="flex flex-col items-center gap-8">
               <div className="w-64 h-64 bg-gray-50 flex items-center justify-center rounded-lg">
-                <LottieAnimation src={RobotLottieAnimation} />
+                <LottieAnimation src={RobotLottieAnimation} className="w-full h-full lottie-robot" />
               </div>
 
               <p className="text-[#6b7280] text-2xl font-[Nunito] text-center">

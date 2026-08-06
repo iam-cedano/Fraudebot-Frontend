@@ -12,7 +12,7 @@ function LookupForm() {
 
     const searchValue = searchRef.current?.value;
     if (searchValue) {
-      navigate(`/search?q=${encodeURIComponent(searchValue)}`);
+      navigate(`/search?q=${Formatter.UnformatInput(searchValue)}`);
     }
   }
 
@@ -29,15 +29,16 @@ function LookupForm() {
         <span className="font-bold">Fraudebot</span> te protege de los
         estafadores
       </h1>
-      <p className="text-2xl text-gray-800 mb-8 font-[Nunito]">
+      <label htmlFor="lookup-search"  className="text-2xl text-gray-800 mb-8 font-[Nunito]">
         Buscar por{" "}
         <span className="font-bold">
           tarjeta, cuenta, clabe, nombre, telefono
         </span>{" "}
         o <span className="font-bold">url</span>
-      </p>
+      </label>
       <div className="flex w-full border border-gray-300 rounded-md overflow-hidden bg-white">
         <input
+          id="lookup-search"
           type="text"
           placeholder="número cuenta, tarjeta, telefono, url"
           className="grow px-4 py-4 outline-none text-gray-400 placeholder-gray-400 text-lg font-[Nunito]"

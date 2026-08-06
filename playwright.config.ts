@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import process from "node:process";
 
 const port = 4173;
 const baseURL = `http://localhost:${port}`;
@@ -21,7 +22,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run preview -- --port 4173 --strictPort",
+    command: "npm run build && npm run preview -- --port 4173 --strictPort",
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

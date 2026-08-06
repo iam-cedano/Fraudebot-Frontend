@@ -17,7 +17,7 @@ function App() {
           <Route path="/search" element={<Search />} />
           <Route path="/organization/:id" element={<Report type="organization" />} />
           <Route path="/scammer/:id" element={<Report type="scammer" />} />
-          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </DependencyProvider>

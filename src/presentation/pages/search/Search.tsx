@@ -48,7 +48,7 @@ function Search() {
   const updateSearchParams = useCallback(
     (nextQuery: string, nextPage: number) => {
       const nextSearchParams = new URLSearchParams({
-        q: Formatter.FormatInput(nextQuery),
+        q: Formatter.UnformatInput(nextQuery),
       });
 
       if (nextPage > 1) {
@@ -128,8 +128,9 @@ function Search() {
 
   const handleInputChange = (event: React.InputEvent<HTMLInputElement>) => {
     const formattedQuery = Formatter.FormatInput(event.currentTarget.value);
+    const unformattedQuery = Formatter.UnformatInput(event.currentTarget.value);
 
-    setSearchParams({ q: formattedQuery });
+    setSearchParams({ q: unformattedQuery });
     setQuery(formattedQuery);
     setCurrentPage(1);
   };
@@ -149,7 +150,7 @@ function Search() {
 
   return (
     <>
-      <title>FraudeBot - Buscando</title>
+      <title>Fraudebot - Búsqueda	</title>
 
       <Header />
 

@@ -12,7 +12,7 @@ export type LottieProps = {
   src?: string;
   loop?: boolean;
   autoPlay?: boolean;
-  style?: CSSProperties;
+  className?: string;
 };
 
 export type DropdownOption = {
