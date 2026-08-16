@@ -1,4 +1,6 @@
 import SearchReportUsecase from "@/application/usecases/report/search-report.usecase";
+import FindMonthlyReportCountsUsecase from "@/application/usecases/report/find-monthly-report-counts.usecase";
+import FindMonthlyReportCountsStubUsecase from "@/application/usecases/report/stub/find-monthly-report-counts.stub";
 import FindScammerSummaryByIdUsecase from "@/application/usecases/scammer/find-scammer-summary-by-id.usecase";
 import FindScammerSummaryByIdStubUsecase from "@/application/usecases/scammer/stub/find-scammer-summary-by-id.stub";
 import FindOrganizationSummaryByIdStubUsecase from "@/application/usecases/organization/stub/find-organization-summary-by-id.stub";
@@ -9,11 +11,14 @@ export const createFindScammerSummaryByIdUseCase = () => new FindScammerSummaryB
 export const createFindScammerSummaryByIdStubUseCase = () => new FindScammerSummaryByIdStubUsecase();
 export const createFindOrganizationSummaryByIdStubUseCase = () => new FindOrganizationSummaryByIdStubUsecase();
 export const createSearchReportStubUseCase = () => new SearchReportStubUsecase();
+export const createFindMonthlyReportCountsUseCase = () => new FindMonthlyReportCountsUsecase();
+export const createFindMonthlyReportCountsStubUseCase = () => new FindMonthlyReportCountsStubUsecase();
 export const dependencies = {
   searchReportUseCase: createSearchReportUseCase,
-  findScammerSummaryByIdUseCase: createFindScammerSummaryByIdStubUseCase,
+  findScammerSummaryByIdUseCase: createFindScammerSummaryByIdUseCase,
   findOrganizationSummaryByIdUseCase: createFindOrganizationSummaryByIdStubUseCase,
   searchReportStubUseCase: createSearchReportStubUseCase,
+  findMonthlyReportCountsUseCase: createFindMonthlyReportCountsStubUseCase,
 };
 
 export type Dependencies = {

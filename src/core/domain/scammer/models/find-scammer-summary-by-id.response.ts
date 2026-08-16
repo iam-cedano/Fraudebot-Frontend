@@ -1,13 +1,12 @@
 type FindScammerSummaryByIdResponse = {
-  id: string;
+  id: number | string;
   name: string;
   country: string;
-  profile_picture: string | null;
   reports: number;
-  categories: string[];
-  is_active: boolean;
+  avatar_path: string | null;
+  products?: string[] | null;
+  status: boolean;
   created_at: string;
-  updated_at: string;
-}
+};
 
 export default FindScammerSummaryByIdResponse;

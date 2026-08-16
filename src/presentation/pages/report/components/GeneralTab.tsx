@@ -1,7 +1,13 @@
+import { KeyboardEvent, useEffect, useState } from "react";
 import reportIcons from "@presentation/pages/report/components/icons";
+import MonthlyReportsChart from "@presentation/pages/report/components/MonthlyReportsChart";
 import { ReportTab } from "@presentation/pages/report/components/types";
+import { useDependencies } from "@/presentation/providers/DependencyProvider";
+import MonthlyReportCountsEntity from "@/core/domain/report/entities/monthly-report-counts.entity";
 
 interface GeneralTabProps {
+  partyId: string;
+  partyType: "scammer" | "organization";
   reports: number;
   onNavigateTab: (tab: ReportTab) => void;
 }
@@ -14,129 +20,171 @@ function formatLongDate(date: Date) {
   });
 }
 
-function ReportsBarChart() {
-  const bars = [42, 68, 55, 80, 62];
-
+function ExternalLinkIcon() {
   return (
     <svg
-      viewBox="0 0 320 180"
-      className="h-44 w-full max-w-md text-gray-900"
+      viewBox="0 0 24 24"
+      fill="none"
       aria-hidden
+      className="h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-black"
     >
-      <line x1="28" y1="150" x2="300" y2="150" stroke="currentColor" />
-      <line x1="28" y1="150" x2="28" y2="20" stroke="currentColor" />
-
-      {bars.map((height, index) => {
-        const x = 52 + index * 52;
-        const barHeight = height * 1.2;
-
-        return (
-          <rect
-            key={index}
-            x={x}
-            y={150 - barHeight}
-            width="28"
-            height={barHeight}
-            fill="currentColor"
-          />
-        );
-      })}
+      <path
+        d="M14 4h6v6M20 4 10 14"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function GeneralTab({ reports, onNavigateTab }: GeneralTabProps) {
+function PanelHeader({
+  title,
+  showExternalLink = false,
+}: {
+  title: string;
+  showExternalLink?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+      <h2 className="text-xl font-extrabold leading-none text-gray-900">
+        {title}
+      </h2>
+      {showExternalLink && <ExternalLinkIcon />}
+    </div>
+  );
+}
+
+const panelClassName =
+  "group grid h-full w-full cursor-pointer text-left transition-colors hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gray-300 lg:row-span-4 lg:grid-rows-subgrid";
+
+function activatePanel(
+  event: KeyboardEvent<HTMLDivElement>,
+  onActivate: () => void,
+) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    onActivate();
+  }
+}
+
+function GeneralTab({
+  partyId,
+  partyType,
+  reports,
+  onNavigateTab,
+}: GeneralTabProps) {
   const today = formatLongDate(new Date());
+  const { findMonthlyReportCountsUseCase } = useDependencies();
+  const [monthlyCounts, setMonthlyCounts] =
+    useState<MonthlyReportCountsEntity | null>(null);
+
+  useEffect(() => {
+    findMonthlyReportCountsUseCase
+      .execute(partyId, partyType)
+      .then(setMonthlyCounts)
+      .catch(() => undefined);
+
+    return () => {
+      findMonthlyReportCountsUseCase.cancel();
+    };
+  }, [findMonthlyReportCountsUseCase, partyId, partyType]);
 
   return (
     <div className="divide-y divide-gray-200 border border-gray-200 bg-white">
-      <div className="grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-        <section className="p-6 sm:p-8">
-          <h2 className="text-lg font-extrabold text-gray-900">Reportes:</h2>
-          <p className="mt-3 text-sm leading-6 text-gray-600">
+      <div className="grid lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr_auto] lg:divide-x lg:divide-gray-200">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onNavigateTab("Reportes")}
+          onKeyDown={(event) =>
+            activatePanel(event, () => onNavigateTab("Reportes"))
+          }
+          className={`${panelClassName} lg:col-start-1`}
+        >
+          <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+            <PanelHeader title="Reportes:" showExternalLink />
+          </div>
+          <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
             Hasta el día de hoy {today} se han recibido:
           </p>
-
-          <button
-            type="button"
-            onClick={() => onNavigateTab("Reportes")}
-            className="mt-5 flex w-full items-center justify-between gap-4 text-left transition-colors hover:bg-gray-50"
-          >
-            <div className="flex items-center gap-3">
-              {reportIcons.reportAlert && (
-                <img
-                  src={reportIcons.reportAlert}
-                  alt=""
-                  aria-hidden
-                  className="h-10 w-10 shrink-0"
-                />
-              )}
-              <span className="text-2xl font-extrabold text-gray-900">
-                {reports} reportes
-              </span>
-            </div>
-            {reportIcons.arrowRight && (
+          <div className="flex items-start px-6 pt-5 sm:px-8">
+            {reportIcons.reportAlert && (
               <img
-                src={reportIcons.arrowRight}
+                src={reportIcons.reportAlert}
                 alt=""
                 aria-hidden
-                className="h-5 w-5 shrink-0 text-gray-400"
+                className="h-10 w-10 shrink-0"
               />
             )}
-          </button>
-
-          <p className="mt-4 text-xs text-gray-400">
+            <span className="ml-3 text-3xl font-extrabold text-gray-900">
+              {reports} reportes
+            </span>
+          </div>
+          <p className="px-6 pb-6 pt-4 text-sm text-gray-400 sm:px-8 sm:pb-8">
             Los reportes han sido verificados por nuestro equipo.
           </p>
-        </section>
+        </div>
 
-        <section className="p-6 sm:p-8">
-          <h2 className="text-lg font-extrabold text-gray-900">Contactos:</h2>
-          <p className="mt-3 text-sm leading-6 text-gray-600">
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onNavigateTab("Contactos")}
+          onKeyDown={(event) =>
+            activatePanel(event, () => onNavigateTab("Contactos"))
+          }
+          className={`${panelClassName} lg:col-start-2`}
+        >
+          <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+            <PanelHeader title="Contactos:" showExternalLink />
+          </div>
+          <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
             Descubre los perfiles que utiliza esta{" "}
             <span className="font-extrabold text-gray-900">
               empresa/estafador
             </span>
             :
           </p>
-
-          <button
-            type="button"
-            onClick={() => onNavigateTab("Contactos")}
-            className="mt-5 flex w-full items-center justify-between gap-4 text-left transition-colors hover:bg-gray-50"
-          >
+          <div className="flex items-start justify-center px-6 pt-5 sm:px-8">
             {reportIcons.contactsIllustration ? (
               <img
                 src={reportIcons.contactsIllustration}
                 alt=""
                 aria-hidden
-                className="h-28 w-auto max-w-full object-contain"
+                className="h-32 w-32 object-contain"
               />
             ) : (
-              <div className="flex h-28 w-full max-w-xs items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-xs text-gray-400">
+              <div className="flex h-32 w-32 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-400">
                 Ilustración de contactos
               </div>
             )}
-            {reportIcons.arrowRight && (
-              <img
-                src={reportIcons.arrowRight}
-                alt=""
-                aria-hidden
-                className="h-5 w-5 shrink-0 text-gray-400"
-              />
-            )}
-          </button>
-        </section>
+          </div>
+          <div className="px-6 pb-6 pt-4 sm:px-8 sm:pb-8" />
+        </div>
       </div>
 
       <section className="p-6 sm:p-8">
-        <h2 className="text-lg font-extrabold text-gray-900">Diagrama:</h2>
+        <PanelHeader title="Diagrama:" />
         <div className="mt-4">
-          <ReportsBarChart />
+          {monthlyCounts ? (
+            <MonthlyReportsChart monthlyCounts={monthlyCounts} />
+          ) : (
+            <div className="flex h-56 items-center text-sm text-gray-400">
+              Cargando diagrama...
+            </div>
+          )}
         </div>
-        <p className="mt-2 text-xs text-gray-400">
+        <p className="mt-2 text-sm text-gray-400">
           Diagramas de barras de cantidad de reportes por mes del año{" "}
-          {new Date().getFullYear()}
+          {monthlyCounts?.year ?? new Date().getFullYear()}
         </p>
       </section>
     </div>

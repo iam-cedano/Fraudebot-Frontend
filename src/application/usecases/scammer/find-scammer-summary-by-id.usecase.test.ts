@@ -1,66 +1,118 @@
-import { describe, it, expect, vi } from "vitest";
 import FindScammerSummaryByIdUsecase from "./find-scammer-summary-by-id.usecase";
-import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
 import Http from "@/infrastructure/http/http";
-import { InternalAxiosRequestConfig } from "axios";
-import { use } from "react";
+import { API_ROUTES } from "@/common/environment";
 
-describe("FindScammerSummaryByIdUsecase.execute.success", () => {
-  it("should return a scammer summary", async () => {
-    const scammerSummary = new ScammerSummaryEntity("1", "John Doe", "USA", "https://example.com/profile.jpg", 10, ["Category 1", "Category 2"], true, new Date(), new Date());
-    const usecase = new FindScammerSummaryByIdUsecase();
+vi.mock("@/infrastructure/http/http", () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
 
-    vi.spyOn(Http, "get").mockResolvedValueOnce({
-        data: scammerSummary,
-        status: 200,
-        statusText: "OK",
-        headers: {},
-        config: {} as unknown as InternalAxiosRequestConfig,
+const mockedHttp = vi.mocked(Http);
+
+describe("FindScammerSummaryByIdUsecase", () => {
+  let useCase: FindScammerSummaryByIdUsecase;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useCase = new FindScammerSummaryByIdUsecase();
+  });
+
+  it("maps a successful API response to a scammer summary entity", async () => {
+    mockedHttp.get.mockResolvedValue({
+      status: 200,
+      data: {
+        id: 20,
+        name: "Joseph Nacchio",
+        country: "DM",
+        reports: 3,
+        avatar_path: null,
+        products: ["Stocks", "Venture", "Recovery"],
+        status: false,
+        created_at: "2026-08-10",
+      },
+    } as never);
+
+    const result = await useCase.execute("20");
+
+    expect(mockedHttp.get).toHaveBeenCalledWith(
+      API_ROUTES.public.scammers.findById.replace("{id}", "20"),
+      expect.objectContaining({
+        signal: expect.any(AbortSignal),
+      }),
+    );
+    expect(result.id).toBe("20");
+    expect(result.name).toBe("Joseph Nacchio");
+    expect(result.country).toBe("DM");
+    expect(result.reports).toBe(3);
+    expect(result.profilePicture).toBeNull();
+    expect(result.categories).toEqual(["Stocks", "Venture", "Recovery"]);
+    expect(result.isActive).toBe(false);
+    expect(result.createdAt).toEqual(new Date("2026-08-10"));
+    expect(result.updatedAt).toEqual(new Date("2026-08-10"));
+  });
+
+  it("maps avatar_path and an active status", async () => {
+    mockedHttp.get.mockResolvedValue({
+      status: 200,
+      data: {
+        id: 1,
+        name: "John Doe",
+        country: "USA",
+        reports: 10,
+        avatar_path: "https://example.com/profile.jpg",
+        products: ["Investment Scam"],
+        status: true,
+        created_at: "2026-01-01",
+      },
+    } as never);
+
+    const result = await useCase.execute("1");
+
+    expect(result.profilePicture).toBe("https://example.com/profile.jpg");
+    expect(result.isActive).toBe(true);
+    expect(result.categories).toEqual(["Investment Scam"]);
+  });
+
+  it("defaults missing products to an empty list", async () => {
+    mockedHttp.get.mockResolvedValue({
+      status: 200,
+      data: {
+        id: 2,
+        name: "Jane Doe",
+        country: "MX",
+        reports: 1,
+        avatar_path: null,
+        status: false,
+        created_at: "2026-02-01",
+      },
+    } as never);
+
+    const result = await useCase.execute("2");
+
+    expect(result.categories).toEqual([]);
+  });
+
+  it("rejects when the request fails", async () => {
+    const error = new Error("Request failed with status code 404");
+
+    mockedHttp.get.mockRejectedValue(error);
+
+    await expect(useCase.execute("1")).rejects.toThrow(error);
+  });
+
+  it("aborts in-flight requests when cancel is called", async () => {
+    let capturedSignal: AbortSignal | undefined;
+
+    mockedHttp.get.mockImplementation((_url, config) => {
+      capturedSignal = config?.signal as AbortSignal;
+
+      return new Promise(() => {});
     });
 
-    const result = await usecase.execute("1");
+    useCase.execute("1");
+    useCase.cancel();
 
-    expect(result).toEqual(scammerSummary);
-  });
-});
-
-describe("FindScammerSummaryByIdUsecase.execute.error", () => {
-  it("should return an error if route does not exist", async () => {
-    const usecase = new FindScammerSummaryByIdUsecase();
-    const error = new Error("Request failed with status code 404");
-
-    vi.spyOn(Http, "get").mockRejectedValueOnce(error);
-
-    await expect(usecase.execute("1")).rejects.toThrow(error);
-  });
-
-  it("should return an error if request is cancelled", async () => {
-    const usecase = new FindScammerSummaryByIdUsecase();
-    const error = new Error("Request cancelled");
-
-    vi.spyOn(Http, "get").mockRejectedValueOnce(error);
-
-    await expect(usecase.execute("1")).rejects.toThrow(error);
-  });
-
-  it("should return a 404 error when scammer is not found", async () => {
-    const usecase = new FindScammerSummaryByIdUsecase();
-    const error = new Error("Request failed with status code 404");
-
-    vi.spyOn(Http, "get").mockRejectedValueOnce(error);
-
-    await expect(usecase.execute("1")).rejects.toThrow(error);
-  });
-});
-
-describe("FindScammerSummaryByIdUsecase.cancel", () => {
-  it("should cancel the request", () => {
-    const usecase = new FindScammerSummaryByIdUsecase();
-
-    vi.spyOn(usecase, "cancel");
-
-    usecase.cancel();
-
-    expect(usecase.cancel).toHaveBeenCalled();
+    expect(capturedSignal?.aborted).toBe(true);
   });
 });
