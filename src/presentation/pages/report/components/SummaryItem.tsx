@@ -19,7 +19,7 @@ function SummaryItem({
         {iconSrc && (
           <img src={iconSrc} alt="" aria-hidden className="h-4 w-4 shrink-0" />
         )}
-        <p className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
+        <p className="text-xs font-bold uppercase tracking-wide text-gray-400">
           {label}
         </p>
       </div>
@@ -33,8 +33,8 @@ function SummaryItem({
           />
         )}
         <p
-          className={`truncate text-sm font-semibold ${
-            tone === "danger" ? "text-red-600" : "text-gray-700"
+          className={`truncate text-base font-semibold ${
+            tone === "danger" ? "text-red-600" : "text-gray-900"
           }`}
         >
           {value}

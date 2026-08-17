@@ -1,27 +1,27 @@
 import ApiCallerInterface from "@/core/base/api-caller.interface";
-import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
-import FindScammerSummaryByIdResponse from "@/core/domain/scammer/models/find-scammer-summary-by-id.response";
+import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
+import FindOrganizationSummaryByIdResponse from "@/core/domain/organization/models/find-organization-summary-by-id.response";
 import Http from "@/infrastructure/http/http";
 import RequestCanceler from "@/infrastructure/http/request-canceler";
 import { API_ROUTES } from "@/common/environment";
 
-class FindScammerSummaryByIdUsecase implements ApiCallerInterface {
+class FindOrganizationSummaryByIdUsecase implements ApiCallerInterface {
   private requestCanceller = new RequestCanceler();
 
-  public async execute(id: string): Promise<ScammerSummaryEntity> {
+  public async execute(id: string): Promise<OrganizationSummaryEntity> {
     const signal = this.requestCanceller.prepareSignal();
-    const url = API_ROUTES.public.scammers.findById.replace(
+    const url = API_ROUTES.public.organizations.findById.replace(
       "{id}",
       encodeURIComponent(id),
     );
 
-    const { data } = await Http.get<FindScammerSummaryByIdResponse>(url, {
+    const { data } = await Http.get<FindOrganizationSummaryByIdResponse>(url, {
       signal,
     });
 
     const createdAt = new Date(data.created_at);
 
-    return new ScammerSummaryEntity(
+    return new OrganizationSummaryEntity(
       String(data.id),
       data.name,
       data.country,
@@ -39,4 +39,4 @@ class FindScammerSummaryByIdUsecase implements ApiCallerInterface {
   }
 }
 
-export default FindScammerSummaryByIdUsecase;
+export default FindOrganizationSummaryByIdUsecase;

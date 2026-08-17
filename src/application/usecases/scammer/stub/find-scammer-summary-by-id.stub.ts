@@ -2,7 +2,7 @@ import ApiCallerInterface from "@/core/base/api-caller.interface";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
 
 class FindScammerSummaryByIdStubUsecase implements ApiCallerInterface {
-    public async execute(): Promise<ScammerSummaryEntity> {
+    public async execute(_id: string): Promise<ScammerSummaryEntity> {
         return new ScammerSummaryEntity(
             "1",
             "Rugna Ignatova",

@@ -1,4 +1,4 @@
-type FindScammerSummaryByIdResponse = {
+type FindOrganizationSummaryByIdResponse = {
   id: number | string;
   name: string;
   country: string;
@@ -9,4 +9,4 @@ type FindScammerSummaryByIdResponse = {
   created_at: string;
 };
 
-export default FindScammerSummaryByIdResponse;
+export default FindOrganizationSummaryByIdResponse;

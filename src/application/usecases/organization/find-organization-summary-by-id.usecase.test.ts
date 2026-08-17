@@ -1,4 +1,4 @@
-import FindScammerSummaryByIdUsecase from "./find-scammer-summary-by-id.usecase";
+import FindOrganizationSummaryByIdUsecase from "./find-organization-summary-by-id.usecase";
 import Http from "@/infrastructure/http/http";
 import { API_ROUTES } from "@/common/environment";
 
@@ -10,77 +10,77 @@ vi.mock("@/infrastructure/http/http", () => ({
 
 const mockedHttp = vi.mocked(Http);
 
-describe("FindScammerSummaryByIdUsecase", () => {
-  let useCase: FindScammerSummaryByIdUsecase;
+describe("FindOrganizationSummaryByIdUsecase", () => {
+  let useCase: FindOrganizationSummaryByIdUsecase;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    useCase = new FindScammerSummaryByIdUsecase();
+    useCase = new FindOrganizationSummaryByIdUsecase();
   });
 
-  it("maps a successful API response to a scammer summary entity", async () => {
-    mockedHttp.get.mockResolvedValue({
-      status: 200,
-      data: {
-        id: 20,
-        name: "Joseph Nacchio",
-        country: "DM",
-        reports: 3,
-        avatar_path: null,
-        products: ["Stocks", "Venture", "Recovery"],
-        status: false,
-        created_at: "2026-08-10",
-      },
-    } as never);
-
-    const result = await useCase.execute("20");
-
-    expect(mockedHttp.get).toHaveBeenCalledWith(
-      API_ROUTES.public.scammers.findById.replace("{id}", "20"),
-      expect.objectContaining({
-        signal: expect.any(AbortSignal),
-      }),
-    );
-    expect(result.id).toBe("20");
-    expect(result.name).toBe("Joseph Nacchio");
-    expect(result.country).toBe("DM");
-    expect(result.reports).toBe(3);
-    expect(result.profilePicture).toBeNull();
-    expect(result.categories).toEqual(["Stocks", "Venture", "Recovery"]);
-    expect(result.isActive).toBe(false);
-    expect(result.createdAt).toEqual(new Date("2026-08-10"));
-    expect(result.updatedAt).toEqual(new Date("2026-08-10"));
-  });
-
-  it("maps avatar_path and an active status", async () => {
+  it("maps a successful API response to an organization summary entity", async () => {
     mockedHttp.get.mockResolvedValue({
       status: 200,
       data: {
         id: 1,
-        name: "John Doe",
-        country: "USA",
-        reports: 10,
-        avatar_path: "https://example.com/profile.jpg",
-        products: ["Investment Scam"],
+        name: "Only Traders",
+        country: "Côte d'Ivoire",
+        reports: 3,
+        avatar_path: null,
+        products: ["Stocks", "Venture", "Recovery"],
         status: true,
-        created_at: "2026-01-01",
+        created_at: "2026-08-10",
       },
     } as never);
 
     const result = await useCase.execute("1");
 
-    expect(result.profilePicture).toBe("https://example.com/profile.jpg");
+    expect(mockedHttp.get).toHaveBeenCalledWith(
+      API_ROUTES.public.organizations.findById.replace("{id}", "1"),
+      expect.objectContaining({
+        signal: expect.any(AbortSignal),
+      }),
+    );
+    expect(result.id).toBe("1");
+    expect(result.name).toBe("Only Traders");
+    expect(result.country).toBe("Côte d'Ivoire");
+    expect(result.reports).toBe(3);
+    expect(result.profilePicture).toBeNull();
+    expect(result.categories).toEqual(["Stocks", "Venture", "Recovery"]);
     expect(result.isActive).toBe(true);
-    expect(result.categories).toEqual(["Investment Scam"]);
+    expect(result.createdAt).toEqual(new Date("2026-08-10"));
+    expect(result.updatedAt).toEqual(new Date("2026-08-10"));
+  });
+
+  it("maps avatar_path and an inactive status", async () => {
+    mockedHttp.get.mockResolvedValue({
+      status: 200,
+      data: {
+        id: 2,
+        name: "Ecohuertas",
+        country: "Mexico",
+        reports: 10,
+        avatar_path: "https://example.com/org.jpg",
+        products: ["Criptomonedas"],
+        status: false,
+        created_at: "2026-01-01",
+      },
+    } as never);
+
+    const result = await useCase.execute("2");
+
+    expect(result.profilePicture).toBe("https://example.com/org.jpg");
+    expect(result.isActive).toBe(false);
+    expect(result.categories).toEqual(["Criptomonedas"]);
   });
 
   it("defaults missing products to an empty list", async () => {
     mockedHttp.get.mockResolvedValue({
       status: 200,
       data: {
-        id: 2,
-        name: "Jane Doe",
-        country: "MX",
+        id: 3,
+        name: "Acme",
+        country: "USA",
         reports: 1,
         avatar_path: null,
         status: false,
@@ -88,7 +88,7 @@ describe("FindScammerSummaryByIdUsecase", () => {
       },
     } as never);
 
-    const result = await useCase.execute("2");
+    const result = await useCase.execute("3");
 
     expect(result.categories).toEqual([]);
   });

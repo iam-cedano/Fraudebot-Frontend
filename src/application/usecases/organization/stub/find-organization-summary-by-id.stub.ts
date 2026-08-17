@@ -2,7 +2,7 @@ import ApiCallerInterface from "@/core/base/api-caller.interface";
 import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
 
 class FindOrganizationSummaryByIdStubUsecase implements ApiCallerInterface {
-    public async execute(): Promise<OrganizationSummaryEntity> {
+    public async execute(_id: string): Promise<OrganizationSummaryEntity> {
         return new OrganizationSummaryEntity(
             "1",
             "Ecohuertas",
