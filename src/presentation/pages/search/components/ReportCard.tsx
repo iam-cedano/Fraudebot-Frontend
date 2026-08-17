@@ -15,7 +15,7 @@ function ReportCard({
   const isActive = status === "active";
   const hasOrganizations = organizations && organizations.length > 0;
   const hasProducts = products.length > 0;
-  const reportPath = isScammer ? `/scammer/${id}` : `/organization/${id}`;
+  const reportPath = isScammer ? `/scammers/${id}` : `/organizations/${id}`;
 
   return (
     <Link

@@ -15,8 +15,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/organization/:id" element={<Report type="organization" />} />
-          <Route path="/scammer/:id" element={<Report type="scammer" />} />
+          <Route path="/organizations/:id" element={<Report type="organization" />} />
+          <Route path="/scammers/:id" element={<Report type="scammer" />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

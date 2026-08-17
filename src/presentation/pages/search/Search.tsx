@@ -71,7 +71,8 @@ function Search() {
       setIsSearching(true);
 
       try {
-        const result = await searchReportUseCase.execute(nextQuery, nextPage);
+        const apiQuery = Formatter.toSearchQuery(nextQuery);
+        const result = await searchReportUseCase.execute(apiQuery, nextPage);
 
         setReports(result.data);
         setCurrentPage(result.page);

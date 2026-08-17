@@ -72,7 +72,7 @@ function Report({ type }: { type: "scammer" | "organization" }) {
     }
 
     findOrganizationSummaryByIdUseCase
-      .execute()
+      .execute(id)
       .then((organization) => {
         setParty(organization);
       })
@@ -102,14 +102,10 @@ function Report({ type }: { type: "scammer" | "organization" }) {
           reports={party.reports}
           location={party.country}
           categories={party.categories}
-          profilePicture={
-            type === "scammer"
-              ? party.profilePicture ?? defaultAvatar
-              : party.profilePicture
-          }
+          profilePicture={party.profilePicture || defaultAvatar}
         />
       ) : (
-        <ReportHeroSkeleton type={type} />
+        <ReportHeroSkeleton />
       )}
 
       <main className="min-h-130 bg-white">

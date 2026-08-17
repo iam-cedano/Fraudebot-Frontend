@@ -11,6 +11,9 @@ const API_ROUTES: Record<string, Record<string, Record<string, string>>> = {
         scammers: {
             findById: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}`,
         },
+        organizations: {
+            findById: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}`,
+        },
     },
 } as const;
 

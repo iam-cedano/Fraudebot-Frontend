@@ -115,6 +115,20 @@
       "problemMatcher": []
     },
     {
+      "label": "[Frontend] Execute Command",
+      "type": "shell",
+      "command": "docker compose exec -T -w /app/ frontend sh -c \"${input:frontendCommand}\"",
+      "options": {
+        "cwd": "${workspaceFolder}/../docker/"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "focus": true
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "[Frontend] [Testing] Create Coverage Report",
       "type": "shell",
       "command": "docker compose exec -T -w /app/ frontend npm run test:coverage",
@@ -155,6 +169,12 @@
       "id": "artisanCommand",
       "type": "promptString",
       "description": "Artisan command (e.g. php artisan db:seed)",
+      "default": ""
+    },
+    {
+      "id": "frontendCommand",
+      "type": "promptString",
+      "description": "Command to run in the frontend container (e.g. npm run lint, ls -la)",
       "default": ""
     },
     {

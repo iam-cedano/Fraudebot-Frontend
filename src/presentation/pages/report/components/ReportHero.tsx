@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import defaultAvatar from "@presentation/assets/default-avatar.png";
 import heroRedBackground from "@presentation/assets/hero-red.webp";
-import placeholderImage from "@presentation/assets/placeholder.webp";
 import ImageLightbox from "@presentation/pages/report/components/ImageLightbox";
 import SummaryItem from "@presentation/pages/report/components/SummaryItem";
 import reportIcons from "@presentation/pages/report/components/icons";
@@ -13,12 +12,8 @@ function SkeletonBar({ className }: { className: string }) {
   return <div className={`animate-pulse rounded bg-gray-200 ${className}`} />;
 }
 
-export function ReportHeroSkeleton({
-  type,
-}: {
-  type: "scammer" | "organization";
-}) {
-  const imageSrc = type === "scammer" ? defaultAvatar : placeholderImage;
+export function ReportHeroSkeleton() {
+  const imageSrc = defaultAvatar;
 
   return (
     <section
@@ -95,7 +90,7 @@ function ReportHero({
   profilePicture,
 }: ReportHeroProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const imageSrc = profilePicture ?? placeholderImage;
+  const imageSrc = profilePicture || defaultAvatar;
   const closePreview = useCallback(() => {
     setIsPreviewOpen(false);
   }, []);

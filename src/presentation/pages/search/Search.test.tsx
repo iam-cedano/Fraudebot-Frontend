@@ -83,6 +83,24 @@ describe("Search page", () => {
     expect(execute).toHaveBeenCalledWith("test", 1);
   });
 
+  it("removes formatting spaces before searching a numeric query", async () => {
+    const execute = vi.fn().mockResolvedValue(createMockSearchResult());
+
+    renderWithProviders(<Search />, {
+      route: "/search?q=4111+1111+1111+1111",
+      overrides: {
+        searchReportUseCase: {
+          execute,
+          cancel: vi.fn(),
+        },
+      },
+    });
+
+    await waitFor(() => {
+      expect(execute).toHaveBeenCalledWith("4111111111111111", 1);
+    });
+  });
+
   it("uses cached results without calling the use case", async () => {
     const execute = vi.fn();
     const cachedResult = createMockSearchResult();
