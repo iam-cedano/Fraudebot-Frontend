@@ -6,13 +6,14 @@ const API_ROUTES: Record<string, Record<string, Record<string, string>>> = {
     public: {
         reports: {
             search: `${ENVIRONMENT.API_BASE_URL}/public/reports/`,
-            monthly: `${ENVIRONMENT.API_BASE_URL}/public/reports/{type}/{id}/monthly`,
         },
         scammers: {
             findById: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}`,
+            calendar: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}/calendar/{year}`,
         },
         organizations: {
             findById: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}`,
+            calendar: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}/calendar/{year}`,
         },
     },
 } as const;

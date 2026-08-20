@@ -10,6 +10,21 @@ vi.mock("@/infrastructure/http/http", () => ({
 
 const mockedHttp = vi.mocked(Http);
 
+const calendarResponse = {
+  "1": 0,
+  "2": 0,
+  "3": 0,
+  "4": 0,
+  "5": 0,
+  "6": 0,
+  "7": 0,
+  "8": 5,
+  "9": 0,
+  "10": 0,
+  "11": 0,
+  "12": 0,
+};
+
 describe("FindMonthlyReportCountsUsecase", () => {
   let useCase: FindMonthlyReportCountsUsecase;
 
@@ -18,27 +33,39 @@ describe("FindMonthlyReportCountsUsecase", () => {
     useCase = new FindMonthlyReportCountsUsecase();
   });
 
-  it("maps a successful API response into twelve monthly counts", async () => {
+  it("maps a scammer calendar response into twelve monthly counts", async () => {
     mockedHttp.get.mockResolvedValue({
       status: 200,
-      data: {
-        year: 2026,
-        months: [
-          { month: 1, count: 4 },
-          { month: 5, count: 12 },
-          { month: 12, count: 7 },
-        ],
-      },
+      data: calendarResponse,
     } as never);
 
     const result = await useCase.execute("20", "scammer", 2026);
 
     expect(mockedHttp.get).toHaveBeenCalledWith(
-      API_ROUTES.public.reports.monthly
-        .replace("{type}", "scammer")
-        .replace("{id}", "20"),
+      API_ROUTES.public.scammers.calendar
+        .replace("{id}", "20")
+        .replace("{year}", "2026"),
       expect.objectContaining({
-        params: { year: 2026 },
+        signal: expect.any(AbortSignal),
+      }),
+    );
+    expect(result.year).toBe(2026);
+    expect(result.counts).toEqual([0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0]);
+  });
+
+  it("maps an organization calendar response into twelve monthly counts", async () => {
+    mockedHttp.get.mockResolvedValue({
+      status: 200,
+      data: { "1": 4, "5": 12, "12": 7 },
+    } as never);
+
+    const result = await useCase.execute("1", "organization", 2026);
+
+    expect(mockedHttp.get).toHaveBeenCalledWith(
+      API_ROUTES.public.organizations.calendar
+        .replace("{id}", "1")
+        .replace("{year}", "2026"),
+      expect.objectContaining({
         signal: expect.any(AbortSignal),
       }),
     );

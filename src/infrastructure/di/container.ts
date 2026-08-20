@@ -20,7 +20,7 @@ export const dependencies = {
   findScammerSummaryByIdUseCase: createFindScammerSummaryByIdUseCase,
   findOrganizationSummaryByIdUseCase: createFindOrganizationSummaryByIdUseCase,
   searchReportStubUseCase: createSearchReportStubUseCase,
-  findMonthlyReportCountsUseCase: createFindMonthlyReportCountsStubUseCase,
+  findMonthlyReportCountsUseCase: createFindMonthlyReportCountsUseCase,
 };
 
 export type Dependencies = {

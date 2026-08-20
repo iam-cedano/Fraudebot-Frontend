@@ -7,15 +7,13 @@ import { API_ROUTES } from "@/common/environment";
 
 function toMonthlyCounts(
   year: number,
-  months: FindMonthlyReportCountsResponse["months"],
+  data: FindMonthlyReportCountsResponse,
 ): MonthlyReportCountsEntity {
-  const counts = Array.from({ length: 12 }, () => 0);
+  const counts = Array.from({ length: 12 }, (_, index) => {
+    const count = data[String(index + 1)];
 
-  for (const item of months) {
-    if (item.month >= 1 && item.month <= 12) {
-      counts[item.month - 1] = item.count;
-    }
-  }
+    return typeof count === "number" && Number.isFinite(count) ? count : 0;
+  });
 
   return new MonthlyReportCountsEntity(year, counts);
 }
@@ -29,16 +27,19 @@ class FindMonthlyReportCountsUsecase implements ApiCallerInterface {
     year = new Date().getFullYear(),
   ): Promise<MonthlyReportCountsEntity> {
     const signal = this.requestCanceller.prepareSignal();
-    const url = API_ROUTES.public.reports.monthly
-      .replace("{type}", encodeURIComponent(type))
-      .replace("{id}", encodeURIComponent(id));
+    const route =
+      type === "scammer"
+        ? API_ROUTES.public.scammers.calendar
+        : API_ROUTES.public.organizations.calendar;
+    const url = route
+      .replace("{id}", encodeURIComponent(id))
+      .replace("{year}", encodeURIComponent(String(year)));
 
     const { data } = await Http.get<FindMonthlyReportCountsResponse>(url, {
       signal,
-      params: { year },
     });
 
-    return toMonthlyCounts(data.year, data.months);
+    return toMonthlyCounts(year, data);
   }
 
   public cancel(): void {
