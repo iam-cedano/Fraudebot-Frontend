@@ -15,6 +15,10 @@ class MonthlyReportCountsEntity {
   public get counts(): number[] {
     return [...this._counts];
   }
+
+  public get hasReports(): boolean {
+    return this._counts.some((count) => count > 0);
+  }
 }
 
 export default MonthlyReportCountsEntity;

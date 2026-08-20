@@ -17,4 +17,12 @@ describe("MonthlyReportCountsEntity", () => {
       "Monthly report counts must include 12 months",
     );
   });
+
+  it("should report whether any month has reports", () => {
+    const emptyCounts = new MonthlyReportCountsEntity(2026, Array(12).fill(0));
+    const monthlyCounts = new MonthlyReportCountsEntity(2026, countsStub);
+
+    expect(emptyCounts.hasReports).toBe(false);
+    expect(monthlyCounts.hasReports).toBe(true);
+  });
 });

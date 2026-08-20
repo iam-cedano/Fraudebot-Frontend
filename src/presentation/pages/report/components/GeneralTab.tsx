@@ -63,6 +63,12 @@ function PanelHeader({
   );
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+const CALENDAR_YEARS = Array.from(
+  { length: CURRENT_YEAR - 2019 },
+  (_, index) => CURRENT_YEAR - index,
+);
+
 const panelClassName =
   "group grid h-full w-full cursor-pointer text-left transition-colors hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gray-300 lg:row-span-4 lg:grid-rows-subgrid";
 
@@ -84,19 +90,21 @@ function GeneralTab({
 }: GeneralTabProps) {
   const today = formatLongDate(new Date());
   const { findMonthlyReportCountsUseCase } = useDependencies();
+  const [selectedYear, setSelectedYear] = useState(CURRENT_YEAR);
   const [monthlyCounts, setMonthlyCounts] =
     useState<MonthlyReportCountsEntity | null>(null);
 
   useEffect(() => {
+    setMonthlyCounts(null);
     findMonthlyReportCountsUseCase
-      .execute(partyId, partyType)
+      .execute(partyId, partyType, selectedYear)
       .then(setMonthlyCounts)
       .catch(() => undefined);
 
     return () => {
       findMonthlyReportCountsUseCase.cancel();
     };
-  }, [findMonthlyReportCountsUseCase, partyId, partyType]);
+  }, [findMonthlyReportCountsUseCase, partyId, partyType, selectedYear]);
 
   return (
     <div className="divide-y divide-gray-200 border border-gray-200 bg-white">
@@ -172,20 +180,42 @@ function GeneralTab({
       </div>
 
       <section className="p-6 sm:p-8">
-        <PanelHeader title="Diagrama:" />
+        <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+          <h2 className="text-xl font-extrabold leading-none text-gray-900">
+            Diagrama de Reportes por Año
+          </h2>
+          <select
+            aria-label="Año"
+            value={selectedYear}
+            onChange={(event) => setSelectedYear(Number(event.target.value))}
+            className="rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+          >
+            {CALENDAR_YEARS.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="mt-4">
-          {monthlyCounts ? (
-            <MonthlyReportsChart monthlyCounts={monthlyCounts} />
-          ) : (
+          {!monthlyCounts ? (
             <div className="flex h-56 items-center text-sm text-gray-400">
               Cargando diagrama...
             </div>
+          ) : monthlyCounts.hasReports ? (
+            <>
+              <MonthlyReportsChart monthlyCounts={monthlyCounts} />
+              <p className="mt-2 text-sm text-gray-400">
+                Diagramas de barras de cantidad de reportes por mes del año{" "}
+                {selectedYear}
+              </p>
+            </>
+          ) : (
+            <p className="flex h-56 items-center justify-center text-center text-2xl font-bold text-gray-900">
+              No hubo reportes en este año
+            </p>
           )}
         </div>
-        <p className="mt-2 text-sm text-gray-400">
-          Diagramas de barras de cantidad de reportes por mes del año{" "}
-          {monthlyCounts?.year ?? new Date().getFullYear()}
-        </p>
       </section>
     </div>
   );
