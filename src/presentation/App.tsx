@@ -6,17 +6,18 @@ import Search from "@presentation/pages/search/Search";
 import NotFound from "@presentation/pages/404/NotFound";
 import Report from "@presentation/pages/report/Report";
 import { DependencyProvider } from "@presentation/providers/DependencyProvider";
+import { APP_ROUTES } from "@/common/app-routes";
 
 function App() {
   return (
     <DependencyProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/organizations/:id" element={<Report type="organization" />} />
-          <Route path="/scammers/:id" element={<Report type="scammer" />} />
+          <Route path={APP_ROUTES.home} element={<Home />} />
+          <Route path={APP_ROUTES.contact} element={<Contact />} />
+          <Route path={APP_ROUTES.search} element={<Search />} />
+          <Route path={APP_ROUTES.organization} element={<Report type="organization" />} />
+          <Route path={APP_ROUTES.scammer} element={<Report type="scammer" />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

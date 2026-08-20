@@ -1,3 +1,4 @@
+import { APP_ROUTES } from "@/common/app-routes";
 import Formatter from "@/presentation/shared/utils/formatter";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +13,7 @@ function LookupForm() {
 
     const searchValue = searchRef.current?.value;
     if (searchValue) {
-      navigate(`/search?${Formatter.buildSearchQueryString(searchValue)}`);
+      navigate(`${APP_ROUTES.search}?${Formatter.buildSearchQueryString(searchValue)}`);
     }
   }
 

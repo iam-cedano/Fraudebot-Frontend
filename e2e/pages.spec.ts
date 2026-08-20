@@ -10,10 +10,10 @@ test.describe("Pages", () => {
   });
 
   test("loads the search page", async ({ page }) => {
-    await page.goto("/search");
+    await page.goto("/busqueda");
 
     await expect(page).toHaveTitle("Fraudebot - Búsqueda");
-    await expect(page).toHaveURL("/search");
+    await expect(page).toHaveURL("/busqueda");
   });
 
   test("loads the 404 page", async ({ page }) => {

@@ -1,21 +1,22 @@
 import FraudeBotLogo from '@presentation/assets/fraudebot-logo.webp'
 import { Link } from 'react-router-dom';
+import { APP_ROUTES } from '@/common/app-routes';
 
 function Header() {
     return (
         <header className="w-full max-w-6xl h-20 bg-white mb-16 rounded shadow-sm flex items-center justify-between px-8 font-[Nunito] m-auto absolute left-0 right-0 top-0">
             <div className="flex items-center gap-2">
-                <Link to="/">
+                <Link to={APP_ROUTES.home}>
                     <img src={FraudeBotLogo} alt="Fraudebot Logo" className="h-14 cursor-pointer" />
                 </Link>
             </div>
 
             <nav className="flex items-center gap-12">
-                <Link to="/contact" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Reportar</Link>
+                <Link to={APP_ROUTES.contact} className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Reportar</Link>
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Blog</a>
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Nuestra misión</a>
                 <a href="#" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">Herramientas</a>
-                <Link to="/search" className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">
+                <Link to={APP_ROUTES.search} className="font-semibold text-gray-700 hover:text-orange-600 transition-colors">
                     Busqueda
                 </Link>
             </nav>

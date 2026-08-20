@@ -6,6 +6,7 @@ import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.en
 import Search from "@/presentation/pages/search/Search";
 import { renderWithProviders } from "@/test/test-utils";
 import Formatter from "@/presentation/shared/utils/formatter";
+import { APP_ROUTES } from "@/common/app-routes";
 
 function createMockSearchResult(page = 1, total = 25) {
   return {
@@ -44,8 +45,8 @@ describe("Home LookupForm", () => {
     const user = userEvent.setup();
     const router = createMemoryRouter(
       [
-        { path: "/", element: <LookupForm /> },
-        { path: "/search", element: <div>Search Page</div> },
+        { path: APP_ROUTES.home, element: <LookupForm /> },
+        { path: APP_ROUTES.search, element: <div>Search Page</div> },
       ],
       { initialEntries: ["/"] },
     );
@@ -57,7 +58,7 @@ describe("Home LookupForm", () => {
     await user.type(input, "john doe");
     await user.click(screen.getByRole("button", { name: "Buscar" }));
 
-    expect(router.state.location.pathname).toBe("/search");
+    expect(router.state.location.pathname).toBe(APP_ROUTES.search);
     expect(router.state.location.search).toBe("?q=john+doe");
   });
 });
@@ -67,7 +68,7 @@ describe("Search page", () => {
     const execute = vi.fn().mockResolvedValue(createMockSearchResult());
 
     renderWithProviders(<Search />, {
-      route: "/search?q=test",
+      route: `${APP_ROUTES.search}?q=test`,
       overrides: {
         searchReportUseCase: {
           execute,
@@ -87,7 +88,7 @@ describe("Search page", () => {
     const execute = vi.fn().mockResolvedValue(createMockSearchResult());
 
     renderWithProviders(<Search />, {
-      route: "/search?q=4111+1111+1111+1111",
+      route: `${APP_ROUTES.search}?q=4111+1111+1111+1111`,
       overrides: {
         searchReportUseCase: {
           execute,
@@ -128,7 +129,7 @@ describe("Search page", () => {
     );
 
     renderWithProviders(<Search />, {
-      route: "/search?q=cached",
+      route: `${APP_ROUTES.search}?q=cached`,
       overrides: {
         searchReportUseCase: {
           execute,
@@ -153,7 +154,7 @@ describe("Search page", () => {
     const user = userEvent.setup();
 
     renderWithProviders(<Search />, {
-      route: "/search?q=test",
+      route: `${APP_ROUTES.search}?q=test`,
       overrides: {
         searchReportUseCase: {
           execute,

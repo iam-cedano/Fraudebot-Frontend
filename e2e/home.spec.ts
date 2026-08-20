@@ -10,7 +10,7 @@ test.describe("Home.Search", () => {
     await page.getByRole('textbox', { name: /buscar por/i }).fill('123 456 7890');
     await page.getByRole('button', { name: /buscar/i }).click();
 
-    await expect(page).toHaveURL('/search?q=1234567890');
+    await expect(page).toHaveURL('/busqueda?q=1234567890');
   });
 
   test("searches for a report(name) and directs to the search page", async ({ page }) => {
@@ -18,7 +18,7 @@ test.describe("Home.Search", () => {
     await page.getByRole('textbox', { name: /buscar por/i }).fill('Jhon Doe [TEST]');
     await page.getByRole('button', { name: /buscar/i }).click();
 
-    await expect(page).toHaveURL('/search?q=Jhon+Doe+%5BTEST%5D');
+    await expect(page).toHaveURL('/busqueda?q=Jhon+Doe+%5BTEST%5D');
   });
 });
 
@@ -29,16 +29,16 @@ test.describe("Home.Header", () => {
 
   test("navigates to the search page", async ({ page }) => {
     await page.getByRole("link", { name: /b[uú]squeda/i }).click();
-    await expect(page).toHaveURL("/search");
+    await expect(page).toHaveURL("/busqueda");
   });
 
   test("navigates to the contact page", async ({ page }) => {
     await page.getByRole("link", { name: /reportar/i }).click();
-    await expect(page).toHaveURL("/contact");
+    await expect(page).toHaveURL("/contacto");
   });
 
   test("navigates to the home page via logo", async ({ page }) => {
-    await page.goto("/search");
+    await page.goto("/busqueda");
     await page.getByRole("link", { name: /fraudebot logo/i }).click();
     await expect(page).toHaveURL("/");
   });

@@ -1,3 +1,4 @@
+import { organizationPath, scammerPath } from "@/common/app-routes";
 import { ReportCardProps } from "@/presentation/pages/search/components/types";
 import { Link } from "react-router-dom";
 
@@ -15,7 +16,7 @@ function ReportCard({
   const isActive = status === "active";
   const hasOrganizations = organizations && organizations.length > 0;
   const hasProducts = products.length > 0;
-  const reportPath = isScammer ? `/scammers/${id}` : `/organizations/${id}`;
+  const reportPath = isScammer ? scammerPath(id) : organizationPath(id);
 
   return (
     <Link
