@@ -27,6 +27,9 @@ const nodeStyle = {
   width: "auto",
 } as const;
 
+const NODE_WIDTH = 208;
+const NODE_HEIGHT = 88;
+
 const RELATED_SCAMMER_A = "2001";
 const RELATED_SCAMMER_B = "2002";
 const RELATED_ORG_A = "3001";
@@ -43,7 +46,12 @@ function partyNode(
     position,
     data,
     className: "nopan",
-    style: nodeStyle,
+    width: NODE_WIDTH,
+    height: NODE_HEIGHT,
+    style: {
+      ...nodeStyle,
+      ...(data.isCurrent ? {} : { pointerEvents: "auto" }),
+    },
   };
 }
 
@@ -58,6 +66,8 @@ function satelliteNode(
     position,
     data,
     className: "nopan",
+    width: NODE_WIDTH,
+    height: NODE_HEIGHT,
     style: nodeStyle,
   };
 }

@@ -105,9 +105,14 @@ function MapPartyNode({ data }: NodeProps<MapPartyNode>) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Abrir ${data.name} en una pestaña nueva`}
-          className="nodrag nopan nowheel block w-52 cursor-pointer rounded-md border border-gray-200 bg-white px-3 py-2.5 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50/50 hover:shadow-md"
+          className="nodrag nopan nowheel pointer-events-auto block w-52 cursor-pointer rounded-md border border-gray-200 bg-white px-3 py-2.5 shadow-sm transition-all hover:border-gray-300 hover:bg-gray-50/50 hover:shadow-md"
           onPointerDown={(event) => {
             event.stopPropagation();
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            window.open(href, "_blank", "noopener,noreferrer");
           }}
         >
           {content}
