@@ -11,7 +11,6 @@ import ReportHero, {
 import ReportsTab from "@presentation/pages/report/components/ReportsTab";
 import ReportTabNavigation from "@presentation/pages/report/components/ReportTabNavigation";
 import { ReportTab } from "@presentation/pages/report/components/types";
-import mockProfile from "@presentation/pages/report/mockProfile";
 import defaultAvatar from "@presentation/assets/default-avatar.png";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
@@ -129,7 +128,7 @@ function Report({ type }: { type: "scammer" | "organization" }) {
                 <ReportsTab reportCount={party.reports} />
               )}
               {activeTab === "Contactos" && (
-                <ContactsTab contacts={mockProfile.contacts} />
+                <ContactsTab partyId={party.id} partyType={type} />
               )}
               {(activeTab === "Mapa" || activeTab === "Soporte") && (
                 <PlaceholderTab tab={activeTab} />

@@ -10,10 +10,12 @@ const API_ROUTES: Record<string, Record<string, Record<string, string>>> = {
         scammers: {
             findById: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}`,
             calendar: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}/calendar/{year}`,
+            contacts: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}/contacts`,
         },
         organizations: {
             findById: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}`,
             calendar: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}/calendar/{year}`,
+            contacts: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}/contacts`,
         },
     },
 } as const;

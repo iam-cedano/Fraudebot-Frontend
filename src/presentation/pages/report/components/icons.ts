@@ -6,7 +6,6 @@ import locationIcon from "@presentation/assets/mark.webp";
 import categoriesIcon from "@presentation/assets/categories.webp";
 import shareArrowIcon from "@presentation/assets/arrow-down.webp";
 import homeIcon from "@presentation/assets/home.svg";
-import reportesIcon from "@presentation/assets/reportes.webp";
 import contactosIcon from "@presentation/assets/user.svg";
 import mapaIcon from "@presentation/assets/map.svg";
 import soporteIcon from "@presentation/assets/help.svg";
@@ -22,7 +21,7 @@ const reportIcons = {
   categories: categoriesIcon,
   shareArrow: shareArrowIcon,
   home: homeIcon,
-  reportes: reportesIcon,
+  reportes: reportAlertIcon,
   contactos: contactosIcon,
   mapa: mapaIcon,
   soporte: soporteIcon,
