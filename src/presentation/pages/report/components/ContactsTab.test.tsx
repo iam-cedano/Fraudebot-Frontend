@@ -38,14 +38,14 @@ function createPage(page: number, platform?: string) {
 }
 
 describe("ContactsTab", () => {
-  it("renders ten contacts from the stub use case", async () => {
+  it("renders ten contacts from the contacts use case", async () => {
     const execute = vi.fn().mockResolvedValue(createPage(1));
 
     renderWithProviders(
       <ContactsTab partyId="20" partyType="scammer" />,
       {
         overrides: {
-          findContactsByPartyStubUseCase: {
+          findContactsByPartyUseCase: {
             execute,
             cancel: vi.fn(),
           },
@@ -85,7 +85,7 @@ describe("ContactsTab", () => {
       <ContactsTab partyId="20" partyType="organization" />,
       {
         overrides: {
-          findContactsByPartyStubUseCase: {
+          findContactsByPartyUseCase: {
             execute,
             cancel: vi.fn(),
           },
@@ -113,7 +113,7 @@ describe("ContactsTab", () => {
 
     renderWithProviders(<ContactsTab partyId="7" partyType="scammer" />, {
       overrides: {
-        findContactsByPartyStubUseCase: {
+        findContactsByPartyUseCase: {
           execute,
           cancel: vi.fn(),
         },

@@ -75,12 +75,51 @@ describe("FindContactsByPartyUsecase", () => {
     expect(mockedHttp.get).toHaveBeenCalledWith(
       API_ROUTES.public.organizations.contacts.replace("{id}", "7"),
       expect.objectContaining({
-        params: { p: 2, platform: "Instagram" },
+        params: { p: 2, platform: "instagram" },
         signal: expect.any(AbortSignal),
       }),
     );
     expect(result.data[0].platform).toBe("Instagram");
     expect(result.page).toBe(2);
+  });
+
+  it("sends webpage filters as the lowercase url query value", async () => {
+    mockedHttp.get.mockResolvedValue({
+      status: 200,
+      data: {
+        data: [{ ...apiContact, platform: "Url" }],
+        total: 1,
+        page: 1,
+        count: 10,
+      },
+    } as never);
+
+    await useCase.execute("20", "scammer", 1, "Webpage");
+
+    expect(mockedHttp.get).toHaveBeenCalledWith(
+      API_ROUTES.public.scammers.contacts.replace("{id}", "20"),
+      expect.objectContaining({
+        params: { p: 1, platform: "url" },
+      }),
+    );
+  });
+
+  it("returns empty results when the party is not found", async () => {
+    mockedHttp.get.mockRejectedValue({
+      response: {
+        status: 404,
+        data: { message: "Contacts not found" },
+      },
+    });
+
+    const result = await useCase.execute("999", "scammer", 1);
+
+    expect(result).toEqual({
+      data: [],
+      total: 0,
+      page: 1,
+      count: 0,
+    });
   });
 
   it("returns empty results for non-200 responses", async () => {
@@ -97,6 +136,14 @@ describe("FindContactsByPartyUsecase", () => {
       page: 3,
       count: 0,
     });
+  });
+
+  it("rethrows unexpected request failures", async () => {
+    const error = new Error("Network Error");
+
+    mockedHttp.get.mockRejectedValue(error);
+
+    await expect(useCase.execute("1", "scammer")).rejects.toThrow(error);
   });
 
   it("aborts in-flight requests when cancel is called", async () => {

@@ -5,6 +5,19 @@ import ContactCard from "@presentation/pages/report/components/ContactCard";
 import PlatformFilterRow from "@presentation/pages/report/components/PlatformFilterRow";
 import { getVisiblePages } from "@/presentation/shared/utils/search-pagination.util";
 
+function isCanceledError(error: unknown) {
+  if (typeof error !== "object" || error === null) {
+    return false;
+  }
+
+  const maybeCanceledError = error as { code?: string; name?: string };
+
+  return (
+    maybeCanceledError.name === "CanceledError" ||
+    maybeCanceledError.code === "ERR_CANCELED"
+  );
+}
+
 interface ContactsTabProps {
   partyId: string;
   partyType: "scammer" | "organization";
@@ -78,7 +91,7 @@ function ContactsPagination({
 }
 
 function ContactsTab({ partyId, partyType }: ContactsTabProps) {
-  const { findContactsByPartyStubUseCase } = useDependencies();
+  const { findContactsByPartyUseCase } = useDependencies();
   const [currentPage, setCurrentPage] = useState(1);
   const [platform, setPlatform] = useState<string | undefined>();
   const [contacts, setContacts] = useState<ContactSummaryEntity[]>([]);
@@ -89,25 +102,41 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
 
   useEffect(() => {
+    let ignore = false;
+
     setIsLoading(true);
 
-    findContactsByPartyStubUseCase
+    findContactsByPartyUseCase
       .execute(partyId, partyType, currentPage, platform)
       .then((result) => {
+        if (ignore) {
+          return;
+        }
+
         setContacts(result.data);
         setCurrentPage(result.page);
         setTotalResults(result.total);
         setPageSize(result.count);
       })
-      .catch(() => undefined)
+      .catch((error) => {
+        if (ignore || isCanceledError(error)) {
+          return;
+        }
+
+        setContacts([]);
+        setTotalResults(0);
+        setPageSize(0);
+      })
       .finally(() => {
-        setIsLoading(false);
+        if (!ignore) {
+          setIsLoading(false);
+        }
       });
 
     return () => {
-      findContactsByPartyStubUseCase.cancel();
+      ignore = true;
     };
-  }, [currentPage, findContactsByPartyStubUseCase, partyId, partyType, platform]);
+  }, [currentPage, findContactsByPartyUseCase, partyId, partyType, platform]);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) {

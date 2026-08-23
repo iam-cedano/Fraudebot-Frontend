@@ -7,6 +7,33 @@ import Http from "@/infrastructure/http/http";
 import RequestCanceler from "@/infrastructure/http/request-canceler";
 import { API_ROUTES } from "@/common/environment";
 
+const emptyResult = (page: number): FindContactsByPartyResult => ({
+  data: [],
+  total: 0,
+  page,
+  count: 0,
+});
+
+function toPlatformQuery(platform?: string): string | undefined {
+  if (!platform) {
+    return undefined;
+  }
+
+  const value = platform.toLowerCase();
+
+  return value === "webpage" ? "url" : value;
+}
+
+function getHttpStatus(error: unknown): number | undefined {
+  if (typeof error !== "object" || error === null || !("response" in error)) {
+    return undefined;
+  }
+
+  const status = (error as { response?: { status?: unknown } }).response?.status;
+
+  return typeof status === "number" ? status : undefined;
+}
+
 class FindContactsByPartyUsecase implements ApiCallerInterface {
   private requestCanceller = new RequestCanceler();
 
@@ -22,42 +49,46 @@ class FindContactsByPartyUsecase implements ApiCallerInterface {
         ? API_ROUTES.public.scammers.contacts
         : API_ROUTES.public.organizations.contacts;
     const url = route.replace("{id}", encodeURIComponent(id));
+    const platformQuery = toPlatformQuery(platform);
 
-    const { data, status } = await Http.get<FindContactsByPartyResponse>(url, {
-      signal,
-      params: {
-        p: page,
-        ...(platform ? { platform } : {}),
-      },
-    });
+    try {
+      const { data, status } = await Http.get<FindContactsByPartyResponse>(url, {
+        signal,
+        params: {
+          p: page,
+          ...(platformQuery ? { platform: platformQuery } : {}),
+        },
+      });
 
-    if (status !== 200) {
+      if (status !== 200) {
+        return emptyResult(page);
+      }
+
+      const contacts = data.data.map(
+        (contact) =>
+          new ContactSummaryEntity(
+            String(contact.id),
+            contact.name,
+            contact.reference,
+            contact.platform,
+            contact.created_at,
+            Boolean(contact.is_active),
+          ),
+      );
+
       return {
-        data: [],
-        total: 0,
-        page,
-        count: 0,
+        data: contacts,
+        total: data.total,
+        page: data.page,
+        count: data.count,
       };
+    } catch (error) {
+      if (getHttpStatus(error) === 404) {
+        return emptyResult(page);
+      }
+
+      throw error;
     }
-
-    const contacts = data.data.map(
-      (contact) =>
-        new ContactSummaryEntity(
-          String(contact.id),
-          contact.name,
-          contact.reference,
-          contact.platform,
-          contact.created_at,
-          Boolean(contact.is_active),
-        ),
-    );
-
-    return {
-      data: contacts,
-      total: data.total,
-      page: data.page,
-      count: data.count,
-    };
   }
 
   public cancel(): void {
