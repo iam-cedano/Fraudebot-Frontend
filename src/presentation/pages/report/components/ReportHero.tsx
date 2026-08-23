@@ -108,7 +108,14 @@ function ReportHero({
       onClick: () => {
         alert("Descargando PDF");
       },
-    }
+    },
+    {
+      id: "jpg",
+      label: "Descargar JPG",
+      onClick: () => {
+        alert("Descargando JPG");
+      },
+    },
   ];
 
   return (
