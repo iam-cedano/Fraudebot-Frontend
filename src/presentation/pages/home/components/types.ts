@@ -5,7 +5,8 @@ export type HomeContainerProps = {
 export type ButtonProps = {
     label: string;
     variant: 'primary' | 'secondary';
-    href: string;
+    href?: string;
+    disabled?: boolean;
     onClick?: () => void;
 }
 

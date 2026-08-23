@@ -101,20 +101,20 @@ function createExampleMapGraph({
   const neighborBId =
     neighborKind === "scammer" ? RELATED_SCAMMER_B : RELATED_ORG_B;
   const neighborAName =
-    neighborKind === "scammer" ? "Luis Navarro" : "Nova Pagos";
+    neighborKind === "scammer" ? "Persona de ejemplo A" : "Empresa de ejemplo A";
   const neighborBName =
-    neighborKind === "scammer" ? "Ana Torres" : "Ruta Express";
+    neighborKind === "scammer" ? "Persona de ejemplo B" : "Empresa de ejemplo B";
 
   const nodes: MapNode[] = [
     satelliteNode("sat-contact-current", { x: 40, y: 0 }, {
       kind: "contact",
-      label: "WhatsApp",
-      detail: "+52 55 1234 5678",
+      label: "Contacto ficticio",
+      detail: "000 000 0000",
     }),
     satelliteNode("sat-payment-current", { x: 520, y: 0 }, {
       kind: "payment_method",
-      label: "CLABE",
-      detail: "012 180 001234567890",
+      label: "Cuenta ficticia",
+      detail: "000 000 000000000000",
     }),
     partyNode("party-current", { x: 280, y: 170 }, {
       partyId,
@@ -136,13 +136,13 @@ function createExampleMapGraph({
     }),
     satelliteNode("sat-contact-neighbor", { x: 40, y: 540 }, {
       kind: "contact",
-      label: "Instagram",
-      detail: "@ruta.oficial",
+      label: "Red social ficticia",
+      detail: "@cuenta_ejemplo",
     }),
     satelliteNode("sat-payment-neighbor", { x: 520, y: 540 }, {
       kind: "payment_method",
-      label: "Bitcoin",
-      detail: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+      label: "Pago ficticio",
+      detail: "identificador-de-ejemplo",
     }),
   ];
 

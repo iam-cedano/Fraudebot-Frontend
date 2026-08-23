@@ -3,91 +3,12 @@ import ContactSummaryEntity from "@/core/domain/contact/entities/contact-summary
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ContactCard from "@presentation/pages/report/components/ContactCard";
 import PlatformFilterRow from "@presentation/pages/report/components/PlatformFilterRow";
-import { getVisiblePages } from "@/presentation/shared/utils/search-pagination.util";
-
-function isCanceledError(error: unknown) {
-  if (typeof error !== "object" || error === null) {
-    return false;
-  }
-
-  const maybeCanceledError = error as { code?: string; name?: string };
-
-  return (
-    maybeCanceledError.name === "CanceledError" ||
-    maybeCanceledError.code === "ERR_CANCELED"
-  );
-}
+import { isCanceledError } from "@/common/utils/http-error.util";
+import PaginationNav from "@/presentation/shared/components/PaginationNav";
 
 interface ContactsTabProps {
   partyId: string;
   partyType: "scammer" | "organization";
-}
-
-function ContactsPagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) {
-  if (totalPages < 1) {
-    return null;
-  }
-
-  const visiblePages = getVisiblePages(currentPage, totalPages);
-
-  return (
-    <nav
-      className="mt-6 flex items-center justify-center gap-2 font-[Nunito]"
-      aria-label="Paginación de contactos"
-    >
-      <button
-        type="button"
-        className="px-3 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50"
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        Anterior
-      </button>
-
-      {visiblePages.map((page, index) => {
-        const previousPage = visiblePages[index - 1];
-        const shouldShowGap = previousPage && page - previousPage > 1;
-
-        return (
-          <div key={page} className="flex items-center gap-2">
-            {shouldShowGap && (
-              <span className="text-sm font-semibold text-gray-400">...</span>
-            )}
-
-            <button
-              type="button"
-              className={`px-3 py-2 text-sm font-semibold border rounded-sm shadow-sm ${
-                page === currentPage
-                  ? "bg-red-600 text-white border-red-600"
-                  : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-              }`}
-              aria-current={page === currentPage ? "page" : undefined}
-              onClick={() => onPageChange(page)}
-            >
-              {page}
-            </button>
-          </div>
-        );
-      })}
-
-      <button
-        type="button"
-        className="px-3 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50"
-        disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        Siguiente
-      </button>
-    </nav>
-  );
 }
 
 function ContactsTab({ partyId, partyType }: ContactsTabProps) {
@@ -98,6 +19,8 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
   const [totalResults, setTotalResults] = useState(0);
   const [pageSize, setPageSize] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [requestVersion, setRequestVersion] = useState(0);
 
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
 
@@ -105,6 +28,7 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
     let ignore = false;
 
     setIsLoading(true);
+    setErrorMessage(null);
 
     findContactsByPartyUseCase
       .execute(partyId, partyType, currentPage, platform)
@@ -126,6 +50,9 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
         setContacts([]);
         setTotalResults(0);
         setPageSize(0);
+        setErrorMessage(
+          "No pudimos cargar los contactos. Revisa tu conexión e inténtalo de nuevo.",
+        );
       })
       .finally(() => {
         if (!ignore) {
@@ -135,8 +62,16 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
 
     return () => {
       ignore = true;
+      findContactsByPartyUseCase.cancel();
     };
-  }, [currentPage, findContactsByPartyUseCase, partyId, partyType, platform]);
+  }, [
+    currentPage,
+    findContactsByPartyUseCase,
+    partyId,
+    partyType,
+    platform,
+    requestVersion,
+  ]);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) {
@@ -185,22 +120,38 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
         )}
 
         {!isLoading &&
+          !errorMessage &&
           contacts.map((contact) => (
             <ContactCard key={contact.id} contact={contact} />
           ))}
 
-        {!isLoading && contacts.length === 0 && (
+        {!isLoading && errorMessage && (
+          <div role="alert" className="py-10 text-center">
+            <p className="text-sm font-semibold text-red-800">{errorMessage}</p>
+            <button
+              type="button"
+              onClick={() => setRequestVersion((version) => version + 1)}
+              className="mt-3 rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !errorMessage && contacts.length === 0 && (
           <p className="py-10 text-center text-sm text-gray-400">
             No se encontraron contactos.
           </p>
         )}
       </div>
 
-      {!isLoading && (
-        <ContactsPagination
+      {!isLoading && !errorMessage && (
+        <PaginationNav
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={handlePageChange}
+          ariaLabel="Paginación de contactos"
+          className="mt-6"
         />
       )}
     </section>

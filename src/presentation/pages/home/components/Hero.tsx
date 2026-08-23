@@ -4,8 +4,9 @@ import BackgroundImage from "@presentation/assets/hero.webp";
 function Hero() {
     return (
         <section 
-            className="w-full h-162.5 bg-cover bg-center flex flex-col items-center pt-8"
+            className="flex min-h-[38rem] w-full flex-col items-center bg-cover bg-center px-4 pb-12 pt-32 sm:justify-center"
             style={{ backgroundImage: `url(${BackgroundImage})` }}
+            aria-labelledby="home-search-title"
         >            
             <LookupForm />
         </section>

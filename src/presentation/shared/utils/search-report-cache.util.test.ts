@@ -79,4 +79,16 @@ describe("SearchReportCache", () => {
     expect(cache.get("test", 1)).toBeNull();
     expect(storage.getItem("fraudebot:search:test:1")).toBeNull();
   });
+
+  it("removes results after the configured retention period", () => {
+    const storage = createMockStorage();
+    let now = 1_000;
+    const cache = new SearchReportCache(storage, 100, () => now);
+
+    cache.set("sensitive query", createSearchResult());
+    now = 1_101;
+
+    expect(cache.get("sensitive query", 1)).toBeNull();
+    expect(storage.getItem("fraudebot:search:sensitive query:1")).toBeNull();
+  });
 });

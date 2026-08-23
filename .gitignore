@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 coverage
+.coverage
 playwright-report
 test-results
 

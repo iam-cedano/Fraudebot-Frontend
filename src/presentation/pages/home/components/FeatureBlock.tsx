@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from "react-router-dom";
+import { APP_ROUTES } from "@/common/app-routes";
 import ManWithScreensImage from "@presentation/assets/man-with-screens.webp"
 import GirlWithScreensImage from "@presentation/assets/girl-with-screens.webp"
 import { FeatureProps } from "@presentation/pages/home/components/types";
@@ -10,15 +12,15 @@ function FeatureBlock() {
             title: 'Seguimiento de Reportes',
             description: (
                 <>
-                    Puedes añadir la información de contacto de un vendedor y te avisaremos si hay noticias sobre él. Dale clic en <strong>"Dar Seguimiento"</strong> y comienza con el proceso. No tiene ningún costo.
+                    Estamos desarrollando una forma segura de seguir reportes y recibir novedades. Esta función todavía no está disponible.
                 </>
             ),
             imageSrc: ManWithScreensImage,
             imageAlt: 'Ilustración de Seguimiento de Reportes',
             reverse: false,
             buttons: [
-                { label: 'Dar Seguimiento', variant: 'primary', href: '#' },
-                { label: 'Buscar Reportes', variant: 'secondary', href: '#' },
+                { label: 'Seguimiento: próximamente', variant: 'primary', disabled: true },
+                { label: 'Buscar reportes', variant: 'secondary', href: APP_ROUTES.search },
             ]
         },
         {
@@ -26,14 +28,14 @@ function FeatureBlock() {
             title: 'Promociona tu negocio con nosotros',
             description: (
                 <>
-                    <strong>Fraudebot</strong> es visitado y confiado por miles de personas en México al hacer negocios online. Con nuestra infraestructura puede promocionar su negocio en un nicho en específico. Da clic en <strong>"Saber más"</strong> para conocer más.
+                    Estamos evaluando opciones transparentes para negocios. Aún no aceptamos promociones ni solicitudes comerciales desde el sitio.
                 </>
             ),
             imageSrc: GirlWithScreensImage,
             imageAlt: 'Ilustración de Promocionar Negocio',
             reverse: true,
             buttons: [
-                { label: 'Saber más', variant: 'primary', href: '#' }
+                { label: 'Promoción: próximamente', variant: 'primary', disabled: true }
             ]
         }
     ];
@@ -63,20 +65,26 @@ function FeatureBlock() {
                             </p>
                             
                             <div className="flex flex-wrap gap-4 mt-2">
-                                {feature.buttons.map((btn, btnIdx) => (
-                                    <a
-                                        key={btnIdx}
-                                        href={btn.href}
-                                        onClick={btn.onClick}
-                                        className={`px-6 py-2.5 rounded shadow-sm font-medium transition-colors ${
+                                {feature.buttons.map((btn, btnIdx) => {
+                                    const className = `rounded px-6 py-2.5 font-medium shadow-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-700 ${
+                                        btn.disabled
+                                            ? 'cursor-not-allowed border border-gray-300 bg-gray-100 text-gray-500'
+                                            :
                                             btn.variant === 'primary' 
-                                            ? 'bg-[#ed7c42] hover:bg-[#d96a32] text-white' 
-                                            : 'bg-white border border-[#ed7c42] text-[#ed7c42] hover:bg-orange-50'
-                                        }`}
-                                    >
-                                        {btn.label}
-                                    </a>
-                                ))}
+                                            ? 'bg-[#c95f28] hover:bg-[#a94c1e] text-white' 
+                                            : 'bg-white border border-[#c95f28] text-[#9a451d] hover:bg-orange-50'
+                                    }`;
+
+                                    return btn.disabled ? (
+                                        <button key={btnIdx} type="button" disabled className={className}>
+                                            {btn.label}
+                                        </button>
+                                    ) : (
+                                        <Link key={btnIdx} to={btn.href!} className={className}>
+                                            {btn.label}
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>

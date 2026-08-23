@@ -1,6 +1,6 @@
 {
-  "name": "Fraudebot",
-  "short_name": "Fraudebot",
+  "name": "FraudeBot",
+  "short_name": "FraudeBot",
   "icons": [
     {
       "src": "/src/presentation/assets/web-app-manifest-192x192.png",

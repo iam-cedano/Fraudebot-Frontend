@@ -6,13 +6,13 @@ import RebecaImage from "@presentation/assets/rebeca-rodriguez.webp";
 function Reviews() {
   const REVIEWS_DATA: ReviewCardProps[] = [
     {
-      name: "Jaqueline Garcia",
-      review: "He potenciado las ventas de mi negocio de gorras gracias a Fraudebot",
+      name: "Jaqueline García",
+      review: "He potenciado las ventas de mi negocio de gorras gracias a FraudeBot",
       avatarUrl: JaquelineImage
     },
     {
-      name: "Rebeca Rodriguez",
-      review: "Fraudebot me ha servido para evitar ser estafada, es mi mano derecha para comprar en línea",
+      name: "Rebeca Rodríguez",
+      review: "FraudeBot me ha servido para evitar ser estafada, es mi mano derecha para comprar en línea",
       avatarUrl: RebecaImage
     },
   ];
@@ -20,7 +20,7 @@ function Reviews() {
   return (
     <section className="w-full py-12 px-4 flex flex-col items-center justify-center bg-cover bg-center" style={{backgroundImage: `url(${HeroAlternativeImage})`}}>
       <h2 className="text-white text-3xl sm:text-4xl font-bold text-center mb-10 font-[Nunito]">
-        Mira que dice la sociedad sobre Fraudebot
+        Mira qué dice la comunidad sobre FraudeBot
       </h2>
 
       <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch w-full">

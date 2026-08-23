@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Footer from "@presentation/shared/components/Footer";
 import Header from "@presentation/shared/components/Header";
 import ContactsTab from "@presentation/pages/report/components/ContactsTab";
@@ -16,6 +16,10 @@ import defaultAvatar from "@presentation/assets/default-avatar.png";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import ScammerSummaryEntity from "@/core/domain/scammer/entities/scammer-summary.entity";
 import OrganizationSummaryEntity from "@/core/domain/organization/entities/organization-summary.entity";
+import {
+  getHttpStatus,
+  isCanceledError,
+} from "@/common/utils/http-error.util";
 
 function GeneralPanelsSkeleton() {
   return (
@@ -48,6 +52,10 @@ function Report({ type }: { type: "scammer" | "organization" }) {
   const { findScammerSummaryByIdUseCase, findOrganizationSummaryByIdUseCase } =
     useDependencies();
   const [activeTab, setActiveTab] = useState<ReportTab>("General");
+  const [loadState, setLoadState] = useState<
+    "loading" | "ready" | "not-found" | "error"
+  >("loading");
+  const [requestVersion, setRequestVersion] = useState(0);
 
   const [party, setParty] = useState<
     ScammerSummaryEntity | OrganizationSummaryEntity | null
@@ -55,16 +63,28 @@ function Report({ type }: { type: "scammer" | "organization" }) {
 
   useEffect(() => {
     if (!id) {
+      setLoadState("not-found");
       return;
     }
+
+    setParty(null);
+    setLoadState("loading");
+    const handleError = (error: unknown) => {
+      if (isCanceledError(error)) {
+        return;
+      }
+
+      setLoadState(getHttpStatus(error) === 404 ? "not-found" : "error");
+    };
 
     if (type === "scammer") {
       findScammerSummaryByIdUseCase
         .execute(id)
         .then((scammer) => {
           setParty(scammer);
+          setLoadState("ready");
         })
-        .catch(() => undefined);
+        .catch(handleError);
 
       return () => {
         findScammerSummaryByIdUseCase.cancel();
@@ -75,24 +95,36 @@ function Report({ type }: { type: "scammer" | "organization" }) {
       .execute(id)
       .then((organization) => {
         setParty(organization);
+        setLoadState("ready");
       })
-      .catch(() => undefined);
+      .catch(handleError);
 
     return () => {
       findOrganizationSummaryByIdUseCase.cancel();
     };
-  }, [findOrganizationSummaryByIdUseCase, findScammerSummaryByIdUseCase, id, type]);
+  }, [
+    findOrganizationSummaryByIdUseCase,
+    findScammerSummaryByIdUseCase,
+    id,
+    requestVersion,
+    type,
+  ]);
 
   useEffect(() => {
-    document.title = party
+    document.title =
+      loadState === "not-found"
+        ? "FraudeBot - Perfil no encontrado"
+        : loadState === "error"
+          ? "FraudeBot - Error"
+          : party
       ? `FraudeBot - ${party.name}`
       : "FraudeBot - Cargando...";
-  }, [party]);
+  }, [loadState, party]);
 
   return (
     <div className="font-[Nunito]">
       <Header />
-      {party ? (
+      {loadState === "ready" && party ? (
         <ReportHero
           id={party.id}
           name={party.name}
@@ -104,19 +136,65 @@ function Report({ type }: { type: "scammer" | "organization" }) {
           categories={party.categories}
           profilePicture={party.profilePicture || defaultAvatar}
         />
-      ) : (
+      ) : loadState === "loading" ? (
         <ReportHeroSkeleton />
-      )}
+      ) : null}
 
       <main className="min-h-130 bg-white">
-        <ReportTabNavigation
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        {loadState === "ready" && (
+          <ReportTabNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+        )}
 
         <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10">
-          {party ? (
-            <>
+          {loadState === "not-found" && (
+            <section className="mx-auto mt-24 max-w-xl rounded-xl border border-gray-200 bg-gray-50 p-8 text-center">
+              <h1 className="text-2xl font-extrabold text-gray-950">
+                Perfil no encontrado
+              </h1>
+              <p className="mt-3 text-gray-600">
+                El perfil solicitado no existe o ya no está disponible.
+              </p>
+              <Link
+                to="/busqueda"
+                className="mt-6 inline-block rounded-md bg-red-600 px-5 py-2.5 font-bold text-white hover:bg-red-700"
+              >
+                Volver a la búsqueda
+              </Link>
+            </section>
+          )}
+
+          {loadState === "error" && (
+            <section
+              role="alert"
+              className="mx-auto mt-24 max-w-xl rounded-xl border border-red-200 bg-red-50 p-8 text-center"
+            >
+              <h1 className="text-2xl font-extrabold text-red-950">
+                No pudimos cargar el perfil
+              </h1>
+              <p className="mt-3 text-red-800">
+                Revisa tu conexión e inténtalo de nuevo.
+              </p>
+              <button
+                type="button"
+                onClick={() => setRequestVersion((version) => version + 1)}
+                className="mt-6 rounded-md bg-red-600 px-5 py-2.5 font-bold text-white hover:bg-red-700"
+              >
+                Reintentar
+              </button>
+            </section>
+          )}
+
+          {loadState === "ready" && party ? (
+            <div
+              role="tabpanel"
+              id={`report-panel-${activeTab.toLowerCase()}`}
+              aria-labelledby={`report-tab-${activeTab.toLowerCase()}`}
+              tabIndex={0}
+              className="focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
+            >
               {activeTab === "General" && (
                 <GeneralTab
                   partyId={party.id}
@@ -139,10 +217,10 @@ function Report({ type }: { type: "scammer" | "organization" }) {
                 />
               )}
               {activeTab === "Soporte" && <PlaceholderTab tab="Soporte" />}
-            </>
-          ) : (
+            </div>
+          ) : loadState === "loading" ? (
             activeTab === "General" && <GeneralPanelsSkeleton />
-          )}
+          ) : null}
         </div>
       </main>
 

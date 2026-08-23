@@ -48,6 +48,7 @@ describe("Http", () => {
   it("creates an axios instance with the API base URL and JSON content type", () => {
     expect(axios.create).toHaveBeenCalledWith({
       baseURL: ENVIRONMENT.API_BASE_URL,
+      timeout: 15_000,
       headers: {
         "Content-Type": "application/json",
       },

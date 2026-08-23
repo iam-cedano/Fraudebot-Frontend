@@ -27,6 +27,7 @@ describe("SearchReportUsecase", () => {
             id: 42,
             name: "Test Scammer",
             products: ["card"],
+            tags: ["phishing"],
             reports: 3,
             type: "scammer",
             organizations: ["Acme"],
@@ -52,6 +53,8 @@ describe("SearchReportUsecase", () => {
     expect(result.data[0].id).toBe("42");
     expect(result.data[0].name).toBe("Test Scammer");
     expect(result.data[0].type).toBe("scammer");
+    expect(result.data[0].tags).toEqual(["phishing"]);
+    expect(result.data[0].products).toEqual(["card"]);
     expect(result.total).toBe(1);
     expect(result.page).toBe(1);
     expect(result.count).toBe(10);

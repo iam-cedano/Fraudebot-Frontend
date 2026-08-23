@@ -33,13 +33,16 @@ test.describe("Home.Header", () => {
   });
 
   test("navigates to the contact page", async ({ page }) => {
-    await page.getByRole("link", { name: /reportar/i }).click();
+    await page
+      .getByRole("navigation", { name: "Navegación principal" })
+      .getByRole("link", { name: /contacto/i })
+      .click();
     await expect(page).toHaveURL("/contacto");
   });
 
   test("navigates to the home page via logo", async ({ page }) => {
     await page.goto("/busqueda");
-    await page.getByRole("link", { name: /fraudebot logo/i }).click();
+    await page.getByRole("link", { name: /fraudebot, ir al inicio/i }).click();
     await expect(page).toHaveURL("/");
   });
 });

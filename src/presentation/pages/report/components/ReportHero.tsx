@@ -5,11 +5,9 @@ import ImageLightbox from "@presentation/pages/report/components/ImageLightbox";
 import SummaryItem from "@presentation/pages/report/components/SummaryItem";
 import reportIcons from "@presentation/pages/report/components/icons";
 import { ReportHeroProps } from "@presentation/pages/report/components/types";
-import DropdownButton from "@presentation/shared/components/DropdownButton";
-import { DropdownOption } from "@presentation/shared/components/types";
 
 function SkeletonBar({ className }: { className: string }) {
-  return <div className={`animate-pulse rounded bg-gray-200 ${className}`} />;
+  return <div className={`motion-safe:animate-pulse rounded bg-gray-200 ${className}`} />;
 }
 
 export function ReportHeroSkeleton() {
@@ -59,15 +57,17 @@ export function ReportHeroSkeleton() {
               <div className="flex shrink-0 gap-2 self-end">
                 <button
                   type="button"
-                  className="cursor-pointer rounded-md border border-gray-300 px-5 py-2 text-sm font-extrabold text-gray-700 hover:bg-gray-50"
+                  disabled
+                  className="cursor-not-allowed rounded-md border border-gray-300 px-5 py-2 text-sm font-extrabold text-gray-500 opacity-70"
                 >
-                  Ayuda
+                  Ayuda (próximamente)
                 </button>
                 <button
                   type="button"
-                  className="cursor-pointer rounded-md bg-red-600 px-5 py-2 text-sm font-extrabold text-white hover:bg-red-700"
+                  disabled
+                  className="cursor-not-allowed rounded-md bg-gray-200 px-5 py-2 text-sm font-extrabold text-gray-600"
                 >
-                  Reportar
+                  Reportar (próximamente)
                 </button>
               </div>
             </div>
@@ -101,23 +101,6 @@ function ReportHero({
     year: "numeric",
   });
 
-  const shareOptions: DropdownOption[] = [
-    {
-      id: "pdf",
-      label: "Descargar PDF",
-      onClick: () => {
-        alert("Descargando PDF");
-      },
-    },
-    {
-      id: "jpg",
-      label: "Descargar JPG",
-      onClick: () => {
-        alert("Descargando JPG");
-      },
-    },
-  ];
-
   return (
     <section
       className="bg-cover bg-center px-4 pb-10 pt-28 sm:pb-12 sm:pt-32"
@@ -135,7 +118,7 @@ function ReportHero({
           >
             <img
               src={imageSrc}
-              alt={name}
+              alt=""
               className="h-full w-full object-cover"
             />
           </button>
@@ -161,11 +144,13 @@ function ReportHero({
                 </p>
               </div>
 
-              <DropdownButton
-                label="Compartir"
-                options={shareOptions}
-                iconSrc={reportIcons.shareArrow}
-              />
+              <button
+                type="button"
+                disabled
+                className="cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-xs font-extrabold text-gray-600"
+              >
+                Exportar (próximamente)
+              </button>
             </div>
 
             <div className="mt-5 grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -201,15 +186,17 @@ function ReportHero({
               <div className="flex shrink-0 gap-2 self-end">
                 <button
                   type="button"
-                  className="cursor-pointer rounded-md border border-gray-300 px-5 py-2 text-sm font-extrabold text-gray-700 hover:bg-gray-50"
+                  disabled
+                  className="cursor-not-allowed rounded-md border border-gray-300 px-5 py-2 text-sm font-extrabold text-gray-500"
                 >
-                  Ayuda
+                  Ayuda (próximamente)
                 </button>
                 <button
                   type="button"
-                  className="cursor-pointer rounded-md bg-red-600 px-5 py-2 text-sm font-extrabold text-white hover:bg-red-700"
+                  disabled
+                  className="cursor-not-allowed rounded-md bg-gray-200 px-5 py-2 text-sm font-extrabold text-gray-600"
                 >
-                  Reportar
+                  Reportar (próximamente)
                 </button>
               </div>
             </div>

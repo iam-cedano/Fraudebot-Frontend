@@ -7,6 +7,7 @@ import Search from "@/presentation/pages/search/Search";
 import { renderWithProviders } from "@/test/test-utils";
 import Formatter from "@/presentation/shared/utils/formatter";
 import { APP_ROUTES } from "@/common/app-routes";
+import { DependencyProvider } from "@/presentation/providers/DependencyProvider";
 
 function createMockSearchResult(page = 1, total = 25) {
   return {
@@ -34,7 +35,7 @@ describe("Home LookupForm", () => {
 
     renderWithProviders(<LookupForm />, { route: "/" });
 
-    const input = screen.getByPlaceholderText("número cuenta, tarjeta, telefono, url");
+    const input = screen.getByRole("textbox", { name: /buscar por/i });
 
     await user.type(input, "4111111111111111");
 
@@ -53,7 +54,7 @@ describe("Home LookupForm", () => {
 
     render(<RouterProvider router={router} />);
 
-    const input = screen.getByPlaceholderText("número cuenta, tarjeta, telefono, url");
+    const input = screen.getByRole("textbox", { name: /buscar por/i });
 
     await user.type(input, "john doe");
     await user.click(screen.getByRole("button", { name: "Buscar" }));
@@ -125,6 +126,7 @@ describe("Search page", () => {
         total: cachedResult.total,
         page: cachedResult.page,
         count: cachedResult.count,
+        cachedAt: Date.now(),
       }),
     );
 
@@ -167,10 +169,59 @@ describe("Search page", () => {
       expect(screen.getByText("Cached Result")).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "Página 2" }));
 
     await waitFor(() => {
       expect(execute).toHaveBeenCalledWith("test", 2);
+    });
+  });
+
+  it("shows an actionable error instead of an empty result", async () => {
+    const execute = vi.fn().mockRejectedValue(new Error("offline"));
+
+    renderWithProviders(<Search />, {
+      route: `${APP_ROUTES.search}?q=test`,
+      overrides: {
+        searchReportUseCase: {
+          execute,
+          cancel: vi.fn(),
+        },
+      },
+    });
+
+    expect(
+      await screen.findByRole("heading", { name: "La búsqueda falló" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("No se encontraron resultados"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("reacts to browser navigation changes in the query string", async () => {
+    const execute = vi.fn().mockResolvedValue(createMockSearchResult());
+    const router = createMemoryRouter(
+      [{ path: APP_ROUTES.search, element: <Search /> }],
+      { initialEntries: [`${APP_ROUTES.search}?q=first`] },
+    );
+
+    render(
+      <DependencyProvider
+        overrides={{
+          searchReportUseCase: { execute, cancel: vi.fn() },
+        }}
+      >
+        <RouterProvider router={router} />
+      </DependencyProvider>,
+    );
+
+    await waitFor(() => {
+      expect(execute).toHaveBeenCalledWith("first", 1);
+    });
+
+    await router.navigate(`${APP_ROUTES.search}?q=second&p=2`);
+
+    await waitFor(() => {
+      expect(execute).toHaveBeenCalledWith("second", 2);
     });
   });
 });

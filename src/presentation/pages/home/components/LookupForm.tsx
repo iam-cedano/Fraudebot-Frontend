@@ -1,17 +1,16 @@
 import { APP_ROUTES } from "@/common/app-routes";
 import Formatter from "@/presentation/shared/utils/formatter";
-import { useRef, useState } from "react";
+import SearchInput from "@/presentation/shared/components/SearchInput";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function LookupForm() {
   const navigate = useNavigate();
-  const searchRef = useRef<HTMLInputElement>(null);
   const [searchValue, setSearchValue] = useState("");
 
   function handleSearch(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const searchValue = searchRef.current?.value;
     if (searchValue) {
       navigate(`${APP_ROUTES.search}?${Formatter.buildSearchQueryString(searchValue)}`);
     }
@@ -24,38 +23,27 @@ function LookupForm() {
   return (
     <form
       onSubmit={handleSearch}
-      className="flex flex-col items-center w-full max-w-4xl px-8 py-7 bg-white rounded-xl shadow-sm relative top-55"
+      role="search"
+      className="flex w-full max-w-4xl flex-col items-center rounded-xl bg-white px-5 py-7 shadow-lg sm:px-8"
     >
-      <h1 className="text-4xl font-medium text-gray-900 mb-4 font-[Nunito]">
-        <span className="font-bold">Fraudebot</span> te protege de los
+      <h1 id="home-search-title" className="mb-4 text-center text-3xl font-medium text-gray-900 font-[Nunito] sm:text-4xl">
+        <span className="font-bold">FraudeBot</span> te protege de los
         estafadores
       </h1>
-      <label htmlFor="lookup-search"  className="text-2xl text-gray-800 mb-8 font-[Nunito]">
+      <label htmlFor="lookup-search" className="mb-8 text-center text-lg text-gray-800 font-[Nunito] sm:text-2xl">
         Buscar por{" "}
         <span className="font-bold">
-          tarjeta, cuenta, clabe, nombre, telefono
+          tarjeta, cuenta, CLABE, nombre, teléfono
         </span>{" "}
-        o <span className="font-bold">url</span>
+        o <span className="font-bold">URL</span>
       </label>
-      <div className="flex w-full border border-gray-300 rounded-md overflow-hidden bg-white">
-        <input
-          id="lookup-search"
-          type="text"
-          placeholder="número cuenta, tarjeta, telefono, url"
-          className="grow px-4 py-4 outline-none text-gray-400 placeholder-gray-400 text-lg font-[Nunito]"
-          ref={searchRef}
-          onInput={(e) =>
-            Formatter.FormatInputAndUpdate(e.currentTarget.value, handleInput)
-          }
-          value={searchValue}
-        />
-        <button
-          type="submit"
-          className="px-8 py-4 bg-white border-l border-gray-300 hover:bg-gray-50 transition-colors text-gray-900 text-lg font-[Nunito]"
-        >
-          Buscar
-        </button>
-      </div>
+      <SearchInput
+        id="lookup-search"
+        value={searchValue}
+        onInput={(event) =>
+          Formatter.FormatInputAndUpdate(event.currentTarget.value, handleInput)
+        }
+      />
     </form>
   );
 }

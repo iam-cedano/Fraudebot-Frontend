@@ -6,31 +6,38 @@ import AyudaImage from '@presentation/assets/ayuda.webp';
 
 function AnchorBlocks() {
     const blocks = [
-        { title: 'Jurídico', href: '#', imageSrc: JuridicoImage },
-        { title: 'Reportes', href: '#', imageSrc: ReporteImage },
-        { title: 'Proveedores', href: '#', imageSrc: ProveedoresImage },
-        { title: 'Noticias', href: '#', imageSrc: NoticiasImage },
-        { title: 'Ayuda', href: '#', imageSrc: AyudaImage },
+        { title: 'Jurídico', imageSrc: JuridicoImage },
+        { title: 'Reportes', imageSrc: ReporteImage },
+        { title: 'Proveedores', imageSrc: ProveedoresImage },
+        { title: 'Noticias', imageSrc: NoticiasImage },
+        { title: 'Ayuda', imageSrc: AyudaImage },
     ];
 
     return (
-        <section className="flex flex-wrap justify-center gap-9 py-12 px-4 max-w-6xl mx-auto">
+        <section className="mx-auto max-w-6xl px-4 py-12" aria-labelledby="resources-title">
+            <div className="mb-8 text-center">
+                <h2 id="resources-title" className="text-3xl font-bold text-gray-900 font-[Nunito]">Más recursos</h2>
+                <p className="mt-2 text-gray-600 font-[Nunito]">Estamos preparando estas secciones para ti.</p>
+            </div>
+            <div className="flex flex-wrap justify-center gap-9">
             {blocks.map((block, index) => (
-                <a
+                <div
                     key={index}
-                    href={block.href}
-                    className="group relative flex items-center justify-center w-48 h-48 sm:w-48 sm:h-48 overflow-hidden bg-gray-900 rounded-sm hover:-translate-y-1 transition-transform duration-300"
+                    className="relative flex h-48 w-48 items-center justify-center overflow-hidden rounded-sm bg-gray-900"
                 >
                     <img
                         src={block.imageSrc}
-                        alt={block.title}
-                        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 h-full w-full object-cover opacity-60"
                     />
-                    <span className="relative z-10 text-white text-lg sm:text-xl font-medium tracking-wide font-[Nunito]">
+                    <span className="relative z-10 flex flex-col items-center text-lg font-bold tracking-wide text-white font-[Nunito] sm:text-xl">
                         {block.title}
+                        <span className="mt-2 rounded-full bg-black/70 px-3 py-1 text-xs uppercase tracking-wider">Próximamente</span>
                     </span>
-                </a>
+                </div>
             ))}
+            </div>
         </section>
     );
 }

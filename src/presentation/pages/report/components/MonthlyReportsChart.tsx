@@ -26,8 +26,9 @@ function MonthlyReportsChart({ monthlyCounts }: MonthlyReportsChartProps) {
   const labels = monthLabels(monthlyCounts.year);
 
   return (
-    <div className="h-56 w-full">
-      <Bar
+    <>
+      <div className="h-56 w-full" aria-hidden="true">
+        <Bar
         data={{
           labels,
           datasets: [
@@ -66,8 +67,26 @@ function MonthlyReportsChart({ monthlyCounts }: MonthlyReportsChartProps) {
             },
           },
         }}
-      />
-    </div>
+        />
+      </div>
+      <table className="sr-only">
+        <caption>Reportes mensuales de {monthlyCounts.year}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Mes</th>
+            <th scope="col">Cantidad de reportes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {labels.map((label, index) => (
+            <tr key={label}>
+              <th scope="row">{label}</th>
+              <td>{monthlyCounts.counts[index] ?? 0}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
 

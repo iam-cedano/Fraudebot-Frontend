@@ -94,10 +94,10 @@ describe("ContactsTab", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "2" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Página 2" })).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole("button", { name: "2" }));
+    await user.click(screen.getByRole("button", { name: "Página 2" }));
 
     await waitFor(() => {
       expect(execute).toHaveBeenCalledWith("20", "organization", 2, undefined);
@@ -134,6 +134,6 @@ describe("ContactsTab", () => {
       "bg-blue-500",
     );
     expect(screen.getByLabelText("Paginación de contactos")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "2" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Página 2" })).toBeInTheDocument();
   });
 });

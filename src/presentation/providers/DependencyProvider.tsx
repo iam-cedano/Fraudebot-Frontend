@@ -1,5 +1,8 @@
 import React, { createContext, useContext, ReactNode, useMemo } from "react";
-import { dependencies, Dependencies } from "@/infrastructure/di/container";
+import {
+  createDependencies,
+  Dependencies,
+} from "@/infrastructure/di/container";
 
 const DependencyContext = createContext<Dependencies | null>(null);
 
@@ -21,13 +24,7 @@ export const DependencyProvider: React.FC<DependencyProviderProps> = ({
   overrides,
 }) => {
   const contextValue = useMemo(() => {
-    const instances = Object.keys(dependencies).reduce((acc, key) => {
-      const factory = dependencies[key as keyof typeof dependencies];
-      acc[key as keyof Dependencies] = factory() as any;
-      return acc;
-    }, {} as Dependencies);
-
-    return { ...instances, ...overrides };
+    return { ...createDependencies(), ...overrides };
   }, [overrides]);
 
   return (

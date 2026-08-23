@@ -6,6 +6,7 @@ import FindContactsByPartyResult, {
 import Http from "@/infrastructure/http/http";
 import RequestCanceler from "@/infrastructure/http/request-canceler";
 import { API_ROUTES } from "@/common/environment";
+import { getHttpStatus } from "@/common/utils/http-error.util";
 
 const emptyResult = (page: number): FindContactsByPartyResult => ({
   data: [],
@@ -22,16 +23,6 @@ function toPlatformQuery(platform?: string): string | undefined {
   const value = platform.toLowerCase();
 
   return value === "webpage" ? "url" : value;
-}
-
-function getHttpStatus(error: unknown): number | undefined {
-  if (typeof error !== "object" || error === null || !("response" in error)) {
-    return undefined;
-  }
-
-  const status = (error as { response?: { status?: unknown } }).response?.status;
-
-  return typeof status === "number" ? status : undefined;
 }
 
 class FindContactsByPartyUsecase implements ApiCallerInterface {

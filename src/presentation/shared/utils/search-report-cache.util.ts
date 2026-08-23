@@ -24,12 +24,18 @@ type CachedSearchReportResult = {
   total: number;
   page: number;
   count: number;
+  cachedAt: number;
 };
 
 const SEARCH_CACHE_PREFIX = "fraudebot:search";
+const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000;
 
 class SearchReportCache {
-  constructor(private readonly storage: KeyValueStorage = sessionStorage) {}
+  constructor(
+    private readonly storage: KeyValueStorage = sessionStorage,
+    private readonly ttlMs = DEFAULT_CACHE_TTL_MS,
+    private readonly now: () => number = Date.now,
+  ) {}
 
   public get(query: string, page: number): SearchReportResult | null {
     const cacheKey = this.getCacheKey(query, page);
@@ -41,6 +47,14 @@ class SearchReportCache {
 
     try {
       const parsedResult = JSON.parse(cachedResult) as CachedSearchReportResult;
+
+      if (
+        typeof parsedResult.cachedAt !== "number" ||
+        this.now() - parsedResult.cachedAt > this.ttlMs
+      ) {
+        this.storage.removeItem(cacheKey);
+        return null;
+      }
 
       return {
         data: parsedResult.data.map(
@@ -82,6 +96,7 @@ class SearchReportCache {
       total: result.total,
       page: result.page,
       count: result.count,
+      cachedAt: this.now(),
     };
 
     this.storage.setItem(

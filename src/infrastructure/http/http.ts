@@ -4,6 +4,7 @@ import { ENVIRONMENT } from '@/common/environment';
 class Http {
   private static instance: AxiosInstance = axios.create({
     baseURL: ENVIRONMENT.API_BASE_URL,
+    timeout: 15_000,
     headers: {
       'Content-Type': 'application/json',
     },

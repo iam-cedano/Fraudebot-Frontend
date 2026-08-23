@@ -1,21 +1,23 @@
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+
 const ENVIRONMENT = {
-    API_BASE_URL: "http://localhost:9000/api",
+    API_BASE_URL: (configuredApiBaseUrl || "/api").replace(/\/+$/, ""),
 }
 
 const API_ROUTES: Record<string, Record<string, Record<string, string>>> = {
     public: {
         reports: {
-            search: `${ENVIRONMENT.API_BASE_URL}/public/reports/`,
+            search: "/public/reports/",
         },
         scammers: {
-            findById: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}`,
-            calendar: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}/calendar/{year}`,
-            contacts: `${ENVIRONMENT.API_BASE_URL}/public/scammers/{id}/contacts`,
+            findById: "/public/scammers/{id}",
+            calendar: "/public/scammers/{id}/calendar/{year}",
+            contacts: "/public/scammers/{id}/contacts",
         },
         organizations: {
-            findById: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}`,
-            calendar: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}/calendar/{year}`,
-            contacts: `${ENVIRONMENT.API_BASE_URL}/public/organizations/{id}/contacts`,
+            findById: "/public/organizations/{id}",
+            calendar: "/public/organizations/{id}/calendar/{year}",
+            contacts: "/public/organizations/{id}/contacts",
         },
     },
 } as const;

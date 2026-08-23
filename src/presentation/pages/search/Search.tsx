@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import Header from "@presentation/shared/components/Header";
@@ -11,129 +11,46 @@ import searchReportCache from "@/presentation/shared/utils/search-report-cache.u
 import Report from "@/presentation/pages/search/components/ReportCard";
 import ReportSummaryEntity from "@/core/domain/report/entities/report-summary.entity";
 import NotFound from "@/presentation/pages/search/components/NotFound";
-import {
-  getValidPage,
-  getVisiblePages,
-} from "@/presentation/shared/utils/search-pagination.util";
-
-function isCanceledError(error: unknown) {
-  if (typeof error !== "object" || error === null) {
-    return false;
-  }
-
-  const maybeCanceledError = error as { code?: string; name?: string };
-
-  return (
-    maybeCanceledError.name === "CanceledError" ||
-    maybeCanceledError.code === "ERR_CANCELED"
-  );
-}
+import { getValidPage } from "@/presentation/shared/utils/search-pagination.util";
+import { isCanceledError } from "@/common/utils/http-error.util";
+import PaginationNav from "@/presentation/shared/components/PaginationNav";
 
 function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSearching, setIsSearching] = useState(false);
   const [query, setQuery] = useState(searchParams.get("q") || "");
-  const [currentPage, setCurrentPage] = useState(() =>
-    getValidPage(searchParams.get("p") || searchParams.get("page")),
-  );
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [pageSize, setPageSize] = useState(0);
   const [reports, setReports] = useState<ReportSummaryEntity[]>([]);
-  
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [requestVersion, setRequestVersion] = useState(0);
+
   const activeSearchId = useRef(0);
   const { searchReportUseCase, searchReportStubUseCase } = useDependencies();
+  const urlQuery = searchParams.get("q") || "";
+  const requestedPage = getValidPage(
+    searchParams.get("p") || searchParams.get("page"),
+  );
+  const hasSubmittedSearch = urlQuery.trim().length > 0;
   const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
-  const visiblePages = getVisiblePages(currentPage, totalPages);
-
-  const isStub = query.includes("[TEST]");
-
-  const updateSearchParams = useCallback(
-    (nextQuery: string, nextPage: number) => {
-      setSearchParams(`?${Formatter.buildSearchQueryString(nextQuery, nextPage)}`);
-    },
-    [setSearchParams],
-  );
-
-  const searchReports = useCallback(
-    async (nextQuery: string, nextPage: number) => {
-      const searchId = ++activeSearchId.current;
-
-      if (!nextQuery || nextQuery.trim() === "") {
-        setIsSearching(false);
-        setReports([]);
-        setCurrentPage(1);
-        setTotalResults(0);
-        setPageSize(0);
-
-        return;
-      }
-
-      setIsSearching(true);
-
-      try {
-        const apiQuery = Formatter.toSearchQuery(nextQuery);
-        const result = await searchReportUseCase.execute(apiQuery, nextPage);
-
-        setReports(result.data);
-        setCurrentPage(result.page);
-        setTotalResults(result.total);
-        setPageSize(result.count);
-        searchReportCache.set(nextQuery, result);
-        updateSearchParams(nextQuery, result.page);
-      } catch (error) {
-        if (isCanceledError(error)) {
-          return;
-        }
-
-        console.error("Error searching reports:", error);
-      } finally {
-        if (searchId === activeSearchId.current) {
-          setIsSearching(false);
-        }
-      }
-    },
-    [searchReportUseCase, updateSearchParams],
-  );
-
-
-  const searchReportsStub = useCallback(
-    async (nextQuery: string, nextPage: number) => {
-      setIsSearching(true);
-
-      try {
-        const result = await searchReportStubUseCase.execute(nextQuery, nextPage);
-
-        setReports(result.data);
-        setCurrentPage(result.page);
-        setTotalResults(result.total);
-        setPageSize(result.count);
-      } catch (error) {
-        if (isCanceledError(error)) {
-          return;
-        }
-
-        console.error("Error searching reports stub:", error);
-      } finally {
-        setIsSearching(false);
-      }
-    },
-    [searchReportStubUseCase],
-  );
 
   useEffect(() => {
-    if (!query || query.trim() === "") {
-      return;
-    }
-
-    if (isStub) {
-      searchReportsStub(query, currentPage);
-      return;
-    }
-    
-    const formattedQuery = Formatter.FormatInput(query);
-    const cachedResult = searchReportCache.get(formattedQuery, currentPage);
-
+    const formattedQuery = Formatter.FormatInput(urlQuery);
     setQuery(formattedQuery);
+    setErrorMessage(null);
+
+    if (!formattedQuery.trim()) {
+      activeSearchId.current += 1;
+      setIsSearching(false);
+      setReports([]);
+      setCurrentPage(1);
+      setTotalResults(0);
+      setPageSize(0);
+      return;
+    }
+
+    const cachedResult = searchReportCache.get(formattedQuery, requestedPage);
 
     if (cachedResult) {
       setReports(cachedResult.data);
@@ -144,68 +61,135 @@ function Search() {
       return;
     }
 
-    searchReports(formattedQuery, currentPage);
+    const searchId = ++activeSearchId.current;
+    const useStub =
+      import.meta.env.DEV && formattedQuery.includes("[TEST]");
+    const useCase = useStub ? searchReportStubUseCase : searchReportUseCase;
+
+    setIsSearching(true);
+
+    void useCase
+      .execute(Formatter.toSearchQuery(formattedQuery), requestedPage)
+      .then((result) => {
+        if (searchId !== activeSearchId.current) {
+          return;
+        }
+
+        setReports(result.data);
+        setCurrentPage(result.page);
+        setTotalResults(result.total);
+        setPageSize(result.count);
+
+        if (!useStub) {
+          searchReportCache.set(formattedQuery, result);
+        }
+
+        if (result.page !== requestedPage) {
+          setSearchParams(
+            `?${Formatter.buildSearchQueryString(formattedQuery, result.page)}`,
+            { replace: true },
+          );
+        }
+      })
+      .catch((error: unknown) => {
+        if (
+          searchId !== activeSearchId.current ||
+          isCanceledError(error)
+        ) {
+          return;
+        }
+
+        setErrorMessage(
+          "No pudimos completar la búsqueda. Revisa tu conexión e inténtalo de nuevo.",
+        );
+      })
+      .finally(() => {
+        if (searchId === activeSearchId.current) {
+          setIsSearching(false);
+        }
+      });
 
     return () => {
-      searchReportUseCase.cancel();
-
-      if (isStub) {
-        searchReportStubUseCase.cancel();
-      }
-      
+      useCase.cancel();
     };
-  }, []);
+  }, [
+    requestVersion,
+    requestedPage,
+    searchReportStubUseCase,
+    searchReportUseCase,
+    setSearchParams,
+    urlQuery,
+  ]);
 
   const handleInputChange = (event: React.InputEvent<HTMLInputElement>) => {
     const formattedQuery = Formatter.FormatInput(event.currentTarget.value);
 
-    setSearchParams(`?${Formatter.buildSearchQueryString(formattedQuery)}`);
     setQuery(formattedQuery);
-    setCurrentPage(1);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setPageSize(0);
+    const formattedQuery = Formatter.FormatInput(query);
+    const nextSearch = formattedQuery.trim()
+      ? `?${Formatter.buildSearchQueryString(formattedQuery, 1)}`
+      : "";
 
-    if (isStub) {
-      searchReportsStub(query, 1);
-      return;
+    if (nextSearch === `?${searchParams.toString()}`) {
+      setRequestVersion((version) => version + 1);
+    } else {
+      setSearchParams(nextSearch);
     }
-
-    await searchReports(query, 1);
   };
 
-  const handlePageChange = async (page: number) => {
+  const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) {
       return;
     }
 
-    await searchReports(query, page);
+    setSearchParams(`?${Formatter.buildSearchQueryString(urlQuery, page)}`);
   };
-
 
   return (
     <>
-      <title>Fraudebot - Búsqueda	</title>
+      <title>FraudeBot - Búsqueda</title>
 
       <Header />
 
       <SearchContainer>
+        <h1 className="sr-only">Buscar reportes de fraude</h1>
+        <LookupForm
+          onSubmit={handleSubmit}
+          onInputChange={handleInputChange}
+          query={query}
+        />
+
         {isSearching && <Loader />}
 
-        {!isSearching && (
-          <LookupForm
-            onSubmit={handleSubmit}
-            onInputChange={handleInputChange}
-            query={query}
-          />
+        {!isSearching && errorMessage && (
+          <section
+            role="alert"
+            className="mx-4 mb-8 max-w-xl rounded-lg border border-red-200 bg-red-50 p-6 text-center font-[Nunito]"
+          >
+            <h2 className="text-lg font-extrabold text-red-900">
+              La búsqueda falló
+            </h2>
+            <p className="mt-2 text-red-800">{errorMessage}</p>
+            <button
+              type="button"
+              onClick={() => setRequestVersion((version) => version + 1)}
+              className="mt-4 rounded-md bg-red-600 px-4 py-2 font-bold text-white hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            >
+              Reintentar
+            </button>
+          </section>
         )}
 
         {!isSearching &&
+          !errorMessage &&
           reports.length > 0 &&
-          reports.map((report, idx) => (
+          reports.map((report) => (
             <Report
-              key={idx}
+              key={`${report.type}:${report.id}`}
               id={report.id}
               name={report.name}
               organizations={report.organizations}
@@ -217,60 +201,26 @@ function Search() {
             />
           ))}
 
-        {!isSearching && totalPages > 1 && (
-          <nav
-            className="flex items-center justify-center gap-2 mt-2 mb-4 font-[Nunito]"
-            aria-label="Paginación de reportes"
-          >
-            <button
-              type="button"
-              className="px-3 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50"
-              disabled={currentPage === 1}
-              onClick={() => handlePageChange(currentPage - 1)}
-            >
-              Anterior
-            </button>
-
-            {visiblePages.map((page, index) => {
-              const previousPage = visiblePages[index - 1];
-              const shouldShowGap = previousPage && page - previousPage > 1;
-
-              return (
-                <div key={page} className="flex items-center gap-2">
-                  {shouldShowGap && (
-                    <span className="text-sm font-semibold text-gray-400">
-                      ...
-                    </span>
-                  )}
-
-                  <button
-                    type="button"
-                    className={`px-3 py-2 text-sm font-semibold border rounded-sm shadow-sm ${
-                      page === currentPage
-                        ? "bg-red-600 text-white border-red-600"
-                        : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                    }`}
-                    aria-current={page === currentPage ? "page" : undefined}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                </div>
-              );
-            })}
-
-            <button
-              type="button"
-              className="px-3 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-sm shadow-sm disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50"
-              disabled={currentPage === totalPages}
-              onClick={() => handlePageChange(currentPage + 1)}
-            >
-              Siguiente
-            </button>
-          </nav>
+        {!isSearching && !errorMessage && totalPages > 1 && (
+          <PaginationNav
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            ariaLabel="Paginación de reportes"
+            className="mb-4 mt-2"
+          />
         )}
 
-        {!isSearching && totalResults === 0 && <NotFound />}
+        {!isSearching &&
+          !errorMessage &&
+          hasSubmittedSearch &&
+          totalResults === 0 && <NotFound />}
+
+        {!isSearching && !hasSubmittedSearch && (
+          <p className="px-4 pb-16 text-center font-[Nunito] text-gray-600">
+            Ingresa un dato para consultar reportes de la comunidad.
+          </p>
+        )}
       </SearchContainer>
 
       <Footer />

@@ -1,3 +1,4 @@
+import { useRef, type KeyboardEvent } from "react";
 import reportIcons from "@presentation/pages/report/components/icons";
 import {
   reportTabs,
@@ -21,27 +22,57 @@ function ReportTabNavigation({
   activeTab,
   onTabChange,
 }: ReportTabNavigationProps) {
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const availableTabs = reportTabs.filter((tab) => tab !== "Soporte");
+
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, tab: ReportTab) {
+    if (tab === "Soporte") return;
+    const currentIndex = availableTabs.indexOf(tab);
+    let nextIndex: number | undefined;
+
+    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % availableTabs.length;
+    if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + availableTabs.length) % availableTabs.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = availableTabs.length - 1;
+
+    if (nextIndex === undefined) return;
+    event.preventDefault();
+    const nextTab = availableTabs[nextIndex];
+    if (!nextTab) return;
+    onTabChange(nextTab);
+    tabRefs.current[reportTabs.indexOf(nextTab)]?.focus();
+  }
+
   return (
     <div className="mx-auto flex max-w-5xl justify-center px-4 pt-6">
-      <nav
+      <div
+        role="tablist"
         className="inline-flex w-fit max-w-full overflow-x-auto bg-gray-100"
         aria-label="Secciones del perfil"
       >
-        {reportTabs.map((tab) => {
+        {reportTabs.map((tab, index) => {
           const isActive = activeTab === tab;
           const iconSrc = tabIcons[tab];
+          const isUnavailable = tab === "Soporte";
 
           return (
             <button
               key={tab}
+              ref={(element) => { tabRefs.current[index] = element; }}
               type="button"
+              role="tab"
+              id={`report-tab-${tab.toLowerCase()}`}
+              aria-controls={`report-panel-${tab.toLowerCase()}`}
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
+              disabled={isUnavailable}
               onClick={() => onTabChange(tab)}
-              className={`cursor-pointer inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-5 py-3.5 text-sm font-extrabold transition-colors sm:px-6 ${
+              onKeyDown={(event) => handleKeyDown(event, tab)}
+              className={`inline-flex shrink-0 items-center gap-2 whitespace-nowrap px-5 py-3.5 text-sm font-extrabold transition-colors focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:text-gray-400 sm:px-6 ${
                 isActive
                   ? "bg-gray-950 text-white"
-                  : "text-gray-600 hover:bg-gray-200 hover:text-gray-950"
+                  : "cursor-pointer text-gray-600 hover:bg-gray-200 hover:text-gray-950"
               }`}
-              aria-current={isActive ? "page" : undefined}
             >
               {iconSrc && (
                 <img
@@ -53,11 +84,11 @@ function ReportTabNavigation({
                   }`}
                 />
               )}
-              {tab}
+              {tab}{isUnavailable ? " (próximamente)" : ""}
             </button>
           );
         })}
-      </nav>
+      </div>
     </div>
   );
 }

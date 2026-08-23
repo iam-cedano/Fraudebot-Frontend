@@ -4,6 +4,7 @@ import MonthlyReportsChart from "@presentation/pages/report/components/MonthlyRe
 import { ReportTab } from "@presentation/pages/report/components/types";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import MonthlyReportCountsEntity from "@/core/domain/report/entities/monthly-report-counts.entity";
+import { isCanceledError } from "@/common/utils/http-error.util";
 
 interface GeneralTabProps {
   partyId: string;
@@ -93,18 +94,36 @@ function GeneralTab({
   const [selectedYear, setSelectedYear] = useState(CURRENT_YEAR);
   const [monthlyCounts, setMonthlyCounts] =
     useState<MonthlyReportCountsEntity | null>(null);
+  const [chartState, setChartState] = useState<
+    "loading" | "ready" | "error"
+  >("loading");
+  const [requestVersion, setRequestVersion] = useState(0);
 
   useEffect(() => {
     setMonthlyCounts(null);
+    setChartState("loading");
     findMonthlyReportCountsUseCase
       .execute(partyId, partyType, selectedYear)
-      .then(setMonthlyCounts)
-      .catch(() => undefined);
+      .then((counts) => {
+        setMonthlyCounts(counts);
+        setChartState("ready");
+      })
+      .catch((error: unknown) => {
+        if (!isCanceledError(error)) {
+          setChartState("error");
+        }
+      });
 
     return () => {
       findMonthlyReportCountsUseCase.cancel();
     };
-  }, [findMonthlyReportCountsUseCase, partyId, partyType, selectedYear]);
+  }, [
+    findMonthlyReportCountsUseCase,
+    partyId,
+    partyType,
+    requestVersion,
+    selectedYear,
+  ]);
 
   return (
     <div className="divide-y divide-gray-200 border border-gray-200 bg-white">
@@ -198,11 +217,27 @@ function GeneralTab({
           </select>
         </div>
         <div className="mt-4">
-          {!monthlyCounts ? (
+          {chartState === "loading" ? (
             <div className="flex h-56 items-center text-sm text-gray-400">
               Cargando diagrama...
             </div>
-          ) : monthlyCounts.hasReports ? (
+          ) : chartState === "error" ? (
+            <div
+              role="alert"
+              className="flex h-56 flex-col items-center justify-center text-center"
+            >
+              <p className="font-semibold text-red-800">
+                No pudimos cargar los reportes de este año.
+              </p>
+              <button
+                type="button"
+                onClick={() => setRequestVersion((version) => version + 1)}
+                className="mt-3 rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700"
+              >
+                Reintentar
+              </button>
+            </div>
+          ) : monthlyCounts?.hasReports ? (
             <>
               <MonthlyReportsChart monthlyCounts={monthlyCounts} />
               <p className="mt-2 text-sm text-gray-400">
