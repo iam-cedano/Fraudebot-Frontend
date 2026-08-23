@@ -4,6 +4,7 @@ import Footer from "@presentation/shared/components/Footer";
 import Header from "@presentation/shared/components/Header";
 import ContactsTab from "@presentation/pages/report/components/ContactsTab";
 import GeneralTab from "@presentation/pages/report/components/GeneralTab";
+import MapTab from "@presentation/pages/report/components/MapTab";
 import PlaceholderTab from "@presentation/pages/report/components/PlaceholderTab";
 import ReportHero, {
   ReportHeroSkeleton,
@@ -130,9 +131,14 @@ function Report({ type }: { type: "scammer" | "organization" }) {
               {activeTab === "Contactos" && (
                 <ContactsTab partyId={party.id} partyType={type} />
               )}
-              {(activeTab === "Mapa" || activeTab === "Soporte") && (
-                <PlaceholderTab tab={activeTab} />
+              {activeTab === "Mapa" && (
+                <MapTab
+                  partyId={party.id}
+                  partyType={type}
+                  partyName={party.name}
+                />
               )}
+              {activeTab === "Soporte" && <PlaceholderTab tab="Soporte" />}
             </>
           ) : (
             activeTab === "General" && <GeneralPanelsSkeleton />

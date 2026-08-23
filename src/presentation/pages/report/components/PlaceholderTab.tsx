@@ -1,5 +1,5 @@
 interface PlaceholderTabProps {
-  tab: "Mapa" | "Soporte";
+  tab: "Soporte";
 }
 
 function PlaceholderTab({ tab }: PlaceholderTabProps) {
