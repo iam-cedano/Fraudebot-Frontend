@@ -33,6 +33,14 @@ function digitsOnly(value: string): string {
   return value.replace(/[^\d+]/g, "");
 }
 
+function stripAtPrefix(value: string): string {
+  return value.replace(/^@/, "");
+}
+
+function stripPathSuffix(value: string): string {
+  return value.replace(/\/.*$/, "");
+}
+
 export function getContactHref(reference: string, platform?: string): string {
   const value = reference.trim();
   const key = platform?.toLowerCase();
@@ -41,16 +49,12 @@ export function getContactHref(reference: string, platform?: string): string {
     return "#";
   }
 
-  if (key === "email" || (value.includes("@") && !value.includes(" "))) {
+  if (key === "email") {
     return value.startsWith("mailto:") ? value : `mailto:${value}`;
   }
 
   if (key === "whatsapp") {
-    return `https://wa.me/${digitsOnly(value).replace(/^\+/, "")}`;
-  }
-
-  if (key === "cellphone" || /^\+?[\d\s()-]{7,}$/.test(value)) {
-    return `tel:${digitsOnly(value)}`;
+    return `https://wa.me/${digitsOnly(value).replace(/\+/g, "")}`;
   }
 
   if (key === "telegram") {
@@ -64,6 +68,73 @@ export function getContactHref(reference: string, platform?: string): string {
       .replace(/^@/, "");
 
     return `https://t.me/${handle}`;
+  }
+
+  if (key === "instagram") {
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+
+    const handle = stripPathSuffix(
+      stripAtPrefix(
+        value.replace(/^https?:\/\/(www\.)?instagram\.com\//i, ""),
+      ),
+    );
+
+    return `https://www.instagram.com/${handle}`;
+  }
+
+  if (key === "tiktok") {
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+
+    const handle = stripPathSuffix(
+      stripAtPrefix(
+        value.replace(/^https?:\/\/(www\.)?tiktok\.com\/@?/i, ""),
+      ),
+    );
+
+    return `https://www.tiktok.com/@${handle}`;
+  }
+
+  if (key === "youtube") {
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+
+    const handle = stripPathSuffix(
+      stripAtPrefix(
+        value.replace(
+          /^https?:\/\/(www\.)?youtube\.com\/(c\/|channel\/|user\/|@)?/i,
+          "",
+        ),
+      ),
+    );
+
+    return `https://www.youtube.com/@${handle}`;
+  }
+
+  if (key === "facebook") {
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+
+    const handle = stripPathSuffix(
+      stripAtPrefix(
+        value.replace(/^https?:\/\/(www\.)?facebook\.com\//i, ""),
+      ),
+    );
+
+    return `https://www.facebook.com/${handle}`;
+  }
+
+  if (key === "cellphone") {
+    return `tel:${digitsOnly(value)}`;
+  }
+
+  if (value.includes("@") && !value.includes(" ")) {
+    return value.startsWith("mailto:") ? value : `mailto:${value}`;
   }
 
   if (/^https?:\/\//i.test(value)) {

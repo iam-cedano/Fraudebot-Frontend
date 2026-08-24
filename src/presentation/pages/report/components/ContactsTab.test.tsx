@@ -61,6 +61,7 @@ describe("ContactsTab", () => {
     const contactLinks = screen.getAllByRole("link", { name: /Abrir / });
     expect(contactLinks).toHaveLength(10);
     expect(contactLinks[0]).toHaveAttribute("target", "_blank");
+    expect(contactLinks[0]).toHaveAttribute("rel", "noopener noreferrer");
     expect(contactLinks[0]).toHaveClass("cursor-pointer");
     expect(screen.getByText("Contactos:")).toBeInTheDocument();
     expect(
@@ -71,6 +72,58 @@ describe("ContactsTab", () => {
       expect(
         screen.getByRole("button", { name: filter.label }),
       ).toBeInTheDocument();
+    }
+  });
+
+  it("builds platform-specific links that open in a new tab", async () => {
+    const execute = vi.fn().mockResolvedValue({
+      data: [
+        createContact("1", "Whatsapp", "+52 669 123 1234"),
+        createContact("2", "Instagram", "kyliejenner"),
+        createContact("3", "Telegram", "cedano"),
+        createContact("4", "Telegram", "+526691231234"),
+        createContact("5", "Webpage", "https://example.com/profile"),
+      ],
+      total: 5,
+      page: 1,
+      count: 10,
+    });
+
+    renderWithProviders(
+      <ContactsTab partyId="20" partyType="scammer" />,
+      {
+        overrides: {
+          findContactsByPartyUseCase: {
+            execute,
+            cancel: vi.fn(),
+          },
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(screen.getAllByRole("article")).toHaveLength(5);
+    });
+
+    expect(screen.getByRole("link", { name: "Abrir WhatsApp" })).toHaveAttribute(
+      "href",
+      "https://wa.me/526691231234",
+    );
+    expect(
+      screen.getByRole("link", { name: "Abrir Instagram" }),
+    ).toHaveAttribute("href", "https://www.instagram.com/kyliejenner");
+
+    const telegramLinks = screen.getAllByRole("link", { name: "Abrir Telegram" });
+    expect(telegramLinks[0]).toHaveAttribute("href", "https://t.me/cedano");
+    expect(telegramLinks[1]).toHaveAttribute("href", "https://t.me/+526691231234");
+    expect(screen.getByRole("link", { name: "Abrir Webpage" })).toHaveAttribute(
+      "href",
+      "https://example.com/profile",
+    );
+
+    for (const link of screen.getAllByRole("link", { name: /Abrir / })) {
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
     }
   });
 

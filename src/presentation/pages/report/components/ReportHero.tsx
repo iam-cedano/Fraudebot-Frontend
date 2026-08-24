@@ -3,6 +3,7 @@ import defaultAvatar from "@presentation/assets/default-avatar.png";
 import heroRedBackground from "@presentation/assets/hero-red.webp";
 import ImageLightbox from "@presentation/pages/report/components/ImageLightbox";
 import SummaryItem from "@presentation/pages/report/components/SummaryItem";
+import { formatReportDate } from "@presentation/pages/report/components/contact-date.util";
 import reportIcons from "@presentation/pages/report/components/icons";
 import { ReportHeroProps } from "@presentation/pages/report/components/types";
 
@@ -95,11 +96,7 @@ function ReportHero({
     setIsPreviewOpen(false);
   }, []);
 
-  const formattedDate = reportDate.toLocaleDateString("es-MX", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  const formattedDate = formatReportDate(reportDate);
 
   return (
     <section

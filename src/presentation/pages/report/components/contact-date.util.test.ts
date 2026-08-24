@@ -1,4 +1,14 @@
-import { formatContactDate } from "@presentation/pages/report/components/contact-date.util";
+import {
+  formatContactDate,
+  formatReportDate,
+} from "@presentation/pages/report/components/contact-date.util";
+
+describe("formatReportDate", () => {
+  it("formats a UTC calendar date as day-month-year", () => {
+    expect(formatReportDate(new Date("2026-08-10"))).toBe("10-ago-2026");
+    expect(formatReportDate(new Date("2026-01-01"))).toBe("01-ene-2026");
+  });
+});
 
 describe("formatContactDate", () => {
   it("formats a day-first API date", () => {

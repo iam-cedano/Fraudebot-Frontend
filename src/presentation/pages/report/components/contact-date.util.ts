@@ -23,6 +23,14 @@ function formatParts(day: number, month: number, year: number): string {
   return `${String(day).padStart(2, "0")}-${monthLabel}-${year}`;
 }
 
+export function formatReportDate(date: Date): string {
+  return formatParts(
+    date.getUTCDate(),
+    date.getUTCMonth() + 1,
+    date.getUTCFullYear(),
+  );
+}
+
 export function formatContactDate(value: string): string {
   const dayFirst = /^(\d{2})-(\d{2})-(\d{4})$/.exec(value);
 
