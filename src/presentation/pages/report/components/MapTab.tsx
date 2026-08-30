@@ -76,9 +76,6 @@ function MapTab({ partyId, partyType, partyName }: MapTabProps) {
           </button>
         </div>
         <div
-          ref={(element) => {
-            element?.setAttribute("inert", "");
-          }}
           className="map-tab relative mt-6 h-[32rem] min-h-[28rem] w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50"
           aria-label="Ejemplo visual de un mapa de relaciones"
         >
@@ -90,8 +87,9 @@ function MapTab({ partyId, partyType, partyName }: MapTabProps) {
         </div>
         <p className="mt-4 text-sm text-gray-500">
           Este diagrama usa datos ficticios para mostrar cómo funcionará la
-          herramienta. No representa vínculos verificados y sus controles están
-          desactivados.
+          herramienta. No representa vínculos verificados. Arrastra el mapa
+          para recorrerlo y usa la rueda del ratón o los controles para acercar
+          o alejar.
         </p>
       </section>
     </ReactFlowProvider>
