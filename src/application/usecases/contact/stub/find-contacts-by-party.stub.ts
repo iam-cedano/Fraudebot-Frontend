@@ -10,7 +10,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Soporte Ventas",
     "+52 666 123 1234",
     "Whatsapp",
-    "10-01-2021",
+    "2021-01-10",
     true,
   ),
   new ContactSummaryEntity(
@@ -18,7 +18,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Roxane",
     "www.facebook.com/profile.php?id=100094827384756",
     "Facebook",
-    "20-11-2026",
+    "2026-11-20",
     true,
   ),
   new ContactSummaryEntity(
@@ -26,7 +26,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Nomad Store",
     "www.youtube.com/@nomad.store",
     "Youtube",
-    "14-06-2026",
+    "2026-06-14",
     true,
   ),
   new ContactSummaryEntity(
@@ -34,7 +34,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Effie",
     "www.tiktok.com/@effie.deals",
     "TikTok",
-    "08-07-2026",
+    "2026-07-08",
     true,
   ),
   new ContactSummaryEntity(
@@ -42,7 +42,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Roxane",
     "fritz.rice@example.com",
     "Email",
-    "23-08-2026",
+    "2026-08-23",
     true,
   ),
   new ContactSummaryEntity(
@@ -50,7 +50,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Soporte Ventas",
     "+52 555 000 1122",
     "Cellphone",
-    "03-09-2025",
+    "2025-09-03",
     true,
   ),
   new ContactSummaryEntity(
@@ -58,7 +58,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Telegram Desk",
     "t.me/nomad_soporte",
     "Telegram",
-    "18-04-2026",
+    "2026-04-18",
     true,
   ),
   new ContactSummaryEntity(
@@ -66,7 +66,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Nomad Store",
     "www.instagram.com/nomad.store",
     "Instagram",
-    "30-12-2026",
+    "2026-12-30",
     true,
   ),
   new ContactSummaryEntity(
@@ -74,7 +74,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Effie",
     "https://nomad-store.example/checkout",
     "Webpage",
-    "11-02-2026",
+    "2026-02-11",
     true,
   ),
   new ContactSummaryEntity(
@@ -82,7 +82,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Fiona",
     "Canal interno de referidos",
     "Other",
-    "23-08-2026",
+    "2026-08-23",
     true,
   ),
   new ContactSummaryEntity(
@@ -90,7 +90,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Andres",
     "+52 811 444 7788",
     "Whatsapp",
-    "27-11-2025",
+    "2025-11-27",
     true,
   ),
   new ContactSummaryEntity(
@@ -98,7 +98,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Mario",
     "www.facebook.com/mario.crypto",
     "Facebook",
-    "04-06-2026",
+    "2026-06-04",
     true,
   ),
   new ContactSummaryEntity(
@@ -106,7 +106,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Lucia",
     "www.youtube.com/watch?v=dQw4w9WgXcQ",
     "Youtube",
-    "19-10-2025",
+    "2025-10-19",
     true,
   ),
   new ContactSummaryEntity(
@@ -114,7 +114,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Sofia",
     "www.tiktok.com/@sofia.outlet",
     "TikTok",
-    "02-01-2026",
+    "2026-01-02",
     true,
   ),
   new ContactSummaryEntity(
@@ -122,7 +122,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Fiona",
     "ahermiston@example.org",
     "Email",
-    "23-08-2026",
+    "2026-08-23",
     true,
   ),
   new ContactSummaryEntity(
@@ -130,7 +130,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Pablo",
     "+52 333 210 9988",
     "Cellphone",
-    "21-03-2026",
+    "2026-03-21",
     true,
   ),
   new ContactSummaryEntity(
@@ -138,7 +138,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Hugo",
     "t.me/hugo_trading",
     "Telegram",
-    "05-05-2026",
+    "2026-05-05",
     true,
   ),
   new ContactSummaryEntity(
@@ -146,7 +146,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Camila",
     "www.instagram.com/camila.vip",
     "Instagram",
-    "09-12-2026",
+    "2026-12-09",
     true,
   ),
   new ContactSummaryEntity(
@@ -154,7 +154,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Diego",
     "www.nomad-store.example/ofertas",
     "Webpage",
-    "14-08-2025",
+    "2025-08-14",
     true,
   ),
   new ContactSummaryEntity(
@@ -162,7 +162,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Valeria",
     "Grupo de WhatsApp cerrado",
     "Other",
-    "28-02-2026",
+    "2026-02-28",
     true,
   ),
   new ContactSummaryEntity(
@@ -170,7 +170,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Marta",
     "+52 222 156 3344",
     "Whatsapp",
-    "07-04-2026",
+    "2026-04-07",
     true,
   ),
   new ContactSummaryEntity(
@@ -178,7 +178,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Paula",
     "www.facebook.com/paula.inversiones",
     "Facebook",
-    "01-11-2026",
+    "2026-11-01",
     true,
   ),
   new ContactSummaryEntity(
@@ -186,7 +186,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Oscar",
     "www.tiktok.com/@oscar.ofertas",
     "TikTok",
-    "25-01-2026",
+    "2026-01-25",
     true,
   ),
   new ContactSummaryEntity(
@@ -194,7 +194,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Ivan",
     "www.instagram.com/ivan.forex",
     "Instagram",
-    "12-07-2025",
+    "2025-07-12",
     true,
   ),
   new ContactSummaryEntity(
@@ -202,7 +202,7 @@ const stubContacts: ContactSummaryEntity[] = [
     "Elena",
     "www.youtube.com/@elena.live",
     "Youtube",
-    "16-09-2026",
+    "2026-09-16",
     true,
   ),
 ];

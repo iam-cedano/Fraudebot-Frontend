@@ -32,15 +32,6 @@ export function formatReportDate(date: Date): string {
 }
 
 export function formatContactDate(value: string): string {
-  const dayFirst = /^(\d{2})-(\d{2})-(\d{4})$/.exec(value);
-
-  if (dayFirst) {
-    return (
-      formatParts(Number(dayFirst[1]), Number(dayFirst[2]), Number(dayFirst[3])) ||
-      value
-    );
-  }
-
   const isoDate = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
 
   if (isoDate) {

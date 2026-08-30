@@ -15,7 +15,7 @@ function createContact(
     `Contact ${id}`,
     reference,
     platform,
-    "20-11-2026",
+    "2026-11-20",
     true,
   );
 }

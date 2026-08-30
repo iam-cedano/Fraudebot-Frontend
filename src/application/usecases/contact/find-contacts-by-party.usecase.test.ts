@@ -15,7 +15,7 @@ const apiContact = {
   name: "Roxane",
   reference: "fritz.rice@example.com",
   platform: "Other",
-  created_at: "23-08-2026",
+  created_at: "2026-08-23",
   is_active: true,
 };
 
@@ -52,7 +52,7 @@ describe("FindContactsByPartyUsecase", () => {
     expect(result.data[0].name).toBe("Roxane");
     expect(result.data[0].reference).toBe("fritz.rice@example.com");
     expect(result.data[0].platform).toBe("Other");
-    expect(result.data[0].createdAt).toBe("23-08-2026");
+    expect(result.data[0].createdAt).toBe("2026-08-23");
     expect(result.data[0].isActive).toBe(true);
     expect(result.total).toBe(4);
     expect(result.page).toBe(1);

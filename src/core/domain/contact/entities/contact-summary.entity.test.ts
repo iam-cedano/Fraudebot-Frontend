@@ -8,7 +8,7 @@ describe("ContactSummaryEntity.success", () => {
       "Roxane",
       "fritz.rice@example.com",
       "Other",
-      "23-08-2026",
+      "2026-08-23",
       true,
     );
   }
@@ -34,7 +34,7 @@ describe("ContactSummaryEntity.success", () => {
   });
 
   it("should return the contact summary created at", () => {
-    expect(createContact().createdAt).toBe("23-08-2026");
+    expect(createContact().createdAt).toBe("2026-08-23");
   });
 
   it("should return the contact summary is active", () => {
@@ -47,7 +47,7 @@ describe("ContactSummaryEntity.success", () => {
       "Roxane",
       "fritz.rice@example.com",
       "Other",
-      "23-08-2026",
+      "2026-08-23",
       false,
     );
 
