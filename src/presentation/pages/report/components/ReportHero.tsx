@@ -1,6 +1,10 @@
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { reportPartyPath } from "@/common/app-routes";
+import {
+  organizationPath,
+  reportPartyPath,
+  scammerPath,
+} from "@/common/app-routes";
 import defaultAvatar from "@presentation/assets/default-avatar.png";
 import heroRedBackground from "@presentation/assets/hero-red.webp";
 import ImageLightbox from "@presentation/pages/report/components/ImageLightbox";
@@ -8,6 +12,20 @@ import SummaryItem from "@presentation/pages/report/components/SummaryItem";
 import { formatReportDate } from "@presentation/pages/report/components/contact-date.util";
 import reportIcons from "@presentation/pages/report/components/icons";
 import { ReportHeroProps } from "@presentation/pages/report/components/types";
+import DropdownButton from "@presentation/shared/components/DropdownButton";
+import { DropdownOption } from "@presentation/shared/components/types";
+
+async function copyTextToClipboard(text: string) {
+  if (!navigator.clipboard?.writeText) {
+    throw new Error("Clipboard unavailable");
+  }
+
+  await navigator.clipboard.writeText(text);
+}
+
+function getProfilePath(id: string, partyType: ReportHeroProps["partyType"]) {
+  return partyType === "scammer" ? scammerPath(id) : organizationPath(id);
+}
 
 function SkeletonBar({ className }: { className: string }) {
   return <div className={`motion-safe:animate-pulse rounded bg-gray-200 ${className}`} />;
@@ -94,12 +112,31 @@ function ReportHero({
   profilePicture,
 }: ReportHeroProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [shareMessage, setShareMessage] = useState<string | null>(null);
   const imageSrc = profilePicture || defaultAvatar;
   const closePreview = useCallback(() => {
     setIsPreviewOpen(false);
   }, []);
 
   const formattedDate = formatReportDate(reportDate);
+  const shareUrl = `${window.location.origin}${getProfilePath(id, partyType)}`;
+  const shareOptions: DropdownOption[] = [
+    {
+      id: "copy-link",
+      label: "Copiar enlace",
+      onClick: () => {
+        void copyTextToClipboard(shareUrl)
+          .then(() => setShareMessage("Enlace copiado"))
+          .catch(() => setShareMessage("No pudimos copiar el enlace"));
+      },
+    },
+    {
+      id: "pdf",
+      label: "Descargar PDF (próximamente)",
+      disabled: true,
+      onClick: () => {},
+    },
+  ];
 
   return (
     <section
@@ -144,13 +181,21 @@ function ReportHero({
                 </p>
               </div>
 
-              <button
-                type="button"
-                disabled
-                className="cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-xs font-extrabold text-gray-600"
-              >
-                Exportar (próximamente)
-              </button>
+              <div className="flex flex-col items-end">
+                <DropdownButton
+                  label="Compartir"
+                  options={shareOptions}
+                  iconSrc={reportIcons.shareArrow}
+                />
+                {shareMessage && (
+                  <p
+                    role="status"
+                    className="mt-2 text-xs font-semibold text-gray-600"
+                  >
+                    {shareMessage}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="mt-5 grid gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2 lg:grid-cols-4">

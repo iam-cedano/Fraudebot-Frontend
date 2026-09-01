@@ -113,6 +113,50 @@ describe("Report page", () => {
     expect(screen.queryByText(/cargando/i)).not.toBeInTheDocument();
   });
 
+  it("copies the profile URL from the Compartir menu", async () => {
+    const user = userEvent.setup();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    renderScammerReport(
+      vi.fn().mockResolvedValue(
+        new ScammerSummaryEntity(
+          "20",
+          "Joseph Nacchio",
+          "DM",
+          null,
+          3,
+          ["Stocks"],
+          false,
+          new Date("2026-08-10"),
+          new Date("2026-08-10"),
+        ),
+      ),
+    );
+
+    await user.click(await screen.findByRole("button", { name: "Compartir" }));
+
+    expect(
+      screen.getByRole("menuitem", { name: "Copiar enlace" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Descargar PDF (próximamente)" }),
+    ).toBeDisabled();
+    expect(
+      screen.queryByRole("button", { name: /Exportar/ }),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("menuitem", { name: "Copiar enlace" }));
+
+    expect(writeText).toHaveBeenCalledWith(
+      `${window.location.origin}/estafadores/20`,
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("Enlace copiado");
+  });
+
   it("shows a retry action for transient failures", async () => {
     const user = userEvent.setup();
     const execute = vi.fn().mockRejectedValue(new Error("offline"));
