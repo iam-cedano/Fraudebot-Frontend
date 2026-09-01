@@ -77,6 +77,7 @@ describe("buildMapGraphFromApi", () => {
         kind: "contact",
         label: "WhatsApp",
         detail: "555 123 4567",
+        platform: "whatsapp",
       },
     });
     expect(edges).toHaveLength(3);

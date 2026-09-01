@@ -15,11 +15,23 @@ export type PartyNodeData = {
   isCurrent: boolean;
 };
 
-export type SatelliteNodeData = {
-  kind: SatelliteKind;
+export type ContactSatelliteNodeData = {
+  kind: "contact";
   label: string;
   detail: string;
+  platform: string;
 };
+
+export type PaymentSatelliteNodeData = {
+  kind: "payment_method";
+  label: string;
+  detail: string;
+  paymentType?: number;
+};
+
+export type SatelliteNodeData =
+  | ContactSatelliteNodeData
+  | PaymentSatelliteNodeData;
 
 export type MapPartyNode = Node<PartyNodeData, "party">;
 export type MapSatelliteNode = Node<SatelliteNodeData, "satellite">;
@@ -72,7 +84,10 @@ function satelliteNode(
     className: "nopan",
     width: NODE_WIDTH,
     height: NODE_HEIGHT,
-    style: nodeStyle,
+    style: {
+      ...nodeStyle,
+      pointerEvents: "auto",
+    },
   };
 }
 
@@ -302,11 +317,19 @@ function buildMapGraphFromApi(
     }
 
     return [
-      satelliteNode(flowId, position, {
-        kind: node.type === "contact" ? "contact" : "payment_method",
-        label: node.label,
-        detail: node.detail,
-      }),
+      node.type === "contact"
+        ? satelliteNode(flowId, position, {
+            kind: "contact",
+            label: node.label,
+            detail: node.detail,
+            platform: node.platform,
+          })
+        : satelliteNode(flowId, position, {
+            kind: "payment_method",
+            label: node.label,
+            detail: node.detail,
+            paymentType: node.payment_type,
+          }),
     ];
   });
 
