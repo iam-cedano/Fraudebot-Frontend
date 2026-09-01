@@ -110,19 +110,17 @@ function Report({ type }: { type: "scammer" | "organization" }) {
     type,
   ]);
 
-  useEffect(() => {
-    document.title =
-      loadState === "not-found"
-        ? "FraudeBot - Perfil no encontrado"
-        : loadState === "error"
-          ? "FraudeBot - Error"
-          : party
-      ? `FraudeBot - ${party.name}`
-      : "FraudeBot - Cargando...";
-  }, [loadState, party]);
+  const title = party
+    ? `FraudeBot - ${party.name}`
+    : loadState === "not-found"
+      ? "FraudeBot - Perfil no encontrado"
+      : loadState === "error"
+        ? "FraudeBot - Error"
+        : "FraudeBot";
 
   return (
     <div className="font-[Nunito]">
+      <title>{title}</title>
       <Header />
       {loadState === "ready" && party ? (
         <ReportHero

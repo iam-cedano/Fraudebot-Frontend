@@ -16,6 +16,7 @@ test("invalid report IDs render a recoverable not-found state", async ({
   await expect(
     page.getByRole("heading", { name: "Perfil no encontrado" }),
   ).toBeVisible();
+  await expect(page).toHaveTitle("FraudeBot - Perfil no encontrado");
   await expect(
     page.getByRole("link", { name: "Volver a la búsqueda" }),
   ).toBeVisible();

@@ -41,6 +41,39 @@ function renderScammerReport(
 }
 
 describe("Report page", () => {
+  beforeEach(() => {
+    document.title = "FraudeBot";
+  });
+
+  it("keeps the generic title while the profile is loading", () => {
+    renderScammerReport(vi.fn().mockReturnValue(new Promise(() => {})));
+
+    expect(document.title).toBe("FraudeBot");
+  });
+
+  it("sets the document title to the party name when loaded", async () => {
+    renderScammerReport(
+      vi.fn().mockResolvedValue(
+        new ScammerSummaryEntity(
+          "20",
+          "Joseph Nacchio",
+          "DM",
+          null,
+          3,
+          ["Stocks"],
+          false,
+          new Date("2026-08-10"),
+          new Date("2026-08-10"),
+        ),
+      ),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Joseph Nacchio" }),
+    ).toBeInTheDocument();
+    expect(document.title).toBe("FraudeBot - Joseph Nacchio");
+  });
+
   it("shows the report date as day-spanish-month-year", async () => {
     const createdAt = new Date("2026-08-10");
 
@@ -76,6 +109,7 @@ describe("Report page", () => {
     expect(
       await screen.findByRole("heading", { name: "Perfil no encontrado" }),
     ).toBeInTheDocument();
+    expect(document.title).toBe("FraudeBot - Perfil no encontrado");
     expect(screen.queryByText(/cargando/i)).not.toBeInTheDocument();
   });
 
@@ -85,7 +119,12 @@ describe("Report page", () => {
 
     renderScammerReport(execute);
 
-    await user.click(await screen.findByRole("button", { name: "Reintentar" }));
+    expect(
+      await screen.findByRole("button", { name: "Reintentar" }),
+    ).toBeInTheDocument();
+    expect(document.title).toBe("FraudeBot - Error");
+
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
 
     expect(execute).toHaveBeenCalledTimes(2);
   });
