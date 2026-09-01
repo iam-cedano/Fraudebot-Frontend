@@ -1,4 +1,5 @@
 import { type ReactNode, type MouseEvent } from "react";
+import { Link } from "react-router-dom";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import {
   getContactHref,
@@ -9,6 +10,7 @@ import type { MapSatelliteNode } from "@presentation/pages/report/components/map
 import {
   getPaymentHref,
   getPaymentLabel,
+  isExternalPaymentHref,
 } from "@presentation/pages/report/components/payment-method.util";
 
 const mapNodeCardClassName =
@@ -91,9 +93,14 @@ function MapSatelliteNode({ data }: NodeProps<MapSatelliteNode>) {
     ? getContactHref(data.detail, data.platform || data.label)
     : getPaymentHref(data.detail, data.paymentType);
   const isLink = href !== "#";
+  const isExternalLink = isLink && (isContact || isExternalPaymentHref(href));
   const ariaLabel = isContact
     ? `Abrir ${title}`
-    : `Abrir ${title}: ${data.detail}`;
+    : isExternalLink
+      ? `Abrir ${title}: ${data.detail}`
+      : `Buscar ${title}: ${data.detail}`;
+
+  const linkClassName = `nodrag nopan nowheel pointer-events-auto cursor-pointer transition-all hover:border-gray-300 hover:bg-gray-50/50 hover:shadow-md ${mapNodeCardClassName}`;
 
   const content = (
     <SatelliteCardContent
@@ -111,13 +118,13 @@ function MapSatelliteNode({ data }: NodeProps<MapSatelliteNode>) {
         position={Position.Top}
         className="!h-2 !w-2 !border-gray-300 !bg-gray-200"
       />
-      {isLink ? (
+      {isExternalLink ? (
         <a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={ariaLabel}
-          className={`nodrag nopan nowheel pointer-events-auto cursor-pointer transition-all hover:border-gray-300 hover:bg-gray-50/50 hover:shadow-md ${mapNodeCardClassName}`}
+          className={linkClassName}
           onPointerDown={(event) => {
             event.stopPropagation();
           }}
@@ -127,6 +134,20 @@ function MapSatelliteNode({ data }: NodeProps<MapSatelliteNode>) {
         >
           {content}
         </a>
+      ) : isLink ? (
+        <Link
+          to={href}
+          aria-label={ariaLabel}
+          className={linkClassName}
+          onPointerDown={(event) => {
+            event.stopPropagation();
+          }}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
+        >
+          {content}
+        </Link>
       ) : (
         <div className={mapNodeCardClassName}>{content}</div>
       )}

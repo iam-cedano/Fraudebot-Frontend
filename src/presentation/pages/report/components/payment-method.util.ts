@@ -1,4 +1,6 @@
 import { getContactHref } from "@presentation/pages/report/components/contact-platform";
+import { APP_ROUTES } from "@/common/app-routes";
+import Formatter from "@/presentation/shared/utils/formatter";
 
 const PAYMENT_TYPE_LABELS: Record<string, string> = {
   "1": "Tarjeta",
@@ -30,6 +32,15 @@ function getPaymentLabel(label: string, paymentType?: number): string {
   return PAYMENT_TYPE_LABELS[normalizedLabel] ?? label;
 }
 
+function buildPaymentSearchHref(reference: string): string {
+  const value = reference.trim();
+  if (!value) {
+    return "#";
+  }
+
+  return `${APP_ROUTES.search}?${Formatter.buildSearchQueryString(value)}`;
+}
+
 function getPaymentHref(reference: string, paymentType?: number): string {
   const value = reference.trim();
   if (!value) {
@@ -45,11 +56,16 @@ function getPaymentHref(reference: string, paymentType?: number): string {
     return genericHref;
   }
 
-  if (paymentType === 4 || normalizePaymentTypeKey(String(paymentType)) === "wallet") {
-    return "#";
-  }
-
-  return "#";
+  return buildPaymentSearchHref(value);
 }
 
-export { getPaymentHref, getPaymentLabel };
+function isExternalPaymentHref(href: string): boolean {
+  return (
+    href.startsWith("http://") ||
+    href.startsWith("https://") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  );
+}
+
+export { buildPaymentSearchHref, getPaymentHref, getPaymentLabel, isExternalPaymentHref };

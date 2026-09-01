@@ -28,8 +28,11 @@ describe("getPaymentHref", () => {
     );
   });
 
-  it("returns a fallback href for non-linkable payment references", () => {
-    expect(getPaymentHref("3145914092")).toBe("#");
+  it("returns a search link for non-linkable payment references", () => {
+    expect(getPaymentHref("3145914092")).toBe("/busqueda?q=3145914092");
+    expect(getPaymentHref("012345678901234567")).toBe(
+      "/busqueda?q=012345678901234567",
+    );
     expect(getPaymentHref("   ")).toBe("#");
   });
 });

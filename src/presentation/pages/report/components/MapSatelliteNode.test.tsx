@@ -1,27 +1,30 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { ReactFlowProvider } from "@xyflow/react";
 import MapSatelliteNode from "@presentation/pages/report/components/MapSatelliteNode";
 import type { MapSatelliteNode as MapSatelliteNodeType } from "@presentation/pages/report/components/map-graph";
 
 function renderSatelliteNode(data: MapSatelliteNodeType["data"]) {
   render(
-    <ReactFlowProvider>
-      <MapSatelliteNode
-        id="satellite-1"
-        type="satellite"
-        selected={false}
-        dragging={false}
-        zIndex={0}
-        draggable={false}
-        selectable={false}
-        deletable={false}
-        positionAbsoluteX={0}
-        positionAbsoluteY={0}
-        isConnectable={false}
-        position={{ x: 0, y: 0 }}
-        data={data}
-      />
-    </ReactFlowProvider>,
+    <MemoryRouter>
+      <ReactFlowProvider>
+        <MapSatelliteNode
+          id="satellite-1"
+          type="satellite"
+          selected={false}
+          dragging={false}
+          zIndex={0}
+          draggable={false}
+          selectable={false}
+          deletable={false}
+          positionAbsoluteX={0}
+          positionAbsoluteY={0}
+          isConnectable={false}
+          position={{ x: 0, y: 0 }}
+          data={data}
+        />
+      </ReactFlowProvider>
+    </MemoryRouter>,
   );
 }
 
@@ -56,7 +59,7 @@ describe("MapSatelliteNode", () => {
     );
   });
 
-  it("renders non-linkable payment satellites as static cards", () => {
+  it("renders searchable payment satellites as internal links", () => {
     renderSatelliteNode({
       kind: "payment_method",
       label: "CLABE",
@@ -64,7 +67,11 @@ describe("MapSatelliteNode", () => {
       paymentType: 2,
     });
 
-    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    const link = screen.getByRole("link", {
+      name: "Buscar CLABE: 3145914092",
+    });
+    expect(link).toHaveAttribute("href", "/busqueda?q=3145914092");
+    expect(link).not.toHaveAttribute("target", "_blank");
     expect(screen.getByText("3145914092")).toBeInTheDocument();
     expect(screen.getByText("CLABE")).toBeInTheDocument();
   });
