@@ -46,10 +46,190 @@ const nodeStyle = {
 
 const NODE_WIDTH = 208;
 const NODE_HEIGHT = 88;
-const HORIZONTAL_GAP = 240;
-const ROW_GAP = 190;
-const CENTER_POSITION = { x: 280, y: 380 };
-const NEIGHBOR_Y = CENTER_POSITION.y - ROW_GAP;
+const MIN_NODE_GAP = 24;
+const LAYOUT_CENTER_X = 400;
+const LAYOUT_CENTER_Y = 300;
+const MAX_NODES_PER_ARC = 4;
+
+const NEIGHBOR_RADIUS = 230;
+const NEIGHBOR_OUTER_RADIUS = 310;
+const CONTACT_RADIUS = 210;
+const PAYMENT_RADIUS = 300;
+
+// Upper semicircle (neighbors above center).
+const NEIGHBOR_ARC = { start: Math.PI * 1.1, end: Math.PI * 1.9 };
+// Lower semicircle (contacts and payments below center).
+const LOWER_ARC = { start: Math.PI * 0.1, end: Math.PI * 0.9 };
+
+type Rect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+function hashString(value: string): number {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) | 0;
+  }
+
+  return Math.abs(hash);
+}
+
+function createSeededRandom(seed: number): () => number {
+  let state = seed || 1;
+
+  return () => {
+    state = (state * 1664525 + 1013904223) | 0;
+    return (state >>> 0) / 4294967296;
+  };
+}
+
+function toRect(position: { x: number; y: number }): Rect {
+  return {
+    x: position.x,
+    y: position.y,
+    width: NODE_WIDTH,
+    height: NODE_HEIGHT,
+  };
+}
+
+function rectsOverlap(a: Rect, b: Rect, gap: number): boolean {
+  return (
+    a.x < b.x + b.width + gap &&
+    a.x + a.width + gap > b.x &&
+    a.y < b.y + b.height + gap &&
+    a.y + a.height + gap > b.y
+  );
+}
+
+function overlapsAny(rect: Rect, others: Rect[], gap: number): boolean {
+  return others.some((other) => rectsOverlap(rect, other, gap));
+}
+
+function splitForArcs(ids: string[], maxPerArc: number = MAX_NODES_PER_ARC): string[][] {
+  if (ids.length <= maxPerArc) {
+    return [ids];
+  }
+
+  const midpoint = Math.ceil(ids.length / 2);
+  return [ids.slice(0, midpoint), ids.slice(midpoint)];
+}
+
+function placeOnArc(
+  ids: string[],
+  centerX: number,
+  centerY: number,
+  baseRadius: number,
+  angleStart: number,
+  angleEnd: number,
+  occupied: Rect[],
+  reserved: Rect[],
+): Map<string, { x: number; y: number }> {
+  const positions = new Map<string, { x: number; y: number }>();
+
+  if (ids.length === 0) {
+    return positions;
+  }
+
+  const angleStep =
+    ids.length === 1 ? 0 : (angleEnd - angleStart) / (ids.length - 1);
+
+  ids.forEach((id, index) => {
+    const random = createSeededRandom(hashString(id));
+    const angle = angleStart + angleStep * index;
+
+    for (let radiusOffset = 0; radiusOffset <= 140; radiusOffset += 14) {
+      const radius = baseRadius + radiusOffset + (random() - 0.5) * 12;
+      const position = {
+        x: centerX + radius * Math.cos(angle) - NODE_WIDTH / 2,
+        y: centerY + radius * Math.sin(angle) - NODE_HEIGHT / 2,
+      };
+      const rect = toRect(position);
+
+      if (
+        !overlapsAny(rect, reserved, MIN_NODE_GAP) &&
+        !overlapsAny(rect, occupied, MIN_NODE_GAP)
+      ) {
+        positions.set(id, position);
+        occupied.push(rect);
+        break;
+      }
+    }
+  });
+
+  return positions;
+}
+
+function applyPositions(
+  positions: Map<string, { x: number; y: number }>,
+  next: Map<string, { x: number; y: number }>,
+) {
+  next.forEach((position, id) => {
+    positions.set(id, position);
+  });
+}
+
+function layoutArcGroup(
+  ids: string[],
+  centerX: number,
+  centerY: number,
+  innerRadius: number,
+  outerRadius: number,
+  arc: { start: number; end: number },
+  occupied: Rect[],
+  reserved: Rect[],
+): Map<string, { x: number; y: number }> {
+  const arcs = splitForArcs(ids);
+  const result = new Map<string, { x: number; y: number }>();
+
+  arcs.forEach((arcIds, index) => {
+    const radius = index === 0 ? innerRadius : outerRadius;
+    applyPositions(
+      result,
+      placeOnArc(
+        arcIds,
+        centerX,
+        centerY,
+        radius,
+        arc.start,
+        arc.end,
+        occupied,
+        reserved,
+      ),
+    );
+  });
+
+  return result;
+}
+
+function partitionSatellitesByKind(
+  flowIds: string[],
+  satelliteNodes: RelationshipMapNode[],
+  getFlowNodeId: (node: RelationshipMapNode) => string,
+): { contacts: string[]; payments: string[] } {
+  const contacts: string[] = [];
+  const payments: string[] = [];
+  const remainingIds = new Set(flowIds);
+
+  for (const node of satelliteNodes) {
+    const flowId = getFlowNodeId(node);
+    if (!remainingIds.has(flowId)) {
+      continue;
+    }
+
+    if (node.type === "contact") {
+      contacts.push(flowId);
+      continue;
+    }
+
+    payments.push(flowId);
+  }
+
+  return { contacts, payments };
+}
 
 function partyNode(
   id: string,
@@ -169,27 +349,6 @@ function toFlowEdge(
   };
 }
 
-function spreadHorizontally(
-  ids: string[],
-  centerX: number,
-  y: number,
-): Map<string, { x: number; y: number }> {
-  const positions = new Map<string, { x: number; y: number }>();
-
-  if (ids.length === 0) {
-    return positions;
-  }
-
-  const totalWidth = (ids.length - 1) * HORIZONTAL_GAP;
-  const startX = centerX - totalWidth / 2;
-
-  ids.forEach((id, index) => {
-    positions.set(id, { x: startX + index * HORIZONTAL_GAP, y });
-  });
-
-  return positions;
-}
-
 function isPartyNode(
   node: RelationshipMapNode,
 ): node is Extract<RelationshipMapNode, { type: "party" }> {
@@ -229,19 +388,41 @@ function buildMapGraphFromApi(
     : partyNodes;
 
   const positions = new Map<string, { x: number; y: number }>();
+  const occupied: Rect[] = [];
+
+  const centerPosition = {
+    x: LAYOUT_CENTER_X - NODE_WIDTH / 2,
+    y: LAYOUT_CENTER_Y - NODE_HEIGHT / 2,
+  };
+  const centerRect = toRect(centerPosition);
+  const reserved: Rect[] = [
+    {
+      x: centerRect.x - MIN_NODE_GAP * 2,
+      y: centerRect.y - MIN_NODE_GAP * 2,
+      width: centerRect.width + MIN_NODE_GAP * 4,
+      height: centerRect.height + MIN_NODE_GAP * 4,
+    },
+  ];
 
   if (centerParty && centerFlowId) {
-    positions.set(centerFlowId, CENTER_POSITION);
+    positions.set(centerFlowId, centerPosition);
+    occupied.push(centerRect);
   }
 
-  const neighborPositions = spreadHorizontally(
-    neighborParties.map((node) => getFlowNodeId(node)),
-    CENTER_POSITION.x,
-    NEIGHBOR_Y,
+  const neighborIds = neighborParties.map((node) => getFlowNodeId(node));
+  applyPositions(
+    positions,
+    layoutArcGroup(
+      neighborIds,
+      LAYOUT_CENTER_X,
+      LAYOUT_CENTER_Y,
+      NEIGHBOR_RADIUS,
+      NEIGHBOR_OUTER_RADIUS,
+      NEIGHBOR_ARC,
+      occupied,
+      reserved,
+    ),
   );
-  neighborPositions.forEach((position, id) => {
-    positions.set(id, position);
-  });
 
   const satellitesByParty = new Map<string, string[]>();
 
@@ -286,14 +467,56 @@ function buildMapGraphFromApi(
       continue;
     }
 
-    const satellitePositions = spreadHorizontally(
+    const isCenterParty = partyFlowId === centerFlowId;
+    const { contacts, payments } = partitionSatellitesByKind(
       satelliteFlowIds,
-      partyPosition.x,
-      partyPosition.y + ROW_GAP,
+      satelliteNodes,
+      getFlowNodeId,
     );
-    satellitePositions.forEach((position, id) => {
-      positions.set(id, position);
-    });
+
+    if (isCenterParty) {
+      applyPositions(
+        positions,
+        layoutArcGroup(
+          contacts,
+          LAYOUT_CENTER_X,
+          LAYOUT_CENTER_Y,
+          CONTACT_RADIUS,
+          CONTACT_RADIUS + 70,
+          LOWER_ARC,
+          occupied,
+          reserved,
+        ),
+      );
+      applyPositions(
+        positions,
+        layoutArcGroup(
+          payments,
+          LAYOUT_CENTER_X,
+          LAYOUT_CENTER_Y,
+          PAYMENT_RADIUS,
+          PAYMENT_RADIUS + 70,
+          LOWER_ARC,
+          occupied,
+          reserved,
+        ),
+      );
+      continue;
+    }
+
+    applyPositions(
+      positions,
+      layoutArcGroup(
+        satelliteFlowIds,
+        partyPosition.x + NODE_WIDTH / 2,
+        partyPosition.y + NODE_HEIGHT / 2,
+        150,
+        220,
+        LOWER_ARC,
+        occupied,
+        [toRect(partyPosition)],
+      ),
+    );
   }
 
   const flowNodes: MapNode[] = map.nodes.flatMap((node) => {

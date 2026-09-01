@@ -131,6 +131,177 @@ describe("buildMapGraphFromApi", () => {
     expect(contact?.position.y).toBeGreaterThan(center?.position.y ?? 0);
   });
 
+  it("places payments below contacts in separate zones", () => {
+    const { nodes } = buildMapGraphFromApi(baseMap, "100", "scammer");
+    const contact = nodes.find((node) => node.id === "contact:501");
+    const payment = nodes.find((node) => node.id === "payment:601");
+
+    expect(payment?.position.y).toBeGreaterThan(contact?.position.y ?? 0);
+  });
+
+  it("never overlaps the center party node", () => {
+    const map: FindRelationshipMapResult = {
+      nodes: [
+        {
+          id: "party:100",
+          type: "party",
+          party_id: "100",
+          name: "Centro",
+          kind: "scammer",
+          is_center: true,
+        },
+        ...Array.from({ length: 5 }, (_, index) => ({
+          id: `party:org:${index + 1}`,
+          type: "party" as const,
+          party_id: String(index + 1),
+          name: `Org ${index + 1}`,
+          kind: "organization" as const,
+          is_center: false,
+        })),
+        ...Array.from({ length: 4 }, (_, index) => ({
+          id: `contact:${index + 1}`,
+          type: "contact" as const,
+          contact_id: String(index + 1),
+          label: "Email",
+          detail: `user${index + 1}@example.com`,
+          platform: "email",
+        })),
+        ...Array.from({ length: 3 }, (_, index) => ({
+          id: `payment:${index + 1}`,
+          type: "payment_method" as const,
+          payment_method_id: String(index + 1),
+          label: "CLABE",
+          detail: `01234567890123456${index}`,
+        })),
+      ],
+      edges: [
+        ...Array.from({ length: 5 }, (_, index) => ({
+          id: `link:${index + 1}`,
+          source: "party:100",
+          target: `party:org:${index + 1}`,
+          kind: "linked" as const,
+        })),
+        ...Array.from({ length: 4 }, (_, index) => ({
+          id: `contact-edge:${index + 1}`,
+          source: `contact:${index + 1}`,
+          target: "party:100",
+          kind: "contact" as const,
+        })),
+        ...Array.from({ length: 3 }, (_, index) => ({
+          id: `payment-edge:${index + 1}`,
+          source: `payment:${index + 1}`,
+          target: "party:100",
+          kind: "payment" as const,
+        })),
+      ],
+    };
+
+    const { nodes } = buildMapGraphFromApi(map, "100", "scammer");
+    const center = nodes.find((node) => node.id === "party:100");
+
+    expect(center).toBeDefined();
+
+    const centerRect = {
+      x: center!.position.x - 24,
+      y: center!.position.y - 24,
+      width: 208 + 48,
+      height: 88 + 48,
+    };
+
+    for (const node of nodes) {
+      if (node.id === center!.id) {
+        continue;
+      }
+
+      const nodeRect = {
+        x: node.position.x,
+        y: node.position.y,
+        width: 208,
+        height: 88,
+      };
+
+      const overlaps =
+        nodeRect.x < centerRect.x + centerRect.width &&
+        nodeRect.x + nodeRect.width > centerRect.x &&
+        nodeRect.y < centerRect.y + centerRect.height &&
+        nodeRect.y + nodeRect.height > centerRect.y;
+
+      expect(overlaps).toBe(false);
+    }
+  });
+
+  it("fans nodes around the center in distinct zones", () => {
+    const map: FindRelationshipMapResult = {
+      nodes: [
+        {
+          id: "party:100",
+          type: "party",
+          party_id: "100",
+          name: "Centro",
+          kind: "scammer",
+          is_center: true,
+        },
+        ...Array.from({ length: 4 }, (_, index) => ({
+          id: `party:org:${index + 1}`,
+          type: "party" as const,
+          party_id: String(index + 1),
+          name: `Org ${index + 1}`,
+          kind: "organization" as const,
+          is_center: false,
+        })),
+        ...Array.from({ length: 5 }, (_, index) => ({
+          id: `contact:${index + 1}`,
+          type: "contact" as const,
+          contact_id: String(index + 1),
+          label: "Email",
+          detail: `user${index + 1}@example.com`,
+          platform: "email",
+        })),
+      ],
+      edges: [
+        ...Array.from({ length: 4 }, (_, index) => ({
+          id: `link:${index + 1}`,
+          source: "party:100",
+          target: `party:org:${index + 1}`,
+          kind: "linked" as const,
+        })),
+        ...Array.from({ length: 5 }, (_, index) => ({
+          id: `contact-edge:${index + 1}`,
+          source: `contact:${index + 1}`,
+          target: "party:100",
+          kind: "contact" as const,
+        })),
+      ],
+    };
+
+    const { nodes } = buildMapGraphFromApi(map, "100", "scammer");
+    const center = nodes.find((node) => node.id === "party:100");
+    const neighbors = nodes.filter(
+      (node) => node.type === "party" && !node.data.isCurrent,
+    );
+    const contacts = nodes.filter((node) => node.id.startsWith("contact:"));
+
+    expect(new Set(neighbors.map((node) => node.position.x)).size).toBeGreaterThan(1);
+    expect(new Set(contacts.map((node) => node.position.x)).size).toBeGreaterThan(1);
+
+    for (const neighbor of neighbors) {
+      expect(neighbor.position.y).toBeLessThan(center?.position.y ?? 0);
+    }
+
+    for (const contact of contacts) {
+      expect(contact.position.y).toBeGreaterThan(center?.position.y ?? 0);
+    }
+  });
+
+  it("keeps layout stable for the same map data", () => {
+    const first = buildMapGraphFromApi(baseMap, "100", "scammer");
+    const second = buildMapGraphFromApi(baseMap, "100", "scammer");
+
+    expect(first.nodes.map((node) => node.position)).toEqual(
+      second.nodes.map((node) => node.position),
+    );
+  });
+
   it("renders kind-qualified party ids from the API", () => {
     const map: FindRelationshipMapResult = {
       nodes: [
