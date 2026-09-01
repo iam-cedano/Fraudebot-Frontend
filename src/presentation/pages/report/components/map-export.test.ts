@@ -61,10 +61,13 @@ describe("exportRelationshipMap", () => {
     expect(mockedToPng).toHaveBeenCalledWith(
       viewportElement,
       expect.objectContaining({
-        backgroundColor: "#f9fafb",
+        backgroundColor: "#ffffff",
         pixelRatio: 2,
       }),
     );
+    const captureOptions = mockedToPng.mock.calls[0]?.[1];
+    expect(captureOptions?.width).toBeGreaterThanOrEqual(208 + 72 * 2);
+    expect(captureOptions?.height).toBeGreaterThanOrEqual(88 + 72 * 2);
     expect(clickSpy).toHaveBeenCalledTimes(1);
     const link = clickSpy.mock.instances[0] as HTMLAnchorElement;
     expect(link.download).toBe("mapa-relaciones.png");

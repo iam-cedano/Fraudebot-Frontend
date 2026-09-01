@@ -7,9 +7,9 @@ import { toPng } from "html-to-image";
 
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 2;
-const PADDING_PX = 48;
+const MARGIN_PX = 72;
 const PIXEL_RATIO = 2;
-const BACKGROUND_COLOR = "#f9fafb";
+const BACKGROUND_COLOR = "#ffffff";
 
 type ExportRelationshipMapParams = {
   nodes: Node[];
@@ -19,15 +19,15 @@ type ExportRelationshipMapParams = {
 
 function getExportViewport(nodes: Node[]) {
   const bounds = getNodesBounds(nodes);
-  const width = Math.max(Math.ceil(bounds.width) + PADDING_PX * 2, 320);
-  const height = Math.max(Math.ceil(bounds.height) + PADDING_PX * 2, 240);
+  const width = Math.max(Math.ceil(bounds.width) + MARGIN_PX * 2, 320);
+  const height = Math.max(Math.ceil(bounds.height) + MARGIN_PX * 2, 240);
   const viewport = getViewportForBounds(
     bounds,
     width,
     height,
     MIN_ZOOM,
     MAX_ZOOM,
-    0,
+    `${MARGIN_PX}px`,
   );
 
   return { width, height, viewport };
