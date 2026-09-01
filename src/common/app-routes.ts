@@ -6,6 +6,7 @@ const APP_ROUTES = {
   organization: "/empresas/:id",
   reportScammer: "/reportar/estafadores/:id",
   reportOrganization: "/reportar/empresas/:id",
+  reportDetail: "/reportes/:id",
 } as const;
 
 function scammerPath(id: string) {
@@ -28,6 +29,10 @@ function reportPartyPath(id: string, type: "scammer" | "organization") {
   return type === "scammer" ? reportScammerPath(id) : reportOrganizationPath(id);
 }
 
+function reportDetailPath(id: string) {
+  return APP_ROUTES.reportDetail.replace(":id", id);
+}
+
 export {
   APP_ROUTES,
   scammerPath,
@@ -35,4 +40,5 @@ export {
   reportScammerPath,
   reportOrganizationPath,
   reportPartyPath,
+  reportDetailPath,
 };

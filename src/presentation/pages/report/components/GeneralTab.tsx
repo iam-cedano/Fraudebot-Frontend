@@ -73,6 +73,12 @@ const CALENDAR_YEARS = Array.from(
 const panelClassName =
   "group grid h-full w-full cursor-pointer text-left transition-colors hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gray-300 lg:row-span-4 lg:grid-rows-subgrid";
 
+const panelGridClassName =
+  "grid lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr_auto] lg:divide-x lg:divide-gray-200";
+
+const disabledPanelClassName =
+  "grid h-full w-full text-left lg:row-span-4 lg:grid-rows-subgrid";
+
 function activatePanel(
   event: KeyboardEvent<HTMLDivElement>,
   onActivate: () => void,
@@ -127,74 +133,145 @@ function GeneralTab({
 
   return (
     <div className="divide-y divide-gray-200 border border-gray-200 bg-white">
-      <div className="grid lg:grid-cols-2 lg:grid-rows-[auto_auto_1fr_auto] lg:divide-x lg:divide-gray-200">
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => onNavigateTab("Reportes")}
-          onKeyDown={(event) =>
-            activatePanel(event, () => onNavigateTab("Reportes"))
-          }
-          className={`${panelClassName} lg:col-start-1`}
-        >
-          <div className="px-6 pt-6 sm:px-8 sm:pt-8">
-            <PanelHeader title="Reportes:" showExternalLink />
+      <div className="divide-y divide-gray-200">
+        <div className={panelGridClassName}>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => onNavigateTab("Reportes")}
+            onKeyDown={(event) =>
+              activatePanel(event, () => onNavigateTab("Reportes"))
+            }
+            className={`${panelClassName} lg:col-start-1`}
+          >
+            <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+              <PanelHeader title="Reportes:" showExternalLink />
+            </div>
+            <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
+              Hasta el día de hoy {today} se han recibido:
+            </p>
+            <div className="flex items-center justify-center px-6 pt-5 sm:px-8">
+              {reportIcons.reportAlert && (
+                <img
+                  src={reportIcons.reportAlert}
+                  alt=""
+                  aria-hidden
+                  className="h-10 w-10 shrink-0"
+                />
+              )}
+              <span className="ml-3 font-extrabold text-gray-900">
+                <span className="text-5xl">{reports}</span>
+                <span className="text-3xl"> reportes</span>
+              </span>
+            </div>
+            <p className="px-6 pb-6 pt-4 text-sm text-gray-400 sm:px-8 sm:pb-8">
+              Los reportes han sido verificados por nuestro equipo.
+            </p>
           </div>
-          <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
-            Hasta el día de hoy {today} se han recibido:
-          </p>
-          <div className="flex items-start px-6 pt-5 sm:px-8">
-            {reportIcons.reportAlert && (
-              <img
-                src={reportIcons.reportAlert}
-                alt=""
-                aria-hidden
-                className="h-10 w-10 shrink-0"
-              />
-            )}
-            <span className="ml-3 text-3xl font-extrabold text-gray-900">
-              {reports} reportes
-            </span>
+
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => onNavigateTab("Contactos")}
+            onKeyDown={(event) =>
+              activatePanel(event, () => onNavigateTab("Contactos"))
+            }
+            className={`${panelClassName} lg:col-start-2`}
+          >
+            <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+              <PanelHeader title="Contactos:" showExternalLink />
+            </div>
+            <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
+              Descubre los perfiles que utiliza esta{" "}
+              <span className="font-extrabold text-gray-900">
+                empresa/estafador
+              </span>
+              :
+            </p>
+            <div className="flex items-start justify-center px-6 pt-5 sm:px-8">
+              {reportIcons.contactsIllustration ? (
+                <img
+                  src={reportIcons.contactsIllustration}
+                  alt=""
+                  aria-hidden
+                  className="h-32 w-32 object-contain"
+                />
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-400">
+                  Ilustración de contactos
+                </div>
+              )}
+            </div>
+            <div className="px-6 pb-6 pt-4 sm:px-8 sm:pb-8" />
           </div>
-          <p className="px-6 pb-6 pt-4 text-sm text-gray-400 sm:px-8 sm:pb-8">
-            Los reportes han sido verificados por nuestro equipo.
-          </p>
         </div>
 
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => onNavigateTab("Contactos")}
-          onKeyDown={(event) =>
-            activatePanel(event, () => onNavigateTab("Contactos"))
-          }
-          className={`${panelClassName} lg:col-start-2`}
-        >
-          <div className="px-6 pt-6 sm:px-8 sm:pt-8">
-            <PanelHeader title="Contactos:" showExternalLink />
+        <div className={panelGridClassName}>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => onNavigateTab("Mapa")}
+            onKeyDown={(event) =>
+              activatePanel(event, () => onNavigateTab("Mapa"))
+            }
+            className={`${panelClassName} lg:col-start-1`}
+          >
+            <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+              <PanelHeader title="Mapa:" showExternalLink />
+            </div>
+            <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
+              Explora las conexiones entre perfiles, reportes y entidades
+              relacionadas con esta{" "}
+              <span className="font-extrabold text-gray-900">
+                empresa/estafador
+              </span>
+              :
+            </p>
+            <div className="flex items-start justify-center px-6 pt-5 sm:px-8">
+              {reportIcons.mapIllustration ? (
+                <img
+                  src={reportIcons.mapIllustration}
+                  alt=""
+                  aria-hidden
+                  className="h-32 w-32 object-contain"
+                />
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-400">
+                  Ilustración de mapa
+                </div>
+              )}
+            </div>
+            <p className="px-6 pb-6 pt-4 text-sm text-gray-400 sm:px-8 sm:pb-8">
+              Arrastra y haz zoom para recorrer el mapa de relaciones.
+            </p>
           </div>
-          <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
-            Descubre los perfiles que utiliza esta{" "}
-            <span className="font-extrabold text-gray-900">
-              empresa/estafador
-            </span>
-            :
-          </p>
-          <div className="flex items-start justify-center px-6 pt-5 sm:px-8">
-            {reportIcons.contactsIllustration ? (
-              <img
-                src={reportIcons.contactsIllustration}
-                alt=""
-                aria-hidden
-                className="h-32 w-32 object-contain"
-              />
-            ) : (
-              <div className="flex h-32 w-32 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-400">
-                Ilustración de contactos
-              </div>
-            )}
+
+          <div className={`${disabledPanelClassName} lg:col-start-2`}>
+            <div className="px-6 pt-6 sm:px-8 sm:pt-8">
+              <PanelHeader title="Soporte:" />
+            </div>
+            <p className="px-6 pt-3 text-base leading-6 text-gray-600 sm:px-8">
+              Obtén ayuda y recursos para reportar o consultar sobre este
+              perfil:
+            </p>
+            <div className="flex items-start justify-center px-6 pt-5 sm:px-8">
+              {reportIcons.soporte ? (
+                <img
+                  src={reportIcons.soporte}
+                  alt=""
+                  aria-hidden
+                  className="h-32 w-32 object-contain opacity-60"
+                />
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-400">
+                  Ilustración de soporte
+                </div>
+              )}
+            </div>
+            <p className="px-6 pb-6 pt-4 text-sm text-gray-400 sm:px-8 sm:pb-8">
+              Sección disponible próximamente.
+            </p>
           </div>
-          <div className="px-6 pb-6 pt-4 sm:px-8 sm:pb-8" />
         </div>
       </div>
 

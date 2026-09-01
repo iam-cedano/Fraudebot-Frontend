@@ -92,7 +92,7 @@ function ReportsTab({ partyId, partyType }: ReportsTabProps) {
           to={reportPartyPath(partyId, partyType)}
           className="inline-block cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-extrabold text-white hover:bg-red-700"
         >
-          Reportar +
+          Agregar +
         </Link>
       </div>
 

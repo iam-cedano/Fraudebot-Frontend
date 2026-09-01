@@ -11,6 +11,7 @@ import mapaIcon from "@presentation/assets/map.svg";
 import soporteIcon from "@presentation/assets/help.svg";
 import reportAlertIcon from "@presentation/assets/alert.svg";
 import contactsIllustrationIcon from "@presentation/assets/thief-world.png";
+import mapIllustrationIcon from "@presentation/assets/knowledge-graph.webp";
 
 const reportIcons = {
   warning: warningIcon,
@@ -27,6 +28,7 @@ const reportIcons = {
   soporte: soporteIcon,
   reportAlert: reportAlertIcon,
   contactsIllustration: contactsIllustrationIcon,
+  mapIllustration: mapIllustrationIcon,
 };
 
 export default reportIcons;

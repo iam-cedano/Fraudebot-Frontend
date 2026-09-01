@@ -27,16 +27,30 @@ function GeneralPanelsSkeleton() {
       className="divide-y divide-gray-200 border border-gray-200 bg-white"
       aria-hidden
     >
-      <div className="grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-        <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
-          <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-full max-w-xs animate-pulse rounded bg-gray-200" />
-          <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
+      <div className="divide-y divide-gray-200">
+        <div className="grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
+          <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
+            <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-full max-w-xs animate-pulse rounded bg-gray-200" />
+            <div className="h-9 w-40 animate-pulse rounded bg-gray-200" />
+          </div>
+          <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
+            <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-full max-w-sm animate-pulse rounded bg-gray-200" />
+            <div className="mx-auto h-32 w-32 animate-pulse rounded-lg bg-gray-200" />
+          </div>
         </div>
-        <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
-          <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-full max-w-sm animate-pulse rounded bg-gray-200" />
-          <div className="mx-auto h-32 w-32 animate-pulse rounded-lg bg-gray-200" />
+        <div className="grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
+          <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
+            <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-full max-w-sm animate-pulse rounded bg-gray-200" />
+            <div className="mx-auto h-32 w-32 animate-pulse rounded-lg bg-gray-200" />
+          </div>
+          <div className="space-y-4 px-6 py-6 sm:px-8 sm:py-8">
+            <div className="h-6 w-32 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-full max-w-xs animate-pulse rounded bg-gray-200" />
+            <div className="mx-auto h-32 w-32 animate-pulse rounded-lg bg-gray-200" />
+          </div>
         </div>
       </div>
       <div className="p-6 sm:p-8">

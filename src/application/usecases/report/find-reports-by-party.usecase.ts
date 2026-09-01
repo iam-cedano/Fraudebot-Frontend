@@ -42,12 +42,12 @@ class FindReportsByPartyUsecase implements ApiCallerInterface {
         return emptyResult(page);
       }
 
-      const reports = data.data.map(
+      const reports = (data.data ?? []).map(
         (report) =>
           new PartyReportEntity(
             String(report.id),
             report.title,
-            report.description,
+            report.short_description,
           ),
       );
 

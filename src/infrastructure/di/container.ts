@@ -1,6 +1,6 @@
 import SearchReportUsecase from "@/application/usecases/report/search-report.usecase";
 import FindMonthlyReportCountsUsecase from "@/application/usecases/report/find-monthly-report-counts.usecase";
-import FindReportsByPartyStubUsecase from "@/application/usecases/report/stub/find-reports-by-party.stub";
+import FindReportsByPartyUsecase from "@/application/usecases/report/find-reports-by-party.usecase";
 import FindScammerSummaryByIdUsecase from "@/application/usecases/scammer/find-scammer-summary-by-id.usecase";
 import FindOrganizationSummaryByIdUsecase from "@/application/usecases/organization/find-organization-summary-by-id.usecase";
 import SearchReportStubUsecase from "@/application/usecases/report/stub/search-report.stub";
@@ -14,7 +14,7 @@ export const createSearchReportStubUseCase = () => new SearchReportStubUsecase()
 export const createFindMonthlyReportCountsUseCase = () => new FindMonthlyReportCountsUsecase();
 export const createFindContactsByPartyUseCase = () => new FindContactsByPartyUsecase();
 export const createFindReportsByPartyUseCase = () =>
-  new FindReportsByPartyStubUsecase();
+  new FindReportsByPartyUsecase();
 export const createFindRelationshipMapByPartyUseCase = () =>
   new FindRelationshipMapByPartyUsecase();
 export const dependencies = {

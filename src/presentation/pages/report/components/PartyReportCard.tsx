@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import { reportDetailPath } from "@/common/app-routes";
 import PartyReportEntity from "@/core/domain/report/entities/party-report.entity";
 
 function ExternalLinkIcon() {
@@ -29,14 +31,15 @@ function ExternalLinkIcon() {
 function PartyReportCard({ report }: { report: PartyReportEntity }) {
   return (
     <article>
-      <div className="cursor-pointer rounded-md border border-gray-200 px-4 py-3 hover:bg-gray-50">
+      <Link
+        to={reportDetailPath(report.id)}
+        className="block cursor-pointer rounded-md border border-gray-200 px-4 py-3 hover:bg-gray-50"
+      >
         <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-baseline text-sm">
-            <span className="shrink-0 text-gray-400">#{report.id}</span>
-            <span className="shrink-0 text-gray-400">&nbsp;-&nbsp;</span>
-            <h3 className="truncate font-bold text-gray-900">{report.title}</h3>
-          </div>
-          <span aria-hidden>
+          <h3 className="min-w-0 truncate text-sm font-extrabold text-gray-900">
+            #{report.id} - {report.title}
+          </h3>
+          <span aria-hidden className="shrink-0">
             <ExternalLinkIcon />
           </span>
         </div>
@@ -44,7 +47,7 @@ function PartyReportCard({ report }: { report: PartyReportEntity }) {
         <p className="mt-2 truncate text-sm text-gray-600" title={report.description}>
           {report.description}
         </p>
-      </div>
+      </Link>
     </article>
   );
 }

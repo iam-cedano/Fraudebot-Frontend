@@ -13,8 +13,9 @@ const mockedHttp = vi.mocked(Http);
 const apiReport = {
   id: 1354,
   title: "¡Me estafó $2,000 MXN y estoy enojada!",
-  description:
+  short_description:
     "Estoy super enojada, me ofreció un lote de ropa por $2,000 MXN.",
+  created_at: "2026-09-22",
 };
 
 describe("FindReportsByPartyUsecase", () => {
@@ -48,7 +49,7 @@ describe("FindReportsByPartyUsecase", () => {
     expect(result.data).toHaveLength(1);
     expect(result.data[0].id).toBe("1354");
     expect(result.data[0].title).toBe("¡Me estafó $2,000 MXN y estoy enojada!");
-    expect(result.data[0].description).toBe(apiReport.description);
+    expect(result.data[0].description).toBe(apiReport.short_description);
     expect(result.total).toBe(4);
     expect(result.page).toBe(1);
     expect(result.count).toBe(10);

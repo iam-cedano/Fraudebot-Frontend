@@ -3,7 +3,8 @@ import PartyReportEntity from "@/core/domain/report/entities/party-report.entity
 type FindReportsByPartyItem = {
   id: string | number;
   title: string;
-  description: string;
+  short_description: string;
+  created_at: string;
 };
 
 type FindReportsByPartyModel<T> = {
