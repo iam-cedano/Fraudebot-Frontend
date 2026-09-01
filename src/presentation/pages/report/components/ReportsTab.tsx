@@ -1,32 +1,143 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import PartyReportEntity from "@/core/domain/report/entities/party-report.entity";
+import { useDependencies } from "@/presentation/providers/DependencyProvider";
+import PartyReportCard from "@presentation/pages/report/components/PartyReportCard";
+import { isCanceledError } from "@/common/utils/http-error.util";
+import PaginationNav from "@/presentation/shared/components/PaginationNav";
+import {
+  reportPartyPath,
+} from "@/common/app-routes";
+
 interface ReportsTabProps {
-  reportCount: number;
+  partyId: string;
+  partyType: "scammer" | "organization";
 }
 
-function ReportsTab({ reportCount }: ReportsTabProps) {
+function ReportsTab({ partyId, partyType }: ReportsTabProps) {
+  const { findReportsByPartyUseCase } = useDependencies();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [reports, setReports] = useState<PartyReportEntity[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [pageSize, setPageSize] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [requestVersion, setRequestVersion] = useState(0);
+
+  const totalPages = pageSize > 0 ? Math.ceil(totalResults / pageSize) : 0;
+
+  useEffect(() => {
+    let ignore = false;
+
+    setIsLoading(true);
+    setErrorMessage(null);
+
+    findReportsByPartyUseCase
+      .execute(partyId, partyType, currentPage)
+      .then((result) => {
+        if (ignore) {
+          return;
+        }
+
+        setReports(result.data);
+        setCurrentPage(result.page);
+        setTotalResults(result.total);
+        setPageSize(result.count);
+      })
+      .catch((error) => {
+        if (ignore || isCanceledError(error)) {
+          return;
+        }
+
+        setReports([]);
+        setTotalResults(0);
+        setPageSize(0);
+        setErrorMessage(
+          "No pudimos cargar los reportes. Revisa tu conexión e inténtalo de nuevo.",
+        );
+      })
+      .finally(() => {
+        if (!ignore) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+      findReportsByPartyUseCase.cancel();
+    };
+  }, [
+    currentPage,
+    findReportsByPartyUseCase,
+    partyId,
+    partyType,
+    requestVersion,
+  ]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages || page === currentPage) {
+      return;
+    }
+
+    setCurrentPage(page);
+  };
+
   return (
-    <section
-      role="tabpanel"
-      id="report-panel-reportes"
-      aria-labelledby="report-tab-reportes"
-      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-red-600">
-            Vista previa
-          </p>
-          <h2 className="mt-1 text-2xl font-extrabold text-gray-900">
-            Historial de reportes
-          </h2>
-        </div>
-        <span className="rounded-full bg-red-600 px-4 py-2 text-sm font-extrabold text-white">
-          {reportCount} reportes
-        </span>
+    <section className="border border-gray-200 bg-white p-6 sm:p-8">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+        <h2 className="text-xl font-extrabold leading-none text-gray-900">
+          Historial de Reportes:
+        </h2>
+        <Link
+          to={reportPartyPath(partyId, partyType)}
+          className="inline-block cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-extrabold text-white hover:bg-red-700"
+        >
+          Reportar +
+        </Link>
       </div>
-      <p className="mt-6 rounded-lg bg-gray-50 p-5 text-gray-600">
-        Próximamente podrás consultar aquí el detalle de los reportes de la
-        comunidad. El historial aún no está conectado a una fuente de datos.
-      </p>
+
+      <div className="mt-6 max-h-[30rem] space-y-3 overflow-y-scroll pr-1">
+        {isLoading && (
+          <p className="py-10 text-center text-sm text-gray-400">
+            Cargando reportes...
+          </p>
+        )}
+
+        {!isLoading &&
+          !errorMessage &&
+          reports.map((report) => (
+            <PartyReportCard key={report.id} report={report} />
+          ))}
+
+        {!isLoading && errorMessage && (
+          <div role="alert" className="py-10 text-center">
+            <p className="text-sm font-semibold text-red-800">{errorMessage}</p>
+            <button
+              type="button"
+              onClick={() => setRequestVersion((version) => version + 1)}
+              className="mt-3 rounded-md bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !errorMessage && reports.length === 0 && (
+          <p className="py-10 text-center text-sm text-gray-400">
+            No se encontraron reportes.
+          </p>
+        )}
+      </div>
+
+      {!isLoading && !errorMessage && (
+        <PaginationNav
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          ariaLabel="Paginación de reportes"
+          className="mt-6"
+        />
+      )}
     </section>
   );
 }

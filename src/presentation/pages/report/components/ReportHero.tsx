@@ -1,4 +1,6 @@
 import { useCallback, useState } from "react";
+import { Link } from "react-router-dom";
+import { reportPartyPath } from "@/common/app-routes";
 import defaultAvatar from "@presentation/assets/default-avatar.png";
 import heroRedBackground from "@presentation/assets/hero-red.webp";
 import ImageLightbox from "@presentation/pages/report/components/ImageLightbox";
@@ -83,6 +85,7 @@ function ReportHero({
   id,
   name,
   type,
+  partyType,
   reportDate,
   status,
   reports,
@@ -188,13 +191,12 @@ function ReportHero({
                 >
                   Ayuda (próximamente)
                 </button>
-                <button
-                  type="button"
-                  disabled
-                  className="cursor-not-allowed rounded-md bg-gray-200 px-5 py-2 text-sm font-extrabold text-gray-600"
+                <Link
+                  to={reportPartyPath(id, partyType)}
+                  className="rounded-md bg-red-600 px-5 py-2 text-sm font-extrabold text-white hover:bg-red-700"
                 >
-                  Reportar (próximamente)
-                </button>
+                  Reportar
+                </Link>
               </div>
             </div>
           </div>

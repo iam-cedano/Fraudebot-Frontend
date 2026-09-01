@@ -129,6 +129,7 @@ function Report({ type }: { type: "scammer" | "organization" }) {
           id={party.id}
           name={party.name}
           type={type === "scammer" ? "Estafador" : "Empresa"}
+          partyType={type}
           reportDate={party.createdAt}
           status={party.isActive ? "Activo" : "Inactivo"}
           reports={party.reports}
@@ -204,7 +205,7 @@ function Report({ type }: { type: "scammer" | "organization" }) {
                 />
               )}
               {activeTab === "Reportes" && (
-                <ReportsTab reportCount={party.reports} />
+                <ReportsTab partyId={party.id} partyType={type} />
               )}
               {activeTab === "Contactos" && (
                 <ContactsTab partyId={party.id} partyType={type} />

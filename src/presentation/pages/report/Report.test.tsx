@@ -62,6 +62,10 @@ describe("Report page", () => {
 
     expect(await screen.findByText("Fecha del Reporte")).toBeInTheDocument();
     expect(screen.getByText("10-ago-2026")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Reportar" })).toHaveAttribute(
+      "href",
+      "/reportar/estafadores/20",
+    );
   });
 
   it("shows a not-found state when the API returns 404", async () => {

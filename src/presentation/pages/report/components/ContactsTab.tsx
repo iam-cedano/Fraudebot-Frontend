@@ -90,7 +90,7 @@ function ContactsTab({ partyId, partyType }: ContactsTabProps) {
 
   return (
     <section className="border border-gray-200 bg-white p-6 sm:p-8">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
         <h2 className="text-xl font-extrabold leading-none text-gray-900">
           Contactos:
         </h2>

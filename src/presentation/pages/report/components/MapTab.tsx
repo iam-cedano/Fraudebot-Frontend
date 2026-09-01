@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import {
   Background,
   BackgroundVariant,
   Controls,
   ReactFlow,
   ReactFlowProvider,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import MapPartyNode from "@presentation/pages/report/components/MapPartyNode";
@@ -13,6 +14,7 @@ import {
   buildMapGraphFromApi,
   type PartyKind,
 } from "@presentation/pages/report/components/map-graph";
+import { exportRelationshipMap } from "@presentation/pages/report/components/map-export";
 import type { FindRelationshipMapResult } from "@/core/domain/map/models/find-relationship-map.model";
 import { useDependencies } from "@/presentation/providers/DependencyProvider";
 import { isCanceledError } from "@/common/utils/http-error.util";
@@ -59,6 +61,73 @@ function MapCanvas({
   );
 }
 
+function MapExportMenu({
+  canExport,
+  fileName,
+  mapContainerRef,
+}: {
+  canExport: boolean;
+  fileName: string;
+  mapContainerRef: RefObject<HTMLDivElement | null>;
+}) {
+  const { getNodes } = useReactFlow();
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const isDisabled = !canExport || isExporting;
+
+  async function exportPng() {
+    if (isDisabled) {
+      return;
+    }
+
+    const viewportElement = mapContainerRef.current?.querySelector<HTMLElement>(
+      ".react-flow__viewport",
+    );
+
+    if (!viewportElement) {
+      setExportError("No pudimos exportar el mapa. Inténtalo de nuevo.");
+      return;
+    }
+
+    setIsExporting(true);
+    setExportError(null);
+
+    try {
+      await exportRelationshipMap({
+        nodes: getNodes(),
+        viewportElement,
+        fileName,
+      });
+    } catch {
+      setExportError("No pudimos exportar el mapa. Inténtalo de nuevo.");
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-end">
+      <button
+        type="button"
+        disabled={isDisabled}
+        onClick={exportPng}
+        className={
+          isDisabled
+            ? "cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-sm font-extrabold text-gray-600 disabled:opacity-100"
+            : "cursor-pointer rounded-md bg-red-600 px-4 py-2 text-sm font-extrabold text-white hover:bg-red-700"
+        }
+      >
+        {isExporting ? "Exportando..." : "Exportar"}
+      </button>
+      {exportError && (
+        <p role="alert" className="mt-2 text-xs font-semibold text-red-800">
+          {exportError}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function MapTab({ partyId, partyType }: MapTabProps) {
   const { findRelationshipMapByPartyUseCase } = useDependencies();
   const [map, setMap] = useState<FindRelationshipMapResult>({
@@ -68,6 +137,7 @@ function MapTab({ partyId, partyType }: MapTabProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [requestVersion, setRequestVersion] = useState(0);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -110,24 +180,20 @@ function MapTab({ partyId, partyType }: MapTabProps) {
 
   return (
     <ReactFlowProvider>
-      <section
-        role="tabpanel"
-        id="report-panel-mapa"
-        aria-labelledby="report-tab-mapa"
-        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-      >
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 className="text-2xl font-extrabold text-gray-900">
-              Mapa de relaciones
-            </h2>
-          </div>
-          <button type="button" disabled className="cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-sm font-extrabold text-gray-600">
-            Exportar (próximamente)
-          </button>
+      <section className="border border-gray-200 bg-white p-6 sm:p-8">
+        <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+          <h2 className="text-xl font-extrabold leading-none text-gray-900">
+            Mapa de relaciones
+          </h2>
+          <MapExportMenu
+            canExport={!isLoading && !errorMessage && hasGraph}
+            fileName="mapa-relaciones"
+            mapContainerRef={mapContainerRef}
+          />
         </div>
         <div
-          className="map-tab relative mt-6 h-[32rem] min-h-[28rem] w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-50"
+          ref={mapContainerRef}
+          className="map-tab relative mt-6 h-[32rem] min-h-[28rem] w-full overflow-hidden border border-gray-200 bg-gray-50 [&_.react-flow_svg]:overflow-visible"
           aria-label="Mapa de relaciones"
         >
           {isLoading && (

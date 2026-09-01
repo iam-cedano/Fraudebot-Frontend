@@ -1,5 +1,6 @@
 import SearchReportUsecase from "@/application/usecases/report/search-report.usecase";
 import FindMonthlyReportCountsUsecase from "@/application/usecases/report/find-monthly-report-counts.usecase";
+import FindReportsByPartyStubUsecase from "@/application/usecases/report/stub/find-reports-by-party.stub";
 import FindScammerSummaryByIdUsecase from "@/application/usecases/scammer/find-scammer-summary-by-id.usecase";
 import FindOrganizationSummaryByIdUsecase from "@/application/usecases/organization/find-organization-summary-by-id.usecase";
 import SearchReportStubUsecase from "@/application/usecases/report/stub/search-report.stub";
@@ -12,6 +13,8 @@ export const createFindOrganizationSummaryByIdUseCase = () => new FindOrganizati
 export const createSearchReportStubUseCase = () => new SearchReportStubUsecase();
 export const createFindMonthlyReportCountsUseCase = () => new FindMonthlyReportCountsUsecase();
 export const createFindContactsByPartyUseCase = () => new FindContactsByPartyUsecase();
+export const createFindReportsByPartyUseCase = () =>
+  new FindReportsByPartyStubUsecase();
 export const createFindRelationshipMapByPartyUseCase = () =>
   new FindRelationshipMapByPartyUsecase();
 export const dependencies = {
@@ -21,6 +24,7 @@ export const dependencies = {
   searchReportStubUseCase: createSearchReportStubUseCase,
   findMonthlyReportCountsUseCase: createFindMonthlyReportCountsUseCase,
   findContactsByPartyUseCase: createFindContactsByPartyUseCase,
+  findReportsByPartyUseCase: createFindReportsByPartyUseCase,
   findRelationshipMapByPartyUseCase: createFindRelationshipMapByPartyUseCase,
 };
 
@@ -40,6 +44,7 @@ export const createDependencies = (): Dependencies => ({
   searchReportStubUseCase: dependencies.searchReportStubUseCase(),
   findMonthlyReportCountsUseCase: dependencies.findMonthlyReportCountsUseCase(),
   findContactsByPartyUseCase: dependencies.findContactsByPartyUseCase(),
+  findReportsByPartyUseCase: dependencies.findReportsByPartyUseCase(),
   findRelationshipMapByPartyUseCase:
     dependencies.findRelationshipMapByPartyUseCase(),
 });

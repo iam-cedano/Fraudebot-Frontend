@@ -20,6 +20,7 @@ export type ReportHeroProps = {
   id: string;
   name: string;
   type: string;
+  partyType: "scammer" | "organization";
   reportDate: Date;
   status: string;
   reports: number;
