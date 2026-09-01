@@ -13,11 +13,13 @@ const API_ROUTES: Record<string, Record<string, Record<string, string>>> = {
             findById: "/public/scammers/{id}",
             calendar: "/public/scammers/{id}/calendar/{year}",
             contacts: "/public/scammers/{id}/contacts",
+            map: "/public/scammers/{id}/map",
         },
         organizations: {
             findById: "/public/organizations/{id}",
             calendar: "/public/organizations/{id}/calendar/{year}",
             contacts: "/public/organizations/{id}/contacts",
+            map: "/public/organizations/{id}/map",
         },
     },
 } as const;

@@ -2,7 +2,7 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type {
   MapSatelliteNode,
   SatelliteKind,
-} from "@presentation/pages/report/components/map-example-graph";
+} from "@presentation/pages/report/components/map-graph";
 
 function kindLabel(kind: SatelliteKind) {
   return kind === "contact" ? "Contacto" : "Método de pago";
@@ -27,11 +27,6 @@ function MapSatelliteNode({ data }: NodeProps<MapSatelliteNode>) {
           {data.detail}
         </p>
       </div>
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        className="!h-2 !w-2 !border-gray-300 !bg-gray-200"
-      />
     </div>
   );
 }

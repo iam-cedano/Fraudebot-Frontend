@@ -210,11 +210,7 @@ function Report({ type }: { type: "scammer" | "organization" }) {
                 <ContactsTab partyId={party.id} partyType={type} />
               )}
               {activeTab === "Mapa" && (
-                <MapTab
-                  partyId={party.id}
-                  partyType={type}
-                  partyName={party.name}
-                />
+                <MapTab partyId={party.id} partyType={type} />
               )}
               {activeTab === "Soporte" && <PlaceholderTab tab="Soporte" />}
             </div>
